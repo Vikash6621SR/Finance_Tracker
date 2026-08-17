@@ -10,6 +10,7 @@ API CONFIGURATION
 const API_BASE_URL =
     "https://financetracker-production-3fe4.up.railway.app/api";
 
+
 /*
 =========================================================
 COMMON REQUEST FUNCTION
@@ -40,14 +41,33 @@ async function apiRequest(endpoint, options = {}) {
         data = null;
     }
 
+
+    /*
+    =====================================================
+    HANDLE HTTP ERRORS
+    =====================================================
+    */
+
     if (!response.ok) {
 
-        throw new Error(
+        const error = new Error(
             data?.message ||
             data?.error ||
             `Request failed with status ${response.status}`
         );
+
+        /*
+        Add HTTP status so pages such as dashboard.js
+        can detect 401 / 403 correctly.
+        */
+
+        error.status = response.status;
+
+        error.data = data;
+
+        throw error;
     }
+
 
     return data;
 }
@@ -69,6 +89,12 @@ const FinanceAPI = {
 
     auth: {
 
+        /*
+        -------------------------------------------------
+        LOGIN
+        -------------------------------------------------
+        */
+
         async login(email, password) {
 
             return await apiRequest(
@@ -85,6 +111,12 @@ const FinanceAPI = {
         },
 
 
+        /*
+        -------------------------------------------------
+        REGISTER / INITIAL SETUP
+        -------------------------------------------------
+        */
+
         async register(userData) {
 
             return await apiRequest(
@@ -98,6 +130,112 @@ const FinanceAPI = {
         },
 
 
+        /*
+        -------------------------------------------------
+        CURRENT LOGGED-IN USER
+        -------------------------------------------------
+
+        Dashboard uses:
+
+            FinanceAPI.auth.me()
+
+        The project already has an authenticated
+        /profile endpoint, so use it to retrieve
+        the current user's information.
+        -------------------------------------------------
+        */
+
+        async me() {
+
+            const response = await apiRequest(
+                "/profile",
+                {
+                    method: "GET"
+                }
+            );
+
+
+            /*
+            Backend may return:
+
+                {
+                    success: true,
+                    user: {...}
+                }
+
+            or:
+
+                {
+                    success: true,
+                    data: {...}
+                }
+
+            or directly:
+
+                {...user...}
+            */
+
+            if (
+                response &&
+                response.success &&
+                response.user
+            ) {
+                return response;
+            }
+
+
+            if (
+                response &&
+                response.success &&
+                response.data
+            ) {
+                return {
+                    success: true,
+                    user: response.data
+                };
+            }
+
+
+            /*
+            If /profile directly returns the user object.
+            */
+
+            if (
+                response &&
+                typeof response === "object" &&
+                !Array.isArray(response)
+            ) {
+
+                /*
+                Avoid treating an explicit unsuccessful
+                response as a valid user.
+                */
+
+                if (response.success === false) {
+                    return response;
+                }
+
+
+                return {
+                    success: true,
+                    user: response
+                };
+            }
+
+
+            return {
+                success: false,
+                user: null
+            };
+        },
+
+
+        /*
+        -------------------------------------------------
+        LOGOUT
+        -------------------------------------------------
+        */
+
         async logout() {
 
             return await apiRequest(
@@ -109,6 +247,12 @@ const FinanceAPI = {
         },
 
 
+        /*
+        -------------------------------------------------
+        SETUP STATUS
+        -------------------------------------------------
+        */
+
         async setupStatus() {
 
             return await apiRequest(
@@ -119,6 +263,7 @@ const FinanceAPI = {
             );
         }
     },
+
 
     /*
     =====================================================
@@ -369,6 +514,38 @@ const FinanceAPI = {
                 }
             );
         }
+    },
+
+
+    /*
+    =====================================================
+    ERROR MESSAGE
+    =====================================================
+    */
+
+    errorMessage(error) {
+
+        if (!error) {
+            return "Something went wrong.";
+        }
+
+
+        if (error.data?.message) {
+            return error.data.message;
+        }
+
+
+        if (error.data?.error) {
+            return error.data.error;
+        }
+
+
+        if (error.message) {
+            return error.message;
+        }
+
+
+        return "Something went wrong.";
     }
 };
 
@@ -380,4 +557,5 @@ MAKE AVAILABLE GLOBALLY
 */
 
 window.FinanceAPI = FinanceAPI;
+
 window.API_BASE_URL = API_BASE_URL;

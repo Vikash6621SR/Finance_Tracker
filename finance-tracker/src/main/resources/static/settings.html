@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Settings | Finance Tracker</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="./static/css/settings.css" />
+  </head>
+
+  <body>
+    <div class="app">
+      <!-- SIDEBAR -->
+
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <a href="dashboard.html" class="logo">
+            <span class="logo-icon">
+              <i class="fa-solid fa-wallet"></i>
+            </span>
+
+            <span> Finance<span>Tracker</span> </span>
+          </a>
+
+          <button id="closeSidebar" class="close-sidebar" type="button">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <nav class="sidebar-nav">
+          <span class="nav-title"> MAIN MENU </span>
+
+          <a href="dashboard.html" class="nav-link">
+            <i class="fa-solid fa-chart-pie"></i>
+            Dashboard
+          </a>
+
+          <a href="transactions.html" class="nav-link">
+            <i class="fa-solid fa-arrow-right-arrow-left"></i>
+            Transactions
+          </a>
+
+          <a href="accounts.html" class="nav-link">
+            <i class="fa-solid fa-building-columns"></i>
+            Accounts
+          </a>
+
+          <a href="budgets.html" class="nav-link">
+            <i class="fa-solid fa-wallet"></i>
+            Budgets
+          </a>
+
+          <a href="savings.html" class="nav-link">
+            <i class="fa-solid fa-piggy-bank"></i>
+            Savings
+          </a>
+
+          <a href="recurring.html" class="nav-link">
+            <i class="fa-solid fa-repeat"></i>
+            Recurring
+          </a>
+
+          <a href="reports.html" class="nav-link">
+            <i class="fa-solid fa-file-lines"></i>
+            Reports
+          </a>
+
+          <span class="nav-title second"> ACCOUNT </span>
+
+          <a href="profile.html" class="nav-link">
+            <i class="fa-regular fa-user"></i>
+            Profile
+          </a>
+
+          <a href="settings.html" class="nav-link active">
+            <i class="fa-solid fa-gear"></i>
+            Settings
+          </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <button id="logoutButton" class="logout-button" type="button">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+
+            Sign out
+          </button>
+        </div>
+      </aside>
+
+      <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+      <!-- MAIN -->
+
+      <main class="main">
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+          <div class="topbar-left">
+            <button id="menuButton" class="menu-button" type="button">
+              <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <div>
+              <h1>Settings</h1>
+            </div>
+          </div>
+
+          <div class="topbar-right">
+            <a href="profile.html" class="user-menu">
+              <span id="userAvatar" class="user-avatar"> U </span>
+
+              <span class="user-details">
+                <strong id="userName"> User </strong>
+
+                <small id="userEmail"> Account </small>
+              </span>
+            </a>
+          </div>
+        </header>
+
+        <!-- CONTENT -->
+
+        <section class="content">
+          <div class="page-header">
+            <div>
+              <span class="eyebrow"> PREFERENCES </span>
+
+              <h2>Settings</h2>
+
+              <p>Configure how your Finance Tracker works.</p>
+            </div>
+          </div>
+
+          <div class="settings-layout">
+            <!-- GENERAL SETTINGS -->
+
+            <section class="settings-card">
+              <div class="card-header">
+                <div>
+                  <h3>General Settings</h3>
+
+                  <p>Basic application preferences.</p>
+                </div>
+
+                <span class="header-icon">
+                  <i class="fa-solid fa-sliders"></i>
+                </span>
+              </div>
+
+              <div class="settings-list">
+                <!-- CURRENCY -->
+
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <span class="setting-icon green">
+                      <i class="fa-solid fa-indian-rupee-sign"></i>
+                    </span>
+
+                    <div>
+                      <strong> Currency </strong>
+
+                      <p>
+                        Select the currency used throughout the application.
+                      </p>
+                    </div>
+                  </div>
+
+                  <select id="currency" class="setting-select">
+                    <option value="INR">Indian Rupee (₹)</option>
+
+                    <option value="USD">US Dollar ($)</option>
+
+                    <option value="EUR">Euro (€)</option>
+
+                    <option value="GBP">British Pound (£)</option>
+                  </select>
+                </div>
+
+                <!-- DATE FORMAT -->
+
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <span class="setting-icon blue">
+                      <i class="fa-regular fa-calendar"></i>
+                    </span>
+
+                    <div>
+                      <strong> Date Format </strong>
+
+                      <p>Choose how dates are displayed.</p>
+                    </div>
+                  </div>
+
+                  <select id="dateFormat" class="setting-select">
+                    <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+
+                    <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+
+                    <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                  </select>
+                </div>
+
+                <!-- START DAY -->
+
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <span class="setting-icon purple">
+                      <i class="fa-solid fa-calendar-week"></i>
+                    </span>
+
+                    <div>
+                      <strong> Week Starts On </strong>
+
+                      <p>Select the first day of the week.</p>
+                    </div>
+                  </div>
+
+                  <select id="weekStart" class="setting-select">
+                    <option value="monday">Monday</option>
+
+                    <option value="sunday">Sunday</option>
+                  </select>
+                </div>
+              </div>
+            </section>
+
+            <!-- NOTIFICATIONS -->
+
+            <section class="settings-card">
+              <div class="card-header">
+                <div>
+                  <h3>Notifications</h3>
+
+                  <p>Choose which application alerts you want.</p>
+                </div>
+
+                <span class="header-icon">
+                  <i class="fa-regular fa-bell"></i>
+                </span>
+              </div>
+
+              <div class="settings-list">
+                <div class="toggle-row">
+                  <div class="setting-info">
+                    <span class="setting-icon green">
+                      <i class="fa-solid fa-wallet"></i>
+                    </span>
+
+                    <div>
+                      <strong> Budget Alerts </strong>
+
+                      <p>Notify when spending approaches a budget limit.</p>
+                    </div>
+                  </div>
+
+                  <label class="switch">
+                    <input id="budgetAlerts" type="checkbox" />
+
+                    <span class="slider"></span>
+                  </label>
+                </div>
+
+                <div class="toggle-row">
+                  <div class="setting-info">
+                    <span class="setting-icon orange">
+                      <i class="fa-solid fa-repeat"></i>
+                    </span>
+
+                    <div>
+                      <strong> Recurring Transaction Alerts </strong>
+
+                      <p>Receive reminders for recurring transactions.</p>
+                    </div>
+                  </div>
+
+                  <label class="switch">
+                    <input id="recurringAlerts" type="checkbox" />
+
+                    <span class="slider"></span>
+                  </label>
+                </div>
+
+                <div class="toggle-row">
+                  <div class="setting-info">
+                    <span class="setting-icon blue">
+                      <i class="fa-solid fa-chart-line"></i>
+                    </span>
+
+                    <div>
+                      <strong> Monthly Summary </strong>
+
+                      <p>Show a summary of your monthly financial activity.</p>
+                    </div>
+                  </div>
+
+                  <label class="switch">
+                    <input id="monthlySummary" type="checkbox" />
+
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+            </section>
+
+            <!-- PRIVACY -->
+
+            <section class="settings-card">
+              <div class="card-header">
+                <div>
+                  <h3>Privacy & Security</h3>
+
+                  <p>Manage account security options.</p>
+                </div>
+
+                <span class="header-icon">
+                  <i class="fa-solid fa-shield-halved"></i>
+                </span>
+              </div>
+
+              <div class="settings-list">
+                <div class="action-row">
+                  <div class="setting-info">
+                    <span class="setting-icon red">
+                      <i class="fa-solid fa-lock"></i>
+                    </span>
+
+                    <div>
+                      <strong> Password & Security </strong>
+
+                      <p>Change your password and manage account security.</p>
+                    </div>
+                  </div>
+
+                  <a href="profile.html" class="action-button"> Manage </a>
+                </div>
+
+                <div class="action-row">
+                  <div class="setting-info">
+                    <span class="setting-icon blue">
+                      <i class="fa-solid fa-user-shield"></i>
+                    </span>
+
+                    <div>
+                      <strong> Account Information </strong>
+
+                      <p>Review your personal profile information.</p>
+                    </div>
+                  </div>
+
+                  <a href="profile.html" class="action-button">
+                    View Profile
+                  </a>
+                </div>
+              </div>
+            </section>
+
+            <!-- DATA -->
+
+            <section class="settings-card">
+              <div class="card-header">
+                <div>
+                  <h3>Data Management</h3>
+
+                  <p>Manage your local application preferences.</p>
+                </div>
+
+                <span class="header-icon">
+                  <i class="fa-solid fa-database"></i>
+                </span>
+              </div>
+
+              <div class="settings-list">
+                <div class="action-row">
+                  <div class="setting-info">
+                    <span class="setting-icon green">
+                      <i class="fa-solid fa-floppy-disk"></i>
+                    </span>
+
+                    <div>
+                      <strong> Save Preferences </strong>
+
+                      <p>Save your current settings.</p>
+                    </div>
+                  </div>
+
+                  <button
+                    id="saveSettings"
+                    class="action-button primary"
+                    type="button"
+                  >
+                    Save
+                  </button>
+                </div>
+
+                <div class="action-row">
+                  <div class="setting-info">
+                    <span class="setting-icon gray">
+                      <i class="fa-solid fa-rotate-left"></i>
+                    </span>
+
+                    <div>
+                      <strong> Reset Preferences </strong>
+
+                      <p>Restore the default application preferences.</p>
+                    </div>
+                  </div>
+
+                  <button
+                    id="resetSettings"
+                    class="action-button"
+                    type="button"
+                  >
+                    Reset
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <!-- DANGER ZONE -->
+
+            <section class="settings-card danger-card">
+              <div class="card-header">
+                <div>
+                  <h3>Account Actions</h3>
+
+                  <p>Actions that affect your current session.</p>
+                </div>
+
+                <span class="header-icon danger-icon">
+                  <i class="fa-solid fa-triangle-exclamation"></i>
+                </span>
+              </div>
+
+              <div class="danger-content">
+                <div>
+                  <strong> Sign out of your account </strong>
+
+                  <p>End your current Finance Tracker session.</p>
+                </div>
+
+                <button id="settingsLogout" class="danger-button" type="button">
+                  <i class="fa-solid fa-arrow-right-from-bracket"></i>
+
+                  Sign Out
+                </button>
+              </div>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- TOAST -->
+
+    <div id="toast" class="toast">
+      <i id="toastIcon"></i>
+
+      <span id="toastMessage"> Done </span>
+    </div>
+
+    <script src="./static/js/api.js"></script>
+
+    <script src="./static/js/settings.js"></script>
+  </body>
+</html>

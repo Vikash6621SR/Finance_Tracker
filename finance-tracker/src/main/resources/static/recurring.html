@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Recurring Transactions | Finance Tracker</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="./static/css/recurring.css" />
+  </head>
+
+  <body>
+    <div class="app">
+      <!-- SIDEBAR -->
+
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <a href="dashboard.html" class="logo">
+            <span class="logo-icon">
+              <i class="fa-solid fa-wallet"></i>
+            </span>
+
+            <span> Finance<span>Tracker</span> </span>
+          </a>
+
+          <button id="closeSidebar" class="close-sidebar" type="button">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <nav class="sidebar-nav">
+          <span class="nav-title"> MAIN MENU </span>
+
+          <a href="dashboard.html" class="nav-link">
+            <i class="fa-solid fa-chart-pie"></i>
+            Dashboard
+          </a>
+
+          <a href="transactions.html" class="nav-link">
+            <i class="fa-solid fa-arrow-right-arrow-left"></i>
+            Transactions
+          </a>
+
+          <a href="accounts.html" class="nav-link">
+            <i class="fa-solid fa-building-columns"></i>
+            Accounts
+          </a>
+
+          <a href="budgets.html" class="nav-link">
+            <i class="fa-solid fa-wallet"></i>
+            Budgets
+          </a>
+
+          <a href="savings.html" class="nav-link">
+            <i class="fa-solid fa-piggy-bank"></i>
+            Savings
+          </a>
+
+          <a href="recurring.html" class="nav-link active">
+            <i class="fa-solid fa-repeat"></i>
+            Recurring
+          </a>
+
+          <a href="reports.html" class="nav-link">
+            <i class="fa-solid fa-file-lines"></i>
+            Reports
+          </a>
+
+          <span class="nav-title second"> ACCOUNT </span>
+
+          <a href="profile.html" class="nav-link">
+            <i class="fa-regular fa-user"></i>
+            Profile
+          </a>
+
+          <a href="settings.html" class="nav-link">
+            <i class="fa-solid fa-gear"></i>
+            Settings
+          </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <button id="logoutButton" class="logout-button" type="button">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+
+            Sign out
+          </button>
+        </div>
+      </aside>
+
+      <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+      <!-- MAIN -->
+
+      <main class="main">
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+          <div class="topbar-left">
+            <button id="menuButton" class="menu-button" type="button">
+              <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <div>
+              <h1>Recurring Transactions</h1>
+            </div>
+          </div>
+
+          <div class="topbar-right">
+            <button
+              id="refreshButton"
+              class="refresh-button"
+              type="button"
+              title="Refresh"
+            >
+              <i class="fa-solid fa-rotate"></i>
+            </button>
+
+            <a href="profile.html" class="user-menu">
+              <span id="userAvatar" class="user-avatar"> U </span>
+
+              <span class="user-details">
+                <strong id="userName"> User </strong>
+
+                <small id="userEmail"> Account </small>
+              </span>
+            </a>
+          </div>
+        </header>
+
+        <!-- CONTENT -->
+
+        <section class="content">
+          <div class="page-header">
+            <div>
+              <span class="eyebrow"> AUTOMATIC TRANSACTIONS </span>
+
+              <h2>Recurring Transactions</h2>
+
+              <p>Schedule transactions that happen regularly.</p>
+            </div>
+
+            <button id="addRecurringButton" class="add-button" type="button">
+              <i class="fa-solid fa-plus"></i>
+
+              Add Recurring
+            </button>
+          </div>
+
+          <!-- SUMMARY -->
+
+          <div class="summary-grid">
+            <div class="summary-card">
+              <div class="summary-icon green">
+                <i class="fa-solid fa-repeat"></i>
+              </div>
+
+              <div>
+                <span> TOTAL </span>
+
+                <strong id="totalRecurring"> 0 </strong>
+              </div>
+            </div>
+
+            <div class="summary-card">
+              <div class="summary-icon blue">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+
+              <div>
+                <span> ACTIVE </span>
+
+                <strong id="activeRecurring"> 0 </strong>
+              </div>
+            </div>
+
+            <div class="summary-card">
+              <div class="summary-icon orange">
+                <i class="fa-solid fa-pause"></i>
+              </div>
+
+              <div>
+                <span> PAUSED </span>
+
+                <strong id="pausedRecurring"> 0 </strong>
+              </div>
+            </div>
+
+            <div class="summary-card">
+              <div class="summary-icon purple">
+                <i class="fa-solid fa-money-bill-transfer"></i>
+              </div>
+
+              <div>
+                <span> TOTAL AMOUNT </span>
+
+                <strong id="totalAmount"> ₹0.00 </strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- FILTER -->
+
+          <div class="filter-panel">
+            <div class="search-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+
+              <input
+                id="searchInput"
+                type="search"
+                placeholder="Search recurring transactions..."
+              />
+            </div>
+
+            <select id="typeFilter" class="filter-select">
+              <option value="all">All Types</option>
+
+              <option value="income">Income</option>
+
+              <option value="expense">Expense</option>
+            </select>
+
+            <select id="statusFilter" class="filter-select">
+              <option value="all">All Status</option>
+
+              <option value="active">Active</option>
+
+              <option value="paused">Paused</option>
+            </select>
+
+            <button id="clearFilters" class="clear-button" type="button">
+              Clear
+            </button>
+          </div>
+
+          <!-- PANEL -->
+
+          <div class="recurring-panel">
+            <div class="panel-header">
+              <div>
+                <h3>Scheduled Transactions</h3>
+
+                <p id="resultText">0 recurring transactions</p>
+              </div>
+
+              <button id="panelAddButton" class="panel-add" type="button">
+                <i class="fa-solid fa-plus"></i>
+
+                Add Recurring
+              </button>
+            </div>
+
+            <div id="recurringGrid" class="recurring-grid">
+              <div class="loading-state">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+
+                Loading recurring transactions...
+              </div>
+            </div>
+
+            <div id="emptyState" class="empty-state">
+              <div class="empty-icon">
+                <i class="fa-solid fa-repeat"></i>
+              </div>
+
+              <h3>No recurring transactions yet</h3>
+
+              <p>Add your first recurring income or expense.</p>
+
+              <button id="emptyAddButton" type="button">
+                <i class="fa-solid fa-plus"></i>
+
+                Add Recurring
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ADD / EDIT MODAL -->
+
+    <div id="recurringModal" class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <div>
+            <span> RECURRING TRANSACTION </span>
+
+            <h2 id="modalTitle">Add Recurring Transaction</h2>
+          </div>
+
+          <button id="modalClose" class="modal-close" type="button">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div id="modalMessage" class="modal-message"></div>
+
+        <form id="recurringForm">
+          <input id="recurringId" type="hidden" />
+
+          <div class="form-group">
+            <label for="recurringName"> Transaction Name </label>
+
+            <input
+              id="recurringName"
+              type="text"
+              maxlength="100"
+              placeholder="e.g. Monthly Salary"
+              required
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="recurringType"> Type </label>
+
+              <select id="recurringType" required>
+                <option value="">Select type</option>
+
+                <option value="income">Income</option>
+
+                <option value="expense">Expense</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="recurringCategory"> Category </label>
+
+              <input
+                id="recurringCategory"
+                type="text"
+                maxlength="60"
+                placeholder="e.g. Salary"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="recurringAmount"> Amount </label>
+
+            <div class="amount-input">
+              <span> ₹ </span>
+
+              <input
+                id="recurringAmount"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="recurringFrequency"> Frequency </label>
+
+              <select id="recurringFrequency" required>
+                <option value="">Select frequency</option>
+
+                <option value="DAILY">Daily</option>
+
+                <option value="WEEKLY">Weekly</option>
+
+                <option value="MONTHLY">Monthly</option>
+
+                <option value="YEARLY">Yearly</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="recurringStartDate"> Next Date </label>
+
+              <input id="recurringStartDate" type="date" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="recurringDescription"> Description </label>
+
+            <textarea
+              id="recurringDescription"
+              rows="3"
+              maxlength="300"
+              placeholder="Optional description..."
+            ></textarea>
+          </div>
+
+          <div class="form-group status-group">
+            <label class="toggle-label">
+              <span>
+                <strong> Active </strong>
+
+                <small>
+                  Automatically include this transaction when active.
+                </small>
+              </span>
+
+              <span class="switch">
+                <input id="recurringActive" type="checkbox" checked />
+
+                <span class="slider"></span>
+              </span>
+            </label>
+          </div>
+
+          <div class="modal-actions">
+            <button id="cancelButton" class="cancel-button" type="button">
+              Cancel
+            </button>
+
+            <button id="saveButton" class="save-button" type="submit">
+              Save Recurring
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- DELETE CONFIRMATION -->
+
+    <div id="confirmOverlay" class="confirm-overlay">
+      <div class="confirm-box">
+        <div class="confirm-icon">
+          <i class="fa-solid fa-trash"></i>
+        </div>
+
+        <h3>Delete recurring transaction?</h3>
+
+        <p>This recurring transaction will be permanently removed.</p>
+
+        <div class="confirm-actions">
+          <button id="confirmCancel" type="button">Cancel</button>
+
+          <button id="confirmDelete" type="button">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+
+    <div id="toast" class="toast">
+      <i id="toastIcon"></i>
+
+      <span id="toastMessage"> Done </span>
+    </div>
+
+    <script src="./static/js/api.js"></script>
+
+    <script src="./static/js/recurring.js"></script>
+  </body>
+</html>

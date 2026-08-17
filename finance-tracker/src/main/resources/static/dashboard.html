@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en" class="dashboard-loading">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Finance Tracker - Dashboard</title>
+
+    <!-- =====================================================
+         ANTI-FLICKER
+         ===================================================== -->
+
+    <style>
+      /*
+         * Hide the application before JavaScript
+         * has verified the login session.
+         *
+         * This CSS is intentionally placed in <head>
+         * so the browser applies it BEFORE painting
+         * the dashboard.
+         */
+
+      html.dashboard-loading .app-shell {
+        visibility: hidden !important;
+      }
+
+      html.dashboard-loading .dashboard-loader {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+
+      html.dashboard-ready .app-shell {
+        visibility: visible !important;
+      }
+
+      html.dashboard-ready .dashboard-loader {
+        display: none !important;
+      }
+    </style>
+
+    <!-- =====================================================
+         FONT AWESOME
+         ===================================================== -->
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+
+    <!-- =====================================================
+         DASHBOARD CSS
+         ===================================================== -->
+
+    <link rel="stylesheet" href="./static/css/dashboard.css" />
+  </head>
+
+  <body>
+    <!-- =====================================================
+         LOADER
+         ===================================================== -->
+
+    <div id="dashboardLoader" class="dashboard-loader">
+      <div class="dashboard-loader-card">
+        <div class="loader-spinner">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+        </div>
+
+        <h3>Loading Finance Tracker</h3>
+
+        <p>Checking your account...</p>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         APP
+         ===================================================== -->
+
+    <div class="app-shell" id="appShell">
+      <!-- =================================================
+             SIDEBAR OVERLAY
+             ================================================= -->
+
+      <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+      <!-- =================================================
+             SIDEBAR
+             ================================================= -->
+
+      <aside id="sidebar" class="sidebar">
+        <!-- BRAND -->
+
+        <div class="sidebar-brand">
+          <a href="dashboard.html" class="brand-link">
+            <span class="brand-icon">
+              <i class="fa-solid fa-wallet"></i>
+            </span>
+
+            <span class="brand-text">
+              Finance
+              <strong> Tracker </strong>
+            </span>
+          </a>
+
+          <button
+            type="button"
+            id="closeSidebar"
+            class="close-sidebar"
+            aria-label="Close menu"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- USER -->
+
+        <div class="sidebar-user">
+          <div class="user-avatar" id="sidebarUserInitial">U</div>
+
+          <div class="sidebar-user-info">
+            <strong id="sidebarUserName"> User </strong>
+
+            <small> Personal Account </small>
+          </div>
+        </div>
+
+        <!-- NAVIGATION -->
+
+        <nav class="sidebar-navigation">
+          <p class="nav-title">MAIN</p>
+
+          <a href="dashboard.html" class="nav-link active">
+            <i class="fa-solid fa-chart-pie"></i>
+
+            <span> Dashboard </span>
+          </a>
+
+          <a href="transactions.html" class="nav-link">
+            <i class="fa-solid fa-receipt"></i>
+
+            <span> Transactions </span>
+          </a>
+
+          <a href="accounts.html" class="nav-link">
+            <i class="fa-solid fa-building-columns"></i>
+
+            <span> Accounts </span>
+          </a>
+
+          <p class="nav-title">PLANNING</p>
+
+          <a href="budgets.html" class="nav-link">
+            <i class="fa-solid fa-wallet"></i>
+
+            <span> Budgets </span>
+          </a>
+
+          <a href="savings.html" class="nav-link">
+            <i class="fa-solid fa-piggy-bank"></i>
+
+            <span> Savings </span>
+          </a>
+
+          <a href="recurring.html" class="nav-link">
+            <i class="fa-solid fa-repeat"></i>
+            Recurring
+          </a>
+
+          <a href="reports.html" class="nav-link">
+            <i class="fa-solid fa-chart-line"></i>
+
+            <span> Reports </span>
+          </a>
+
+          <p class="nav-title">ACCOUNT</p>
+
+          <a href="profile.html" class="nav-link">
+            <i class="fa-solid fa-user"></i>
+
+            <span> Profile </span>
+          </a>
+
+          <a href="settings.html" class="nav-link">
+            <i class="fa-solid fa-gear"></i>
+
+            <span> Settings </span>
+          </a>
+        </nav>
+
+        <!-- LOGOUT -->
+
+        <div class="sidebar-bottom">
+          <button type="button" id="logoutButton" class="logout-button">
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            <span> Logout </span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- =================================================
+             MAIN
+             ================================================= -->
+
+      <main class="main-content">
+        <!-- =================================================
+                 TOP BAR
+                 ================================================= -->
+
+        <header class="topbar">
+          <div class="topbar-left">
+            <button
+              type="button"
+              id="menuButton"
+              class="menu-button"
+              aria-label="Open menu"
+            >
+              <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <div class="page-heading">
+              <h1>Dashboard</h1>
+
+              <p id="currentDate">Loading...</p>
+            </div>
+          </div>
+
+          <div class="topbar-right">
+            <!-- NOTIFICATION -->
+
+            <button
+              type="button"
+              id="notificationButton"
+              class="icon-button"
+              aria-label="Notifications"
+            >
+              <i class="fa-regular fa-bell"></i>
+            </button>
+
+            <!-- PROFILE -->
+
+            <div class="topbar-user">
+              <div class="topbar-avatar" id="topbarUserInitial">U</div>
+
+              <div class="topbar-user-info">
+                <strong id="topbarUserName"> User </strong>
+
+                <small> Personal </small>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- =================================================
+                 CONTENT
+                 ================================================= -->
+
+        <section class="dashboard-content">
+          <!-- =================================================
+                     WELCOME
+                     ================================================= -->
+
+          <section class="welcome-section">
+            <div>
+              <p class="welcome-label">Welcome back,</p>
+
+              <h2>
+                <span id="welcomeName"> User </span>
+
+                👋
+              </h2>
+
+              <p>Here's your financial overview.</p>
+            </div>
+
+            <a
+              href="transactions.html"
+              class="add-button"
+              id="addTransactionButton"
+            >
+              <i class="fa-solid fa-plus"></i>
+
+              Add Transaction
+            </a>
+          </section>
+
+          <!-- =================================================
+                     SUMMARY CARDS
+                     ================================================= -->
+
+          <section class="summary-grid">
+            <!-- INCOME -->
+
+            <article class="summary-card">
+              <div class="summary-card-top">
+                <span class="summary-icon income">
+                  <i class="fa-solid fa-arrow-down"></i>
+                </span>
+
+                <span id="incomeChange" class="change neutral"> — </span>
+              </div>
+
+              <p class="summary-label">Total Income</p>
+
+              <h3 id="totalIncome">₹0.00</h3>
+            </article>
+
+            <!-- EXPENSE -->
+
+            <article class="summary-card">
+              <div class="summary-card-top">
+                <span class="summary-icon expense">
+                  <i class="fa-solid fa-arrow-up"></i>
+                </span>
+
+                <span id="expenseChange" class="change neutral"> — </span>
+              </div>
+
+              <p class="summary-label">Total Expenses</p>
+
+              <h3 id="totalExpense">₹0.00</h3>
+            </article>
+
+            <!-- SAVINGS -->
+
+            <article class="summary-card">
+              <div class="summary-card-top">
+                <span class="summary-icon savings">
+                  <i class="fa-solid fa-piggy-bank"></i>
+                </span>
+
+                <span id="savingsChange" class="change neutral"> — </span>
+              </div>
+
+              <p class="summary-label">Net Savings</p>
+
+              <h3 id="netSavings">₹0.00</h3>
+            </article>
+
+            <!-- SAVINGS RATE -->
+
+            <article class="summary-card">
+              <div class="summary-card-top">
+                <span class="summary-icon rate">
+                  <i class="fa-solid fa-percent"></i>
+                </span>
+
+                <span id="rateChange" class="change neutral"> — </span>
+              </div>
+
+              <p class="summary-label">Savings Rate</p>
+
+              <h3 id="savingsRate">0%</h3>
+            </article>
+          </section>
+
+          <!-- =================================================
+                     PERIOD
+                     ================================================= -->
+
+          <div class="dashboard-toolbar">
+            <div>
+              <h3>Financial Overview</h3>
+            </div>
+
+            <select id="periodSelect" class="period-select">
+              <option value="7">Last 7 Days</option>
+
+              <option value="30" selected>Last 30 Days</option>
+
+              <option value="90">Last 90 Days</option>
+
+              <option value="365">Last Year</option>
+            </select>
+          </div>
+
+          <!-- =================================================
+                     CHARTS
+                     ================================================= -->
+
+          <section class="charts-grid">
+            <!-- INCOME / EXPENSE -->
+
+            <article class="chart-card">
+              <div class="chart-header">
+                <div>
+                  <h3>Income vs Expenses</h3>
+
+                  <p>Your financial activity over time</p>
+                </div>
+              </div>
+
+              <div class="chart-container">
+                <canvas id="incomeExpenseChart"></canvas>
+
+                <div id="incomeExpenseEmpty" class="chart-empty hidden">
+                  <i class="fa-solid fa-chart-line"></i>
+
+                  <span> No transaction data available. </span>
+                </div>
+              </div>
+            </article>
+
+            <!-- EXPENSE CATEGORIES -->
+
+            <article class="chart-card">
+              <div class="chart-header">
+                <div>
+                  <h3>Expense Categories</h3>
+
+                  <p>Where your money goes</p>
+                </div>
+              </div>
+
+              <div class="category-chart-container">
+                <div class="doughnut-container">
+                  <canvas id="expenseCategoryChart"></canvas>
+
+                  <div id="expenseCategoryEmpty" class="chart-empty hidden">
+                    <i class="fa-solid fa-chart-pie"></i>
+
+                    <span> No expenses yet. </span>
+                  </div>
+                </div>
+
+                <div id="categoryList" class="category-list"></div>
+              </div>
+            </article>
+          </section>
+
+          <!-- =================================================
+                     RECENT TRANSACTIONS
+                     ================================================= -->
+
+          <section class="recent-section">
+            <div class="section-header">
+              <div>
+                <h3>Recent Transactions</h3>
+
+                <p>Your latest financial activity</p>
+              </div>
+
+              <a
+                href="transactions.html"
+                id="viewAllTransactions"
+                class="view-all"
+              >
+                View All
+
+                <i class="fa-solid fa-arrow-right"></i>
+              </a>
+            </div>
+
+            <div id="recentTransactions" class="recent-transactions">
+              <div class="empty-transactions">
+                <span>
+                  <i class="fa-solid fa-receipt"></i>
+                </span>
+
+                <strong> No transactions yet </strong>
+
+                <small> Add your first transaction to see it here. </small>
+              </div>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <!-- =====================================================
+         TOAST
+         ===================================================== -->
+
+    <div id="dashboardToast" class="toast">
+      <i class="fa-solid fa-circle-info"></i>
+
+      <span id="dashboardToastMessage"></span>
+    </div>
+
+    <!-- =====================================================
+         CHART.JS
+         ===================================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+    <!-- =====================================================
+         API
+         ===================================================== -->
+
+    <script src="./static/js/api.js"></script>
+
+    <!-- =====================================================
+         DASHBOARD JS
+         ===================================================== -->
+
+    <script src="./static/js/dashboard.js"></script>
+  </body>
+</html>

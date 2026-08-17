@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Setup Profile | Finance Tracker</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="./static/css/setup.css" />
+  </head>
+
+  <body>
+    <div class="setup-page">
+      <!-- =====================================================
+         LEFT PANEL
+    ====================================================== -->
+
+      <section class="setup-info">
+        <a href="index.html" class="brand">
+          <span class="brand-icon">
+            <i class="fa-solid fa-wallet"></i>
+          </span>
+
+          <span> Finance<span>Tracker</span> </span>
+        </a>
+
+        <div class="info-content">
+          <span class="eyebrow"> ONE LAST STEP </span>
+
+          <h1>
+            Set up your
+            <span>financial profile.</span>
+          </h1>
+
+          <p>
+            Tell us a little about yourself so Finance Tracker can create your
+            personal account.
+          </p>
+
+          <div class="setup-points">
+            <div class="setup-point">
+              <span class="point-icon">
+                <i class="fa-solid fa-user"></i>
+              </span>
+
+              <div>
+                <strong> Personal profile </strong>
+
+                <span> Your account is created for you. </span>
+              </div>
+            </div>
+
+            <div class="setup-point">
+              <span class="point-icon">
+                <i class="fa-solid fa-database"></i>
+              </span>
+
+              <div>
+                <strong> Your own financial data </strong>
+
+                <span> Your accounts and transactions are yours. </span>
+              </div>
+            </div>
+
+            <div class="setup-point">
+              <span class="point-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+              </span>
+
+              <div>
+                <strong> Secure login </strong>
+
+                <span> Use your account credentials to sign in. </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-footer">
+          © <span id="leftYear"></span>
+          Finance Tracker
+        </div>
+      </section>
+
+      <!-- =====================================================
+         SETUP FORM
+    ====================================================== -->
+
+      <section class="setup-section">
+        <div class="setup-card">
+          <!-- MOBILE BRAND -->
+
+          <div class="mobile-brand">
+            <a href="index.html" class="mobile-logo">
+              <span class="mobile-logo-icon">
+                <i class="fa-solid fa-wallet"></i>
+              </span>
+
+              <span> Finance<span>Tracker</span> </span>
+            </a>
+          </div>
+
+          <!-- HEADER -->
+
+          <div class="setup-header">
+            <span class="form-label"> PERSONAL PROFILE </span>
+
+            <h2>Complete your profile</h2>
+
+            <p>Enter your information to create your account.</p>
+          </div>
+
+          <!-- MESSAGE -->
+
+          <div class="message" id="setupMessage"></div>
+
+          <!-- FORM -->
+
+          <form id="setupForm" novalidate>
+            <!-- NAME -->
+
+            <div class="form-group">
+              <label for="name"> Full Name </label>
+
+              <div class="input-wrapper">
+                <i class="fa-regular fa-user"></i>
+
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  placeholder="Enter your full name"
+                  autocomplete="name"
+                  maxlength="100"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- EMAIL -->
+
+            <div class="form-group">
+              <label for="email"> Email Address </label>
+
+              <div class="input-wrapper">
+                <i class="fa-regular fa-envelope"></i>
+
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="Enter your email address"
+                  autocomplete="email"
+                  maxlength="150"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- PHONE -->
+
+            <div class="form-group">
+              <label for="phone"> Phone Number </label>
+
+              <div class="input-wrapper">
+                <i class="fa-solid fa-phone"></i>
+
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  placeholder="Enter your phone number"
+                  autocomplete="tel"
+                  maxlength="20"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- OCCUPATION -->
+
+            <div class="form-group">
+              <label for="occupation"> Occupation </label>
+
+              <div class="input-wrapper select-wrapper">
+                <i class="fa-solid fa-briefcase"></i>
+
+                <select id="occupation" name="occupation" required>
+                  <option value="" selected disabled>
+                    Select your occupation
+                  </option>
+
+                  <option value="Student">Student</option>
+
+                  <option value="Employee">Employee</option>
+
+                  <option value="Business Owner">Business Owner</option>
+
+                  <option value="Freelancer">Freelancer</option>
+
+                  <option value="Self Employed">Self Employed</option>
+
+                  <option value="Professional">Professional</option>
+
+                  <option value="Other">Other</option>
+                </select>
+
+                <i class="fa-solid fa-chevron-down select-arrow"></i>
+              </div>
+            </div>
+
+            <!-- PASSWORD -->
+
+            <div class="form-group">
+              <label for="password"> Password </label>
+
+              <div class="input-wrapper">
+                <i class="fa-solid fa-lock"></i>
+
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Create a password"
+                  autocomplete="new-password"
+                  minlength="6"
+                  required
+                />
+
+                <button
+                  type="button"
+                  class="password-toggle"
+                  data-target="password"
+                  aria-label="Show password"
+                >
+                  <i class="fa-regular fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- CONFIRM PASSWORD -->
+
+            <div class="form-group">
+              <label for="confirmPassword"> Confirm Password </label>
+
+              <div class="input-wrapper">
+                <i class="fa-solid fa-lock"></i>
+
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  placeholder="Confirm your password"
+                  autocomplete="new-password"
+                  minlength="6"
+                  required
+                />
+
+                <button
+                  type="button"
+                  class="password-toggle"
+                  data-target="confirmPassword"
+                  aria-label="Show password"
+                >
+                  <i class="fa-regular fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- TERMS -->
+
+            <label class="terms">
+              <input type="checkbox" id="terms" required />
+
+              <span> I confirm that the information provided is correct. </span>
+            </label>
+
+            <!-- SUBMIT -->
+
+            <button type="submit" class="setup-button" id="setupButton">
+              <span> Create Profile </span>
+
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </form>
+
+          <!-- LOGIN -->
+
+          <div class="login-link">
+            <span> Already have an account? </span>
+
+            <a href="login.html"> Sign in </a>
+          </div>
+
+          <!-- BACK -->
+
+          <a href="index.html" class="back-link">
+            <i class="fa-solid fa-arrow-left"></i>
+
+            Back to home
+          </a>
+        </div>
+      </section>
+    </div>
+
+    <script src="./static/js/api.js"></script>
+
+    <script src="./static/js/setup.js"></script>
+  </body>
+</html>

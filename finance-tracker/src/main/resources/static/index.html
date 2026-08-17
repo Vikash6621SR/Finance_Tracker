@@ -1,10 +1,289 @@
-<!DOCTYPE html>
-<html>
-<head>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>Finance Tracker</title>
-</head>
-<body>
-    <h1>Finance Tracker</h1>
-    <p>Application is running successfully.</p>
-</body>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="./static/css/index.css" />
+  </head>
+
+  <body>
+    <header class="navbar">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">
+          <i class="fa-solid fa-wallet"></i>
+        </span>
+
+        <span> Finance<span class="logo-green">Tracker</span> </span>
+      </a>
+
+      <button type="button" class="menu-button" id="menuButton">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="#home"> Home </a>
+
+        <a href="#features"> Features </a>
+
+        <a href="#about"> About </a>
+
+        <a href="login.html" class="nav-login"> Login </a>
+
+        <a href="register.html" class="nav-register"> Get Started </a>
+      </nav>
+    </header>
+
+    <main>
+      <!-- HERO -->
+
+      <section class="hero" id="home">
+        <div class="hero-content">
+          <span class="hero-label"> PERSONAL FINANCE MANAGEMENT </span>
+
+          <h1>
+            Take control of
+            <span>your finances.</span>
+          </h1>
+
+          <p>
+            Finance Tracker helps you manage accounts, transactions, budgets and
+            savings in one simple place.
+          </p>
+
+          <div class="hero-buttons">
+            <a href="register.html" class="primary-button">
+              Get Started
+
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
+
+            <a href="login.html" class="secondary-button"> Login </a>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="dashboard-preview">
+            <div class="preview-top">
+              <div>
+                <span> Total Balance </span>
+
+                <strong> Manage your money </strong>
+              </div>
+
+              <div class="preview-icon">
+                <i class="fa-solid fa-wallet"></i>
+              </div>
+            </div>
+
+            <div class="preview-chart">
+              <div class="chart-line line-one"></div>
+
+              <div class="chart-line line-two"></div>
+
+              <div class="chart-line line-three"></div>
+
+              <div class="chart-bars">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+
+            <div class="preview-bottom">
+              <div>
+                <span>Income</span>
+                <strong>Track</strong>
+              </div>
+
+              <div>
+                <span>Expenses</span>
+                <strong>Control</strong>
+              </div>
+
+              <div>
+                <span>Savings</span>
+                <strong>Grow</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURES -->
+
+      <section class="features" id="features">
+        <div class="section-heading">
+          <span> FEATURES </span>
+
+          <h2>Everything you need to manage your money</h2>
+
+          <p>
+            Keep your financial information organized and make better decisions.
+          </p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-wallet"></i>
+            </div>
+
+            <h3>Accounts</h3>
+
+            <p>
+              Organize your bank accounts, cash and other financial accounts in
+              one place.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-arrow-right-arrow-left"></i>
+            </div>
+
+            <h3>Transactions</h3>
+
+            <p>
+              Record income and expenses and keep your financial activity
+              organized.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-chart-column"></i>
+            </div>
+
+            <h3>Budgets</h3>
+
+            <p>
+              Set budgets and monitor your spending against your financial
+              plans.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-piggy-bank"></i>
+            </div>
+
+            <h3>Savings</h3>
+
+            <p>Create savings goals and track your progress toward them.</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+
+      <section class="about" id="about">
+        <div class="about-content">
+          <span class="section-label"> ABOUT FINANCE TRACKER </span>
+
+          <h2>
+            Your finances.
+            <span>Your way.</span>
+          </h2>
+
+          <p>
+            Finance Tracker is designed to give you a clear view of your
+            personal finances without unnecessary complexity.
+          </p>
+
+          <p>
+            Add your own accounts, transactions, budgets and savings goals and
+            keep everything organized in one application.
+          </p>
+        </div>
+
+        <div class="about-points">
+          <div class="about-point">
+            <i class="fa-solid fa-check"></i>
+
+            <span> Your data stays connected to your account. </span>
+          </div>
+
+          <div class="about-point">
+            <i class="fa-solid fa-check"></i>
+
+            <span> No pre-loaded financial transactions. </span>
+          </div>
+
+          <div class="about-point">
+            <i class="fa-solid fa-check"></i>
+
+            <span> Manage your finances from one dashboard. </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA -->
+
+      <section class="cta">
+        <div>
+          <span> READY TO START? </span>
+
+          <h2>Start managing your finances today.</h2>
+        </div>
+
+        <a href="register.html" class="cta-button">
+          Create Account
+
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+
+    <footer class="footer">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <span class="logo-icon">
+            <i class="fa-solid fa-wallet"></i>
+          </span>
+
+          <span> Finance<span class="logo-green">Tracker</span> </span>
+        </a>
+
+        <p>Simple personal finance management.</p>
+      </div>
+
+      <div class="footer-links">
+        <a href="login.html"> Login </a>
+
+        <a href="register.html"> Register </a>
+      </div>
+
+      <p class="copyright">
+        © <span id="currentYear"></span>
+        Finance Tracker. All rights reserved.
+      </p>
+    </footer>
+
+    <script src="./static/js/api.js"></script>
+
+    <script src="./static/js/index.js"></script>
+  </body>
 </html>

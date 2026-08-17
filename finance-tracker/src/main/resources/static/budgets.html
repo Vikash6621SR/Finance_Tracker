@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Budgets | Finance Tracker</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="./static/css/budgets.css" />
+  </head>
+
+  <body>
+    <div class="app">
+      <!-- SIDEBAR -->
+
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <a href="dashboard.html" class="logo">
+            <span class="logo-icon">
+              <i class="fa-solid fa-wallet"></i>
+            </span>
+
+            <span> Finance<span>Tracker</span> </span>
+          </a>
+
+          <button class="close-sidebar" id="closeSidebar" type="button">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <nav class="sidebar-nav">
+          <span class="nav-title"> MAIN MENU </span>
+
+          <a href="dashboard.html" class="nav-link">
+            <i class="fa-solid fa-chart-pie"></i>
+            Dashboard
+          </a>
+
+          <a href="transactions.html" class="nav-link">
+            <i class="fa-solid fa-arrow-right-arrow-left"></i>
+            Transactions
+          </a>
+
+          <a href="accounts.html" class="nav-link">
+            <i class="fa-solid fa-building-columns"></i>
+            Accounts
+          </a>
+
+          <a href="budgets.html" class="nav-link active">
+            <i class="fa-solid fa-wallet"></i>
+            Budgets
+          </a>
+
+          <a href="savings.html" class="nav-link">
+            <i class="fa-solid fa-piggy-bank"></i>
+            Savings
+          </a>
+
+          <a href="recurring.html" class="nav-link">
+            <i class="fa-solid fa-repeat"></i>
+            Recurring
+          </a>
+
+          <a href="reports.html" class="nav-link">
+            <i class="fa-solid fa-file-lines"></i>
+            Reports
+          </a>
+
+          <span class="nav-title second"> ACCOUNT </span>
+
+          <a href="profile.html" class="nav-link">
+            <i class="fa-regular fa-user"></i>
+            Profile
+          </a>
+
+          <a href="settings.html" class="nav-link">
+            <i class="fa-solid fa-gear"></i>
+            Settings
+          </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <button id="logoutButton" class="logout-button" type="button">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+
+            Sign out
+          </button>
+        </div>
+      </aside>
+
+      <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+      <!-- MAIN -->
+
+      <main class="main">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button id="menuButton" class="menu-button" type="button">
+              <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <div>
+              <h1>Budgets</h1>
+            </div>
+          </div>
+
+          <div class="topbar-right">
+            <button
+              id="refreshButton"
+              class="refresh-button"
+              type="button"
+              title="Refresh"
+            >
+              <i class="fa-solid fa-rotate"></i>
+            </button>
+
+            <a href="profile.html" class="user-menu">
+              <span id="userAvatar" class="user-avatar"> U </span>
+
+              <span class="user-details">
+                <strong id="userName"> User </strong>
+
+                <small id="userEmail"> Account </small>
+              </span>
+            </a>
+          </div>
+        </header>
+
+        <section class="content">
+          <!-- PAGE HEADER -->
+
+          <div class="page-header">
+            <div>
+              <span class="eyebrow"> BUDGET PLANNER </span>
+
+              <h2>Manage Your Budgets</h2>
+
+              <p>Set spending limits and track your progress.</p>
+            </div>
+
+            <button id="addBudgetButton" class="add-button" type="button">
+              <i class="fa-solid fa-plus"></i>
+
+              Add Budget
+            </button>
+          </div>
+
+          <!-- SUMMARY -->
+
+          <div class="summary-grid">
+            <div class="summary-card">
+              <div class="summary-icon green">
+                <i class="fa-solid fa-wallet"></i>
+              </div>
+
+              <div>
+                <span> TOTAL BUDGET </span>
+
+                <strong id="totalBudget"> ₹0.00 </strong>
+              </div>
+            </div>
+
+            <div class="summary-card">
+              <div class="summary-icon blue">
+                <i class="fa-solid fa-chart-line"></i>
+              </div>
+
+              <div>
+                <span> TOTAL SPENT </span>
+
+                <strong id="totalSpent"> ₹0.00 </strong>
+              </div>
+            </div>
+
+            <div class="summary-card">
+              <div class="summary-icon orange">
+                <i class="fa-solid fa-hourglass-half"></i>
+              </div>
+
+              <div>
+                <span> REMAINING </span>
+
+                <strong id="remainingBudget"> ₹0.00 </strong>
+              </div>
+            </div>
+
+            <div class="summary-card">
+              <div class="summary-icon purple">
+                <i class="fa-solid fa-list-check"></i>
+              </div>
+
+              <div>
+                <span> ACTIVE BUDGETS </span>
+
+                <strong id="activeBudgets"> 0 </strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- FILTER -->
+
+          <div class="filter-panel">
+            <div class="search-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+
+              <input
+                type="search"
+                id="searchInput"
+                placeholder="Search budgets..."
+              />
+            </div>
+
+            <select id="periodFilter" class="filter-select">
+              <option value="all">All Periods</option>
+
+              <option value="MONTHLY">Monthly</option>
+
+              <option value="WEEKLY">Weekly</option>
+
+              <option value="YEARLY">Yearly</option>
+            </select>
+
+            <button id="clearFilters" class="clear-button" type="button">
+              Clear
+            </button>
+          </div>
+
+          <!-- BUDGET PANEL -->
+
+          <div class="budget-panel">
+            <div class="panel-header">
+              <div>
+                <h3>Your Budgets</h3>
+
+                <p id="resultText">0 budgets</p>
+              </div>
+
+              <button id="panelAddButton" class="panel-add" type="button">
+                <i class="fa-solid fa-plus"></i>
+
+                Add Budget
+              </button>
+            </div>
+
+            <div id="budgetGrid" class="budget-grid">
+              <div class="loading-state">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+
+                Loading budgets...
+              </div>
+            </div>
+
+            <div id="emptyState" class="empty-state">
+              <div class="empty-icon">
+                <i class="fa-solid fa-wallet"></i>
+              </div>
+
+              <h3>No budgets yet</h3>
+
+              <p>
+                Create your first budget to start controlling your spending.
+              </p>
+
+              <button id="emptyAddButton" type="button">
+                <i class="fa-solid fa-plus"></i>
+
+                Create Budget
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- BUDGET MODAL -->
+
+    <div id="budgetModal" class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <div>
+            <span> BUDGET </span>
+
+            <h2 id="modalTitle">Add Budget</h2>
+          </div>
+
+          <button id="modalClose" class="modal-close" type="button">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div id="modalMessage" class="modal-message"></div>
+
+        <form id="budgetForm">
+          <input type="hidden" id="budgetId" />
+
+          <div class="form-group">
+            <label for="budgetName"> Budget Name </label>
+
+            <input
+              id="budgetName"
+              type="text"
+              maxlength="100"
+              placeholder="e.g. Food Budget"
+              required
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="budgetCategory"> Category </label>
+
+              <input
+                id="budgetCategory"
+                type="text"
+                maxlength="60"
+                placeholder="e.g. Food"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="budgetPeriod"> Period </label>
+
+              <select id="budgetPeriod" required>
+                <option value="">Select period</option>
+
+                <option value="MONTHLY">Monthly</option>
+
+                <option value="WEEKLY">Weekly</option>
+
+                <option value="YEARLY">Yearly</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="budgetAmount"> Budget Amount </label>
+
+            <div class="amount-input">
+              <span>₹</span>
+
+              <input
+                id="budgetAmount"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="budgetDescription"> Description </label>
+
+            <textarea
+              id="budgetDescription"
+              rows="3"
+              maxlength="300"
+              placeholder="Optional description..."
+            ></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button id="cancelButton" class="cancel-button" type="button">
+              Cancel
+            </button>
+
+            <button id="saveButton" class="save-button" type="submit">
+              Save Budget
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- DELETE CONFIRMATION -->
+
+    <div id="confirmOverlay" class="confirm-overlay">
+      <div class="confirm-box">
+        <div class="confirm-icon">
+          <i class="fa-solid fa-trash"></i>
+        </div>
+
+        <h3>Delete budget?</h3>
+
+        <p>This budget will be permanently removed.</p>
+
+        <div class="confirm-actions">
+          <button id="confirmCancel" type="button">Cancel</button>
+
+          <button id="confirmDelete" type="button">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+
+    <div id="toast" class="toast">
+      <i id="toastIcon"></i>
+
+      <span id="toastMessage"> Done </span>
+    </div>
+
+    <script src="./static/js/api.js"></script>
+
+    <script src="./static/js/budgets.js"></script>
+  </body>
+</html>

@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Notifications | Finance Tracker</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+
+    <!-- Notifications CSS -->
+    <link rel="stylesheet" href="./static/css/notifications.css" />
+  </head>
+
+  <body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="app">
+      <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+          <a href="dashboard.html" class="brand">
+            <span class="brand-icon">
+              <i class="fa-solid fa-wallet"></i>
+            </span>
+
+            <span class="brand-name"> Finance<span>Tracker</span> </span>
+          </a>
+
+          <button type="button" class="mobile-close" id="mobileClose">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- USER -->
+
+        <div class="sidebar-user">
+          <div class="user-avatar" id="sidebarAvatar">U</div>
+
+          <div class="user-details">
+            <strong id="sidebarUserName"> User </strong>
+
+            <span id="sidebarUserEmail"> - </span>
+          </div>
+        </div>
+
+        <!-- NAVIGATION -->
+
+        <nav class="sidebar-nav">
+          <span class="nav-title"> MAIN </span>
+
+          <a href="dashboard.html" class="nav-item">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Dashboard</span>
+          </a>
+
+          <a href="accounts.html" class="nav-item">
+            <i class="fa-solid fa-wallet"></i>
+            <span>Accounts</span>
+          </a>
+
+          <a href="transactions.html" class="nav-item">
+            <i class="fa-solid fa-arrow-right-arrow-left"></i>
+            <span>Transactions</span>
+          </a>
+
+          <a href="budgets.html" class="nav-item">
+            <i class="fa-solid fa-chart-column"></i>
+            <span>Budgets</span>
+          </a>
+
+          <a href="savings.html" class="nav-item">
+            <i class="fa-solid fa-piggy-bank"></i>
+            <span>Savings</span>
+          </a>
+
+          <a href="recurring.html" class="nav-link">
+            <i class="fa-solid fa-repeat"></i>
+            Recurring
+          </a>
+
+          <span class="nav-title secondary-title"> ANALYSIS </span>
+
+          <a href="reports.html" class="nav-item">
+            <i class="fa-solid fa-chart-column"></i>
+            <span>Reports</span>
+          </a>
+
+          <span class="nav-title secondary-title"> ACCOUNT </span>
+
+          <a href="profile.html" class="nav-item">
+            <i class="fa-regular fa-user"></i>
+            <span>Profile</span>
+          </a>
+
+          <a href="settings.html" class="nav-item">
+            <i class="fa-solid fa-gear"></i>
+            <span>Settings</span>
+          </a>
+        </nav>
+
+        <!-- LOGOUT -->
+
+        <div class="sidebar-bottom">
+          <button type="button" class="logout-button" id="logoutButton">
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            <span> Logout </span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+      <main class="main-content">
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+          <button type="button" class="menu-button" id="menuButton">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+
+          <div class="topbar-spacer"></div>
+
+          <div class="topbar-user">
+            <div class="topbar-avatar" id="topbarAvatar">U</div>
+
+            <div class="topbar-user-info">
+              <strong id="topbarUserName"> User </strong>
+
+              <span> Personal Account </span>
+            </div>
+          </div>
+        </header>
+
+        <!-- =====================================================
+             CONTENT
+        ====================================================== -->
+
+        <div class="content">
+          <!-- HEADER -->
+
+          <section class="page-header">
+            <div>
+              <span class="eyebrow"> ACCOUNT </span>
+
+              <h1>Notifications</h1>
+
+              <p>View important updates from your Finance Tracker account.</p>
+            </div>
+
+            <button type="button" class="clear-button" id="clearButton">
+              <i class="fa-solid fa-check-double"></i>
+
+              Mark All as Read
+            </button>
+          </section>
+
+          <!-- MESSAGE -->
+
+          <div class="global-message" id="globalMessage"></div>
+
+          <!-- =================================================
+                 NOTIFICATIONS
+            ================================================== -->
+
+          <section class="notification-card">
+            <div class="card-header">
+              <div>
+                <span class="card-label"> UPDATES </span>
+
+                <h2>Your Notifications</h2>
+              </div>
+
+              <div class="header-icon">
+                <i class="fa-regular fa-bell"></i>
+              </div>
+            </div>
+
+            <!-- EMPTY STATE -->
+
+            <div class="empty-state" id="emptyState">
+              <div class="empty-icon">
+                <i class="fa-regular fa-bell-slash"></i>
+              </div>
+
+              <h3>No notifications</h3>
+
+              <p>You don't have any notifications right now.</p>
+            </div>
+
+            <!-- NOTIFICATION LIST -->
+
+            <div class="notification-list" id="notificationList"></div>
+          </section>
+
+          <!-- =================================================
+                 NOTIFICATION SETTINGS
+            ================================================== -->
+
+          <section class="notification-settings-card">
+            <div class="settings-info">
+              <div class="settings-icon">
+                <i class="fa-solid fa-bell"></i>
+              </div>
+
+              <div>
+                <h3>Notification Preferences</h3>
+
+                <p>Manage notifications from the Settings page.</p>
+              </div>
+            </div>
+
+            <a href="settings.html" class="settings-link">
+              Open Settings
+
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </section>
+
+          <!-- FOOTER -->
+
+          <footer class="page-footer">
+            <span>
+              ©
+              <span id="currentYear"></span>
+              Finance Tracker
+            </span>
+
+            <span> Personal finance, made simpler. </span>
+          </footer>
+        </div>
+      </main>
+    </div>
+
+    <!-- API -->
+
+    <script src="./static/js/api.js"></script>
+
+    <!-- Notifications JS -->
+
+    <script src="./static/js/notifications.js"></script>
+  </body>
+</html>

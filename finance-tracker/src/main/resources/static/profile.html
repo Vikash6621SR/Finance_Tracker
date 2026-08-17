@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Profile | Finance Tracker</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="./static/css/profile.css" />
+  </head>
+
+  <body>
+    <div class="app">
+      <!-- SIDEBAR -->
+
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <a href="dashboard.html" class="logo">
+            <span class="logo-icon">
+              <i class="fa-solid fa-wallet"></i>
+            </span>
+
+            <span> Finance<span>Tracker</span> </span>
+          </a>
+
+          <button id="closeSidebar" class="close-sidebar" type="button">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <nav class="sidebar-nav">
+          <span class="nav-title"> MAIN MENU </span>
+
+          <a href="dashboard.html" class="nav-link">
+            <i class="fa-solid fa-chart-pie"></i>
+            Dashboard
+          </a>
+
+          <a href="transactions.html" class="nav-link">
+            <i class="fa-solid fa-arrow-right-arrow-left"></i>
+            Transactions
+          </a>
+
+          <a href="accounts.html" class="nav-link">
+            <i class="fa-solid fa-building-columns"></i>
+            Accounts
+          </a>
+
+          <a href="budgets.html" class="nav-link">
+            <i class="fa-solid fa-wallet"></i>
+            Budgets
+          </a>
+
+          <a href="savings.html" class="nav-link">
+            <i class="fa-solid fa-piggy-bank"></i>
+            Savings
+          </a>
+
+          <a href="recurring.html" class="nav-link">
+            <i class="fa-solid fa-repeat"></i>
+            Recurring
+          </a>
+
+          <a href="reports.html" class="nav-link">
+            <i class="fa-solid fa-file-lines"></i>
+            Reports
+          </a>
+
+          <span class="nav-title second"> ACCOUNT </span>
+
+          <a href="profile.html" class="nav-link active">
+            <i class="fa-regular fa-user"></i>
+            Profile
+          </a>
+
+          <a href="settings.html" class="nav-link">
+            <i class="fa-solid fa-gear"></i>
+            Settings
+          </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <button id="logoutButton" class="logout-button" type="button">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+
+            Sign out
+          </button>
+        </div>
+      </aside>
+
+      <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+      <!-- MAIN -->
+
+      <main class="main">
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+          <div class="topbar-left">
+            <button id="menuButton" class="menu-button" type="button">
+              <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <div>
+              <h1>Profile</h1>
+            </div>
+          </div>
+
+          <div class="topbar-right">
+            <a href="profile.html" class="user-menu">
+              <span id="topAvatar" class="user-avatar"> U </span>
+
+              <span class="user-details">
+                <strong id="topUserName"> User </strong>
+
+                <small id="topUserEmail"> Account </small>
+              </span>
+            </a>
+          </div>
+        </header>
+
+        <!-- CONTENT -->
+
+        <section class="content">
+          <div class="page-header">
+            <div>
+              <span class="eyebrow"> ACCOUNT </span>
+
+              <h2>My Profile</h2>
+
+              <p>Update your personal account information.</p>
+            </div>
+          </div>
+
+          <div class="profile-layout">
+            <!-- PROFILE CARD -->
+
+            <div class="profile-card">
+              <div class="profile-cover"></div>
+
+              <div class="profile-main">
+                <div id="profileAvatar" class="profile-avatar">U</div>
+
+                <h2 id="profileDisplayName">User</h2>
+
+                <p id="profileDisplayEmail">Account</p>
+
+                <span class="account-badge">
+                  <i class="fa-solid fa-circle-check"></i>
+                  Account
+                </span>
+              </div>
+
+              <div class="profile-stats">
+                <div>
+                  <strong id="memberSince"> — </strong>
+
+                  <span> Member Since </span>
+                </div>
+
+                <div>
+                  <strong> Finance </strong>
+
+                  <span> Account Type </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- DETAILS -->
+
+            <div class="details-card">
+              <div class="card-header">
+                <div>
+                  <h3>Personal Information</h3>
+
+                  <p>Keep your account information up to date.</p>
+                </div>
+
+                <i class="fa-regular fa-user"></i>
+              </div>
+
+              <div id="profileMessage" class="profile-message"></div>
+
+              <form id="profileForm">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="fullName"> Full Name </label>
+
+                    <div class="input-wrapper">
+                      <i class="fa-regular fa-user"></i>
+
+                      <input
+                        id="fullName"
+                        type="text"
+                        maxlength="100"
+                        placeholder="Enter your name"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="email"> Email Address </label>
+
+                    <div class="input-wrapper">
+                      <i class="fa-regular fa-envelope"></i>
+
+                      <input
+                        id="email"
+                        type="email"
+                        maxlength="150"
+                        placeholder="Enter your email"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="phone"> Phone Number </label>
+
+                    <div class="input-wrapper">
+                      <i class="fa-solid fa-phone"></i>
+
+                      <input
+                        id="phone"
+                        type="tel"
+                        maxlength="20"
+                        placeholder="Enter phone number"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="username"> Username </label>
+
+                    <div class="input-wrapper">
+                      <i class="fa-solid fa-at"></i>
+
+                      <input
+                        id="username"
+                        type="text"
+                        maxlength="80"
+                        placeholder="Username"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="bio"> About </label>
+
+                  <textarea
+                    id="bio"
+                    rows="4"
+                    maxlength="300"
+                    placeholder="Tell us a little about yourself..."
+                  ></textarea>
+                </div>
+
+                <div class="form-actions">
+                  <button id="resetButton" class="reset-button" type="button">
+                    Reset
+                  </button>
+
+                  <button id="saveButton" class="save-button" type="submit">
+                    <i class="fa-solid fa-check"></i>
+
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- PASSWORD -->
+
+            <div class="password-card">
+              <div class="card-header">
+                <div>
+                  <h3>Change Password</h3>
+
+                  <p>Use a strong password to protect your account.</p>
+                </div>
+
+                <i class="fa-solid fa-lock"></i>
+              </div>
+
+              <div id="passwordMessage" class="profile-message"></div>
+
+              <form id="passwordForm">
+                <div class="form-group">
+                  <label for="currentPassword"> Current Password </label>
+
+                  <div class="input-wrapper password-wrapper">
+                    <i class="fa-solid fa-lock"></i>
+
+                    <input
+                      id="currentPassword"
+                      type="password"
+                      placeholder="Enter current password"
+                      required
+                    />
+
+                    <button
+                      class="password-toggle"
+                      type="button"
+                      data-target="currentPassword"
+                    >
+                      <i class="fa-regular fa-eye"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="newPassword"> New Password </label>
+
+                    <div class="input-wrapper password-wrapper">
+                      <i class="fa-solid fa-key"></i>
+
+                      <input
+                        id="newPassword"
+                        type="password"
+                        minlength="8"
+                        placeholder="Minimum 8 characters"
+                        required
+                      />
+
+                      <button
+                        class="password-toggle"
+                        type="button"
+                        data-target="newPassword"
+                      >
+                        <i class="fa-regular fa-eye"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="confirmPassword"> Confirm Password </label>
+
+                    <div class="input-wrapper password-wrapper">
+                      <i class="fa-solid fa-key"></i>
+
+                      <input
+                        id="confirmPassword"
+                        type="password"
+                        minlength="8"
+                        placeholder="Repeat new password"
+                        required
+                      />
+
+                      <button
+                        class="password-toggle"
+                        type="button"
+                        data-target="confirmPassword"
+                      >
+                        <i class="fa-regular fa-eye"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  id="passwordSaveButton"
+                  class="save-button"
+                  type="submit"
+                >
+                  <i class="fa-solid fa-shield-halved"></i>
+
+                  Update Password
+                </button>
+              </form>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- TOAST -->
+
+    <div id="toast" class="toast">
+      <i id="toastIcon"></i>
+
+      <span id="toastMessage"> Done </span>
+    </div>
+
+    <script src="./static/js/api.js"></script>
+
+    <script src="./static/js/profile.js"></script>
+  </body>
+</html>

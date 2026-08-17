@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Savings | Finance Tracker</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+
+    <!-- Savings CSS -->
+    <link rel="stylesheet" href="./static/css/savings.css" />
+  </head>
+
+  <body>
+    <div class="app">
+      <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <a href="dashboard.html" class="logo">
+            <span class="logo-icon">
+              <i class="fa-solid fa-wallet"></i>
+            </span>
+
+            <span class="logo-text"> Finance<span>Tracker</span> </span>
+          </a>
+
+          <button
+            type="button"
+            id="closeSidebar"
+            class="close-sidebar"
+            aria-label="Close menu"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <nav class="sidebar-nav">
+          <span class="nav-title">MAIN MENU</span>
+
+          <a href="dashboard.html" class="nav-link">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Dashboard</span>
+          </a>
+
+          <a href="transactions.html" class="nav-link">
+            <i class="fa-solid fa-arrow-right-arrow-left"></i>
+            <span>Transactions</span>
+          </a>
+
+          <a href="accounts.html" class="nav-link">
+            <i class="fa-solid fa-building-columns"></i>
+            <span>Accounts</span>
+          </a>
+
+          <a href="budgets.html" class="nav-link">
+            <i class="fa-solid fa-wallet"></i>
+            <span>Budgets</span>
+          </a>
+
+          <a href="savings.html" class="nav-link active">
+            <i class="fa-solid fa-piggy-bank"></i>
+            <span>Savings</span>
+          </a>
+
+          <a href="recurring.html" class="nav-link">
+            <i class="fa-solid fa-repeat"></i>
+            <span>Recurring</span>
+          </a>
+
+          <a href="reports.html" class="nav-link">
+            <i class="fa-solid fa-file-lines"></i>
+            <span>Reports</span>
+          </a>
+
+          <span class="nav-title second">ACCOUNT</span>
+
+          <a href="profile.html" class="nav-link">
+            <i class="fa-regular fa-user"></i>
+            <span>Profile</span>
+          </a>
+
+          <a href="settings.html" class="nav-link">
+            <i class="fa-solid fa-gear"></i>
+            <span>Settings</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <button type="button" id="logoutButton" class="logout-button">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>Sign out</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- SIDEBAR OVERLAY -->
+
+      <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+      <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+      <main class="main">
+        <!-- =================================================
+             TOPBAR
+        ================================================== -->
+
+        <header class="topbar">
+          <div class="topbar-left">
+            <button
+              type="button"
+              id="menuButton"
+              class="menu-button"
+              aria-label="Open menu"
+            >
+              <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <div class="topbar-heading">
+              <h1>Savings</h1>
+            </div>
+          </div>
+
+          <div class="topbar-right">
+            <button
+              type="button"
+              id="refreshButton"
+              class="refresh-button"
+              title="Refresh"
+            >
+              <i class="fa-solid fa-rotate"></i>
+            </button>
+
+            <a href="profile.html" class="user-menu">
+              <span id="userAvatar" class="user-avatar"> U </span>
+
+              <span class="user-details">
+                <strong id="userName"> User </strong>
+
+                <small id="userEmail"> Account </small>
+              </span>
+            </a>
+          </div>
+        </header>
+
+        <!-- =================================================
+             PAGE CONTENT
+        ================================================== -->
+
+        <section class="content">
+          <!-- PAGE HEADER -->
+
+          <div class="page-header">
+            <div>
+              <span class="eyebrow"> SAVINGS PLANNER </span>
+
+              <h2>Your Savings Goals</h2>
+
+              <p>Create goals and track your progress.</p>
+            </div>
+
+            <button type="button" id="addSavingsButton" class="add-button">
+              <i class="fa-solid fa-plus"></i>
+              Add Goal
+            </button>
+          </div>
+
+          <!-- =================================================
+                 SUMMARY
+            ================================================== -->
+
+          <div class="summary-grid">
+            <div class="summary-card">
+              <div class="summary-icon green">
+                <i class="fa-solid fa-bullseye"></i>
+              </div>
+
+              <div class="summary-info">
+                <span class="summary-label"> TOTAL GOALS </span>
+
+                <strong id="totalGoals"> 0 </strong>
+              </div>
+            </div>
+
+            <div class="summary-card">
+              <div class="summary-icon blue">
+                <i class="fa-solid fa-coins"></i>
+              </div>
+
+              <div class="summary-info">
+                <span class="summary-label"> SAVED </span>
+
+                <strong id="totalSaved"> ₹0.00 </strong>
+              </div>
+            </div>
+
+            <div class="summary-card">
+              <div class="summary-icon orange">
+                <i class="fa-solid fa-flag-checkered"></i>
+              </div>
+
+              <div class="summary-info">
+                <span class="summary-label"> TARGET </span>
+
+                <strong id="totalTarget"> ₹0.00 </strong>
+              </div>
+            </div>
+
+            <div class="summary-card">
+              <div class="summary-icon purple">
+                <i class="fa-solid fa-chart-line"></i>
+              </div>
+
+              <div class="summary-info">
+                <span class="summary-label"> COMPLETED </span>
+
+                <strong id="completedGoals"> 0 </strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- =================================================
+                 FILTERS
+            ================================================== -->
+
+          <div class="filter-panel">
+            <div class="search-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+
+              <input
+                id="searchInput"
+                type="search"
+                placeholder="Search savings goals..."
+                autocomplete="off"
+              />
+            </div>
+
+            <select id="statusFilter" class="filter-select">
+              <option value="all">All Goals</option>
+
+              <option value="active">Active</option>
+
+              <option value="completed">Completed</option>
+            </select>
+
+            <button type="button" id="clearFilters" class="clear-button">
+              Clear
+            </button>
+          </div>
+
+          <!-- =================================================
+                 SAVINGS PANEL
+            ================================================== -->
+
+          <div class="savings-panel">
+            <div class="panel-header">
+              <div>
+                <h3>Savings Goals</h3>
+
+                <p id="resultText">0 goals</p>
+              </div>
+
+              <button type="button" id="panelAddButton" class="panel-add">
+                <i class="fa-solid fa-plus"></i>
+                Add Goal
+              </button>
+            </div>
+
+            <!-- GOALS GRID -->
+
+            <div id="savingsGrid" class="savings-grid">
+              <!-- JS inserts goals here -->
+            </div>
+
+            <!-- EMPTY STATE -->
+
+            <div id="emptyState" class="empty-state" hidden>
+              <div class="empty-icon">
+                <i class="fa-solid fa-piggy-bank"></i>
+              </div>
+
+              <h3>No savings goals yet</h3>
+
+              <p>
+                Create your first savings goal to start building towards it.
+              </p>
+
+              <button type="button" id="emptyAddButton">
+                <i class="fa-solid fa-plus"></i>
+                Create Goal
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- =========================================================
+     ADD / EDIT MODAL
+========================================================== -->
+
+    <div id="savingsModal" class="modal-overlay" hidden>
+      <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalTitle"
+      >
+        <div class="modal-header">
+          <div>
+            <span class="modal-eyebrow"> SAVINGS GOAL </span>
+
+            <h2 id="modalTitle">Add Savings Goal</h2>
+          </div>
+
+          <button
+            type="button"
+            id="modalClose"
+            class="modal-close"
+            aria-label="Close"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div id="modalMessage" class="modal-message"></div>
+
+        <form id="savingsForm">
+          <input id="savingsId" type="hidden" />
+
+          <div class="form-group">
+            <label for="savingsName"> Goal Name </label>
+
+            <input
+              id="savingsName"
+              type="text"
+              maxlength="100"
+              placeholder="e.g. New Laptop"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="savingsTarget"> Target Amount </label>
+
+            <div class="amount-input">
+              <span>₹</span>
+
+              <input
+                id="savingsTarget"
+                type="number"
+                min="0.01"
+                step="0.01"
+                placeholder="0.00"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="savingsCurrent"> Current Saved Amount </label>
+
+            <div class="amount-input">
+              <span>₹</span>
+
+              <input
+                id="savingsCurrent"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                value="0"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="savingsDate"> Target Date </label>
+
+            <input id="savingsDate" type="date" />
+          </div>
+
+          <div class="form-group">
+            <label for="savingsDescription"> Description </label>
+
+            <textarea
+              id="savingsDescription"
+              rows="3"
+              maxlength="300"
+              placeholder="Optional description..."
+            ></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" id="cancelButton" class="cancel-button">
+              Cancel
+            </button>
+
+            <button type="submit" id="saveButton" class="save-button">
+              Save Goal
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- =========================================================
+     DELETE CONFIRMATION
+========================================================== -->
+
+    <div id="confirmOverlay" class="confirm-overlay" hidden>
+      <div class="confirm-box">
+        <div class="confirm-icon">
+          <i class="fa-solid fa-trash"></i>
+        </div>
+
+        <h3>Delete savings goal?</h3>
+
+        <p>This savings goal will be permanently removed.</p>
+
+        <div class="confirm-actions">
+          <button type="button" id="confirmCancel">Cancel</button>
+
+          <button type="button" id="confirmDelete" class="danger-button">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================
+     TOAST
+========================================================== -->
+
+    <div id="toast" class="toast" role="status" aria-live="polite">
+      <i id="toastIcon"></i>
+
+      <span id="toastMessage"> Done </span>
+    </div>
+
+    <!-- =========================================================
+     SCRIPTS
+========================================================== -->
+
+    <script src="./static/js/api.js"></script>
+    <script src="./static/js/savings.js"></script>
+  </body>
+</html>

@@ -24,6 +24,13 @@ async function apiRequest(endpoint, options = {}) {
         {
             ...options,
 
+            /*
+            IMPORTANT:
+            Send the session cookie with every request.
+            Your Spring Boot backend uses HTTP session
+            authentication.
+            */
+
             credentials: "include",
 
             headers: {
@@ -33,11 +40,21 @@ async function apiRequest(endpoint, options = {}) {
         }
     );
 
+
+    /*
+    =====================================================
+    READ RESPONSE
+    =====================================================
+    */
+
     let data = null;
 
     try {
+
         data = await response.json();
+
     } catch (error) {
+
         data = null;
     }
 
@@ -56,9 +73,15 @@ async function apiRequest(endpoint, options = {}) {
             `Request failed with status ${response.status}`
         );
 
+
         /*
-        Add HTTP status so pages such as dashboard.js
-        can detect 401 / 403 correctly.
+        IMPORTANT:
+        Keep the HTTP status available.
+
+        dashboard.js uses this to detect:
+
+        401 = Unauthorized
+        403 = Forbidden
         */
 
         error.status = response.status;
@@ -68,6 +91,12 @@ async function apiRequest(endpoint, options = {}) {
         throw error;
     }
 
+
+    /*
+    =====================================================
+    RETURN SUCCESS RESPONSE
+    =====================================================
+    */
 
     return data;
 }
@@ -81,6 +110,7 @@ FINANCE API
 
 const FinanceAPI = {
 
+
     /*
     =====================================================
     AUTHENTICATION
@@ -88,6 +118,7 @@ const FinanceAPI = {
     */
 
     auth: {
+
 
         /*
         -------------------------------------------------
@@ -113,7 +144,7 @@ const FinanceAPI = {
 
         /*
         -------------------------------------------------
-        REGISTER / INITIAL SETUP
+        REGISTER / FIRST-TIME SETUP
         -------------------------------------------------
         */
 
@@ -135,98 +166,38 @@ const FinanceAPI = {
         CURRENT LOGGED-IN USER
         -------------------------------------------------
 
-        Dashboard uses:
+        Backend endpoint:
 
-            FinanceAPI.auth.me()
+        GET /api/auth/me
 
-        The project already has an authenticated
-        /profile endpoint, so use it to retrieve
-        the current user's information.
+        This is used by dashboard.js:
+
+        FinanceAPI.auth.me()
+
+        The backend returns:
+
+        {
+            success: true,
+            user: {
+                id,
+                name,
+                email,
+                phone,
+                occupation,
+                createdAt
+            }
+        }
         -------------------------------------------------
         */
 
         async me() {
 
-            const response = await apiRequest(
-                "/profile",
+            return await apiRequest(
+                "/auth/me",
                 {
                     method: "GET"
                 }
             );
-
-
-            /*
-            Backend may return:
-
-                {
-                    success: true,
-                    user: {...}
-                }
-
-            or:
-
-                {
-                    success: true,
-                    data: {...}
-                }
-
-            or directly:
-
-                {...user...}
-            */
-
-            if (
-                response &&
-                response.success &&
-                response.user
-            ) {
-                return response;
-            }
-
-
-            if (
-                response &&
-                response.success &&
-                response.data
-            ) {
-                return {
-                    success: true,
-                    user: response.data
-                };
-            }
-
-
-            /*
-            If /profile directly returns the user object.
-            */
-
-            if (
-                response &&
-                typeof response === "object" &&
-                !Array.isArray(response)
-            ) {
-
-                /*
-                Avoid treating an explicit unsuccessful
-                response as a valid user.
-                */
-
-                if (response.success === false) {
-                    return response;
-                }
-
-
-                return {
-                    success: true,
-                    user: response
-                };
-            }
-
-
-            return {
-                success: false,
-                user: null
-            };
         },
 
 
@@ -251,6 +222,9 @@ const FinanceAPI = {
         -------------------------------------------------
         SETUP STATUS
         -------------------------------------------------
+
+        GET /api/auth/setup-status
+        -------------------------------------------------
         */
 
         async setupStatus() {
@@ -259,6 +233,31 @@ const FinanceAPI = {
                 "/auth/setup-status",
                 {
                     method: "GET"
+                }
+            );
+        },
+
+
+        /*
+        -------------------------------------------------
+        CHANGE PASSWORD
+        -------------------------------------------------
+
+        POST /api/auth/change-password
+        -------------------------------------------------
+        */
+
+        async changePassword(currentPassword, newPassword) {
+
+            return await apiRequest(
+                "/auth/change-password",
+                {
+                    method: "POST",
+
+                    body: JSON.stringify({
+                        currentPassword: currentPassword,
+                        newPassword: newPassword
+                    })
                 }
             );
         }
@@ -273,6 +272,13 @@ const FinanceAPI = {
 
     accounts: {
 
+
+        /*
+        -------------------------------------------------
+        GET ALL ACCOUNTS
+        -------------------------------------------------
+        */
+
         async getAll() {
 
             return await apiRequest(
@@ -284,17 +290,30 @@ const FinanceAPI = {
         },
 
 
+        /*
+        -------------------------------------------------
+        CREATE ACCOUNT
+        -------------------------------------------------
+        */
+
         async create(account) {
 
             return await apiRequest(
                 "/accounts",
                 {
                     method: "POST",
+
                     body: JSON.stringify(account)
                 }
             );
         },
 
+
+        /*
+        -------------------------------------------------
+        UPDATE ACCOUNT
+        -------------------------------------------------
+        */
 
         async update(id, account) {
 
@@ -302,11 +321,18 @@ const FinanceAPI = {
                 `/accounts/${id}`,
                 {
                     method: "PUT",
+
                     body: JSON.stringify(account)
                 }
             );
         },
 
+
+        /*
+        -------------------------------------------------
+        DELETE ACCOUNT
+        -------------------------------------------------
+        */
 
         async delete(id) {
 
@@ -328,6 +354,13 @@ const FinanceAPI = {
 
     transactions: {
 
+
+        /*
+        -------------------------------------------------
+        GET ALL TRANSACTIONS
+        -------------------------------------------------
+        */
+
         async getAll() {
 
             return await apiRequest(
@@ -339,17 +372,30 @@ const FinanceAPI = {
         },
 
 
+        /*
+        -------------------------------------------------
+        CREATE TRANSACTION
+        -------------------------------------------------
+        */
+
         async create(transaction) {
 
             return await apiRequest(
                 "/transactions",
                 {
                     method: "POST",
+
                     body: JSON.stringify(transaction)
                 }
             );
         },
 
+
+        /*
+        -------------------------------------------------
+        UPDATE TRANSACTION
+        -------------------------------------------------
+        */
 
         async update(id, transaction) {
 
@@ -357,11 +403,18 @@ const FinanceAPI = {
                 `/transactions/${id}`,
                 {
                     method: "PUT",
+
                     body: JSON.stringify(transaction)
                 }
             );
         },
 
+
+        /*
+        -------------------------------------------------
+        DELETE TRANSACTION
+        -------------------------------------------------
+        */
 
         async delete(id) {
 
@@ -383,6 +436,13 @@ const FinanceAPI = {
 
     budgets: {
 
+
+        /*
+        -------------------------------------------------
+        GET ALL BUDGETS
+        -------------------------------------------------
+        */
+
         async getAll() {
 
             return await apiRequest(
@@ -394,17 +454,30 @@ const FinanceAPI = {
         },
 
 
+        /*
+        -------------------------------------------------
+        CREATE BUDGET
+        -------------------------------------------------
+        */
+
         async create(budget) {
 
             return await apiRequest(
                 "/budgets",
                 {
                     method: "POST",
+
                     body: JSON.stringify(budget)
                 }
             );
         },
 
+
+        /*
+        -------------------------------------------------
+        UPDATE BUDGET
+        -------------------------------------------------
+        */
 
         async update(id, budget) {
 
@@ -412,11 +485,18 @@ const FinanceAPI = {
                 `/budgets/${id}`,
                 {
                     method: "PUT",
+
                     body: JSON.stringify(budget)
                 }
             );
         },
 
+
+        /*
+        -------------------------------------------------
+        DELETE BUDGET
+        -------------------------------------------------
+        */
 
         async delete(id) {
 
@@ -438,6 +518,13 @@ const FinanceAPI = {
 
     savings: {
 
+
+        /*
+        -------------------------------------------------
+        GET ALL SAVINGS
+        -------------------------------------------------
+        */
+
         async getAll() {
 
             return await apiRequest(
@@ -449,17 +536,30 @@ const FinanceAPI = {
         },
 
 
+        /*
+        -------------------------------------------------
+        CREATE SAVING
+        -------------------------------------------------
+        */
+
         async create(saving) {
 
             return await apiRequest(
                 "/savings",
                 {
                     method: "POST",
+
                     body: JSON.stringify(saving)
                 }
             );
         },
 
+
+        /*
+        -------------------------------------------------
+        UPDATE SAVING
+        -------------------------------------------------
+        */
 
         async update(id, saving) {
 
@@ -467,11 +567,18 @@ const FinanceAPI = {
                 `/savings/${id}`,
                 {
                     method: "PUT",
+
                     body: JSON.stringify(saving)
                 }
             );
         },
 
+
+        /*
+        -------------------------------------------------
+        DELETE SAVING
+        -------------------------------------------------
+        */
 
         async delete(id) {
 
@@ -493,10 +600,26 @@ const FinanceAPI = {
 
     profile: {
 
+
+        /*
+        -------------------------------------------------
+        GET CURRENT PROFILE
+        -------------------------------------------------
+
+        Backend does NOT have:
+
+        GET /api/profile
+
+        Instead the backend provides:
+
+        GET /api/auth/me
+        -------------------------------------------------
+        */
+
         async get() {
 
             return await apiRequest(
-                "/profile",
+                "/auth/me",
                 {
                     method: "GET"
                 }
@@ -504,12 +627,24 @@ const FinanceAPI = {
         },
 
 
+        /*
+        -------------------------------------------------
+        UPDATE PROFILE
+        -------------------------------------------------
+
+        Backend endpoint:
+
+        PUT /api/auth/profile
+        -------------------------------------------------
+        */
+
         async update(profile) {
 
             return await apiRequest(
-                "/profile",
+                "/auth/profile",
                 {
                     method: "PUT",
+
                     body: JSON.stringify(profile)
                 }
             );
@@ -526,21 +661,43 @@ const FinanceAPI = {
     errorMessage(error) {
 
         if (!error) {
+
             return "Something went wrong.";
         }
 
 
-        if (error.data?.message) {
+        /*
+        Backend error message
+        */
+
+        if (
+            error.data &&
+            error.data.message
+        ) {
+
             return error.data.message;
         }
 
 
-        if (error.data?.error) {
+        /*
+        Backend error field
+        */
+
+        if (
+            error.data &&
+            error.data.error
+        ) {
+
             return error.data.error;
         }
 
 
+        /*
+        JavaScript error message
+        */
+
         if (error.message) {
+
             return error.message;
         }
 

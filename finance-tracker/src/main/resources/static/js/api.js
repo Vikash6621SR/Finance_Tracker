@@ -347,6 +347,61 @@ const FinanceAPI = {
 
 
     /*
+=====================================================
+RECURRING TRANSACTIONS
+=====================================================
+*/
+
+recurring: {
+
+    async getAll() {
+
+        return await apiRequest(
+            "/recurring",
+            {
+                method: "GET"
+            }
+        );
+    },
+
+
+    async create(recurring) {
+
+        return await apiRequest(
+            "/recurring",
+            {
+                method: "POST",
+                body: JSON.stringify(recurring)
+            }
+        );
+    },
+
+
+    async update(id, recurring) {
+
+        return await apiRequest(
+            `/recurring/${id}`,
+            {
+                method: "PUT",
+                body: JSON.stringify(recurring)
+            }
+        );
+    },
+
+
+    async delete(id) {
+
+        return await apiRequest(
+            `/recurring/${id}`,
+            {
+                method: "DELETE"
+            }
+        );
+    }
+},
+
+
+    /*
     =====================================================
     TRANSACTIONS
     =====================================================

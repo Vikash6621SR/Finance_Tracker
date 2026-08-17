@@ -88,7 +88,7 @@ const FinanceAPI = {
         async register(userData) {
 
             return await apiRequest(
-                "/auth/register",
+                "/auth/setup",
                 {
                     method: "POST",
 

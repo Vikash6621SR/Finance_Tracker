@@ -1,333 +1,452 @@
-/* =========================================================
-   FINANCE TRACKER
-   LOGIN.JS
-   ========================================================= */
-
 "use strict";
 
-/* =========================================================
-   INITIALIZE
-   ========================================================= */
+/*
+=========================================================
+FINANCE TRACKER
+LOGIN
+=========================================================
+*/
 
-document.addEventListener("DOMContentLoaded", initializeLogin, {
-  once: true,
-});
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
 
-/* =========================================================
-   INITIALIZE LOGIN
-   ========================================================= */
+        initializeLogin();
+
+    }
+);
+
+
+/*
+=========================================================
+INITIALIZE
+=========================================================
+*/
 
 function initializeLogin() {
-  const form = document.getElementById("loginForm");
 
-  if (!form) {
-    console.error("Login form not found.");
-
-    return;
-  }
-
-  form.addEventListener("submit", handleLogin);
-
-  setupPasswordToggle();
-
-  /*
-   * Restore remembered email if available.
-   */
-
-  const emailInput = document.getElementById("email");
-
-  if (emailInput) {
-    try {
-      const rememberedEmail = localStorage.getItem(
-        "financeTrackerRememberedEmail",
-      );
-
-      if (rememberedEmail && !emailInput.value) {
-        emailInput.value = rememberedEmail;
-      }
-    } catch (error) {
-      console.warn("Unable to read remembered email.", error);
-    }
-  }
-}
-
-/* =========================================================
-   LOGIN
-   ========================================================= */
-
-async function handleLogin(event) {
-  event.preventDefault();
-
-  const emailInput = document.getElementById("email");
-
-  const passwordInput = document.getElementById("password");
-
-  if (!emailInput || !passwordInput) {
-    showLoginMessage("Login form fields are missing.", "error");
-
-    return;
-  }
-
-  const email = emailInput.value.trim();
-
-  const password = passwordInput.value;
-
-  /* =====================================================
-       VALIDATION
-       ===================================================== */
-
-  if (!email) {
-    showLoginMessage("Please enter your email.", "error");
-
-    emailInput.focus();
-
-    return;
-  }
-
-  if (!isValidEmail(email)) {
-    showLoginMessage("Please enter a valid email address.", "error");
-
-    emailInput.focus();
-
-    return;
-  }
-
-  if (!password) {
-    showLoginMessage("Please enter your password.", "error");
-
-    passwordInput.focus();
-
-    return;
-  }
-
-  clearLoginMessage();
-
-  setLoginLoading(true);
-
-  try {
-    /* =================================================
-           IMPORTANT FIX
-           =================================================
-
-           Your api.js has:
-
-               login(email, password)
-
-           NOT:
-
-               login({ email, password })
-
-           ================================================= */
-
-    const response = await FinanceAPI.auth.login(email, password);
-
-    console.log("Login response:", response);
-
-    /* =================================================
-           LOGIN FAILED
-           ================================================= */
-
-    if (!response || response.success !== true) {
-      showLoginMessage(
-        response?.message || "Invalid email or password.",
-        "error",
-      );
-
-      setLoginLoading(false);
-
-      return;
-    }
-
-    /* =================================================
-           SAVE LIGHTWEIGHT USER INFORMATION
-           ================================================= */
-
-    if (response.user) {
-      try {
-        localStorage.setItem(
-          "financeTrackerUser",
-          JSON.stringify(response.user),
+    const form =
+        document.getElementById(
+            "loginForm"
         );
-      } catch (error) {
-        console.warn("Unable to save user information.", error);
-      }
+
+
+    if (!form) {
+
+        console.error(
+            "loginForm not found."
+        );
+
+        return;
     }
 
-    /*
-     * Save remembered email.
-     */
 
-    try {
-      const rememberCheckbox = document.getElementById("rememberMe");
+    form.addEventListener(
+        "submit",
+        handleLogin
+    );
 
-      if (rememberCheckbox && rememberCheckbox.checked) {
-        localStorage.setItem("financeTrackerRememberedEmail", email);
-      } else {
-        localStorage.removeItem("financeTrackerRememberedEmail");
-      }
-    } catch (error) {
-      console.warn("Unable to save remembered email.", error);
-    }
 
-    /* =================================================
-           SUCCESS
-           ================================================= */
+    setupPasswordToggle();
 
-    showLoginMessage("Login successful. Opening dashboard...", "success");
-
-    /*
-     * IMPORTANT:
-     *
-     * No setTimeout().
-     * No reload().
-     * No second login request.
-     */
-
-    window.location.replace("dashboard.html");
-  } catch (error) {
-    console.error("Login error:", error);
-
-    showLoginMessage(getErrorMessage(error), "error");
-
-    setLoginLoading(false);
-  }
 }
 
-/* =========================================================
-   PASSWORD TOGGLE
-   ========================================================= */
+
+/*
+=========================================================
+LOGIN
+=========================================================
+*/
+
+async function handleLogin(
+    event
+) {
+
+    event.preventDefault();
+
+
+    const form =
+        event.currentTarget;
+
+
+    const emailInput =
+        document.getElementById(
+            "email"
+        );
+
+
+    const passwordInput =
+        document.getElementById(
+            "password"
+        );
+
+
+    const submitButton =
+        form.querySelector(
+            'button[type="submit"]'
+        );
+
+
+    const errorBox =
+        document.getElementById(
+            "loginError"
+        );
+
+
+    const email =
+        emailInput?.value.trim();
+
+
+    const password =
+        passwordInput?.value;
+
+
+    /*
+    -----------------------------------------------------
+    CLEAR ERROR
+    -----------------------------------------------------
+    */
+
+    if (errorBox) {
+
+        errorBox.textContent =
+            "";
+
+        errorBox.style.display =
+            "none";
+    }
+
+
+    /*
+    -----------------------------------------------------
+    VALIDATION
+    -----------------------------------------------------
+    */
+
+    if (!email) {
+
+        showLoginError(
+            "Please enter your email address."
+        );
+
+        emailInput?.focus();
+
+        return;
+    }
+
+
+    if (!password) {
+
+        showLoginError(
+            "Please enter your password."
+        );
+
+        passwordInput?.focus();
+
+        return;
+    }
+
+
+    /*
+    -----------------------------------------------------
+    CHECK FINANCE API
+    -----------------------------------------------------
+    */
+
+    if (
+        !window.FinanceAPI ||
+        !FinanceAPI.auth ||
+        typeof FinanceAPI.auth.login !==
+            "function"
+    ) {
+
+        console.error(
+            "FinanceAPI is not loaded."
+        );
+
+
+        showLoginError(
+            "Finance API is not loaded. Please refresh the page."
+        );
+
+
+        return;
+    }
+
+
+    /*
+    -----------------------------------------------------
+    LOADING STATE
+    -----------------------------------------------------
+    */
+
+    setLoginLoading(
+        submitButton,
+        true
+    );
+
+
+    try {
+
+        /*
+        -------------------------------------------------
+        LOGIN API
+        -------------------------------------------------
+        */
+
+        const response =
+            await FinanceAPI.auth.login(
+                email,
+                password
+            );
+
+
+        console.log(
+            "Login successful:",
+            response
+        );
+
+
+        /*
+        -------------------------------------------------
+        REMEMBER ME
+        -------------------------------------------------
+        */
+
+        const rememberMe =
+            document.getElementById(
+                "rememberMe"
+            )?.checked;
+
+
+        if (
+            rememberMe
+        ) {
+
+            localStorage.setItem(
+                "financeTrackerRememberEmail",
+                email
+            );
+
+        } else {
+
+            localStorage.removeItem(
+                "financeTrackerRememberEmail"
+            );
+        }
+
+
+        /*
+        -------------------------------------------------
+        SAVE LOGIN STATE
+        -------------------------------------------------
+        */
+
+        sessionStorage.setItem(
+            "financeTrackerLoggedIn",
+            "true"
+        );
+
+
+        /*
+        -------------------------------------------------
+        REDIRECT
+        -------------------------------------------------
+        */
+
+        window.location.href =
+            "dashboard.html";
+
+
+    } catch (error) {
+
+        console.error(
+            "Login error:",
+            error
+        );
+
+
+        let message =
+            "Unable to sign in. Please check your email and password.";
+
+
+        if (
+            window.FinanceAPI &&
+            typeof FinanceAPI.errorMessage ===
+                "function"
+        ) {
+
+            message =
+                FinanceAPI.errorMessage(
+                    error
+                );
+
+        } else if (
+            error?.message
+        ) {
+
+            message =
+                error.message;
+        }
+
+
+        showLoginError(
+            message
+        );
+
+
+    } finally {
+
+        setLoginLoading(
+            submitButton,
+            false
+        );
+    }
+}
+
+
+/*
+=========================================================
+LOGIN ERROR
+=========================================================
+*/
+
+function showLoginError(
+    message
+) {
+
+    const errorBox =
+        document.getElementById(
+            "loginError"
+        );
+
+
+    if (!errorBox) {
+
+        alert(
+            message
+        );
+
+        return;
+    }
+
+
+    errorBox.textContent =
+        message;
+
+
+    errorBox.style.display =
+        "block";
+}
+
+
+/*
+=========================================================
+LOADING
+=========================================================
+*/
+
+function setLoginLoading(
+    button,
+    loading
+) {
+
+    if (!button) {
+
+        return;
+    }
+
+
+    if (loading) {
+
+        button.disabled =
+            true;
+
+
+        button.dataset.originalText =
+            button.innerHTML;
+
+
+        button.innerHTML = `
+            <span class="login-spinner"></span>
+            Signing in...
+        `;
+
+    } else {
+
+        button.disabled =
+            false;
+
+
+        if (
+            button.dataset.originalText
+        ) {
+
+            button.innerHTML =
+                button.dataset.originalText;
+        }
+    }
+}
+
+
+/*
+=========================================================
+PASSWORD TOGGLE
+=========================================================
+*/
 
 function setupPasswordToggle() {
-  const toggle = document.getElementById("togglePassword");
 
-  const password = document.getElementById("password");
+    const passwordInput =
+        document.getElementById(
+            "password"
+        );
 
-  if (!toggle || !password) {
-    return;
-  }
 
-  toggle.addEventListener("click", function () {
-    const showingPassword = password.type === "password";
+    const toggleButton =
+        document.getElementById(
+            "togglePassword"
+        );
 
-    password.type = showingPassword ? "text" : "password";
 
-    const icon = toggle.querySelector("i");
+    if (
+        !passwordInput ||
+        !toggleButton
+    ) {
 
-    if (icon) {
-      icon.className = showingPassword
-        ? "fa-solid fa-eye-slash"
-        : "fa-solid fa-eye";
-    }
-  });
-}
-
-/* =========================================================
-   BUTTON LOADING
-   ========================================================= */
-
-function setLoginLoading(loading) {
-  const form = document.getElementById("loginForm");
-
-  if (!form) {
-    return;
-  }
-
-  const button = form.querySelector('button[type="submit"]');
-
-  if (!button) {
-    return;
-  }
-
-  if (loading) {
-    button.disabled = true;
-
-    if (!button.dataset.originalText) {
-      button.dataset.originalText = button.innerHTML;
+        return;
     }
 
-    button.innerHTML = `
 
-            <i
-                class="fa-solid fa-spinner fa-spin"
-            ></i>
+    toggleButton.addEventListener(
+        "click",
+        function () {
 
-            <span>
-                Signing in...
-            </span>
+            const isPassword =
+                passwordInput.type ===
+                "password";
 
-        `;
-  } else {
-    button.disabled = false;
 
-    if (button.dataset.originalText) {
-      button.innerHTML = button.dataset.originalText;
-    }
-  }
+            passwordInput.type =
+                isPassword
+                    ? "text"
+                    : "password";
+
+
+            const icon =
+                toggleButton.querySelector(
+                    "i"
+                );
+
+
+            if (icon) {
+
+                icon.className =
+                    isPassword
+                        ? "fa-regular fa-eye-slash"
+                        : "fa-regular fa-eye";
+            }
+
+        }
+    );
 }
-
-/* =========================================================
-   SHOW MESSAGE
-   ========================================================= */
-
-function showLoginMessage(message, type = "error") {
-  const element =
-    document.getElementById("loginMessage") ||
-    document.getElementById("errorMessage") ||
-    document.getElementById("message");
-
-  if (!element) {
-    console.error(message);
-
-    return;
-  }
-
-  element.textContent = message;
-
-  element.classList.remove("success", "error", "show");
-
-  element.classList.add(type, "show");
-
-  element.style.display = "block";
-}
-
-/* =========================================================
-   CLEAR MESSAGE
-   ========================================================= */
-
-function clearLoginMessage() {
-  const element =
-    document.getElementById("loginMessage") ||
-    document.getElementById("errorMessage") ||
-    document.getElementById("message");
-
-  if (!element) {
-    return;
-  }
-
-  element.textContent = "";
-
-  element.classList.remove("success", "error", "show");
-
-  element.style.display = "none";
-}
-
-/* =========================================================
-   EMAIL VALIDATION
-   ========================================================= */
-
-function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-/* =========================================================
-   ERROR MESSAGE
-   ========================================================= */
-
-function getErrorMessage(error) {
-  if (error && error.message) {
-    return error.message;
-  }
-
-  return "Unable to connect to the server. " + "Please try again.";
-}
-

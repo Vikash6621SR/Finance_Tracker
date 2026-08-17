@@ -30,10 +30,8 @@
         credentials: "include"
 */
 
-const API_HOST =
-  window.location.hostname === "127.0.0.1" ? "127.0.0.1" : "localhost";
-
- const API_BASE_URL = `http://${API_HOST}:8080/api`;
+const API_BASE_URL =
+    "https://financetracker-production-3fe4.up.railway.app/api";
 
 
 /* =========================================================

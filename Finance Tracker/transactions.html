@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Transactions | Finance Tracker</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+
+    <!-- Transactions CSS -->
+    <link rel="stylesheet" href="./static/css/transactions.css" />
+  </head>
+
+  <body>
+    <div class="app">
+      <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <a href="dashboard.html" class="logo">
+            <span class="logo-icon">
+              <i class="fa-solid fa-wallet"></i>
+            </span>
+
+            <span> Finance<span>Tracker</span> </span>
+          </a>
+
+          <button
+            type="button"
+            class="close-sidebar"
+            id="closeSidebar"
+            aria-label="Close menu"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- SIDEBAR NAVIGATION -->
+
+        <nav class="sidebar-nav">
+          <span class="nav-title"> MAIN MENU </span>
+
+          <a href="dashboard.html" class="nav-link">
+            <i class="fa-solid fa-chart-pie"></i>
+
+            <span> Dashboard </span>
+          </a>
+
+          <a href="transactions.html" class="nav-link active">
+            <i class="fa-solid fa-arrow-right-arrow-left"></i>
+
+            <span> Transactions </span>
+          </a>
+
+          <a href="accounts.html" class="nav-link">
+            <i class="fa-solid fa-building-columns"></i>
+
+            <span> Accounts </span>
+          </a>
+
+          <a href="budgets.html" class="nav-link">
+            <i class="fa-solid fa-wallet"></i>
+
+            <span> Budgets </span>
+          </a>
+
+          <a href="savings.html" class="nav-link">
+            <i class="fa-solid fa-piggy-bank"></i>
+
+            <span> Savings </span>
+          </a>
+
+          <a href="recurring.html" class="nav-link">
+            <i class="fa-solid fa-repeat"></i>
+
+            <span> Recurring </span>
+          </a>
+
+          <a href="reports.html" class="nav-link">
+            <i class="fa-solid fa-file-lines"></i>
+
+            <span> Reports </span>
+          </a>
+
+          <span class="nav-title second"> ACCOUNT </span>
+
+          <a href="profile.html" class="nav-link">
+            <i class="fa-regular fa-user"></i>
+
+            <span> Profile </span>
+          </a>
+
+          <a href="settings.html" class="nav-link">
+            <i class="fa-solid fa-gear"></i>
+
+            <span> Settings </span>
+          </a>
+        </nav>
+
+        <!-- SIDEBAR BOTTOM -->
+
+        <div class="sidebar-bottom">
+          <button type="button" class="logout-button" id="logoutButton">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+
+            <span> Sign out </span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- MOBILE SIDEBAR OVERLAY -->
+
+      <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+      <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+      <main class="main">
+        <!-- =================================================
+             TOPBAR
+        ================================================== -->
+
+        <header class="topbar">
+          <!-- HAMBURGER -->
+
+          <button
+            type="button"
+            class="menu-button"
+            id="menuButton"
+            aria-label="Open menu"
+            aria-expanded="false"
+          >
+            <i class="fa-solid fa-bars"></i>
+          </button>
+
+          <!-- PAGE TITLE -->
+
+          <div class="topbar-title">
+            <h1>Transactions</h1>
+
+            <p>Track and manage your financial activity.</p>
+          </div>
+
+          <!-- TOPBAR RIGHT -->
+
+          <div class="topbar-right">
+            <button
+              type="button"
+              class="refresh-button"
+              id="refreshButton"
+              title="Refresh"
+              aria-label="Refresh transactions"
+            >
+              <i class="fa-solid fa-rotate"></i>
+            </button>
+
+            <a href="profile.html" class="user-menu">
+              <span class="user-avatar" id="userAvatar"> U </span>
+
+              <span class="user-details">
+                <strong id="userName"> User </strong>
+
+                <small id="userEmail"> Account </small>
+              </span>
+            </a>
+          </div>
+        </header>
+
+        <!-- =================================================
+             CONTENT
+        ================================================== -->
+
+        <section class="content">
+          <!-- PAGE HEADER -->
+
+          <div class="page-header">
+            <div>
+              <span class="eyebrow"> FINANCIAL ACTIVITY </span>
+
+              <h2>Your Transactions</h2>
+
+              <p>Add, view and manage your income and expenses.</p>
+            </div>
+
+            <button type="button" class="add-button" id="openAddButton">
+              <i class="fa-solid fa-plus"></i>
+
+              Add Transaction
+            </button>
+          </div>
+
+          <!-- =================================================
+                 SUMMARY
+            ================================================== -->
+
+          <div class="summary-grid">
+            <!-- TOTAL TRANSACTIONS -->
+
+            <div class="summary-card">
+              <div class="summary-icon total">
+                <i class="fa-solid fa-list"></i>
+              </div>
+
+              <div>
+                <span> TOTAL TRANSACTIONS </span>
+
+                <strong id="totalTransactions"> 0 </strong>
+              </div>
+            </div>
+
+            <!-- TOTAL INCOME -->
+
+            <div class="summary-card">
+              <div class="summary-icon income">
+                <i class="fa-solid fa-arrow-down"></i>
+              </div>
+
+              <div>
+                <span> TOTAL INCOME </span>
+
+                <strong id="totalIncome"> ₹0.00 </strong>
+              </div>
+            </div>
+
+            <!-- TOTAL EXPENSES -->
+
+            <div class="summary-card">
+              <div class="summary-icon expense">
+                <i class="fa-solid fa-arrow-up"></i>
+              </div>
+
+              <div>
+                <span> TOTAL EXPENSES </span>
+
+                <strong id="totalExpenses"> ₹0.00 </strong>
+              </div>
+            </div>
+
+            <!-- NET BALANCE -->
+
+            <div class="summary-card">
+              <div class="summary-icon balance">
+                <i class="fa-solid fa-scale-balanced"></i>
+              </div>
+
+              <div>
+                <span> NET BALANCE </span>
+
+                <strong id="netBalance"> ₹0.00 </strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- =================================================
+                 FILTERS
+            ================================================== -->
+
+          <div class="filter-panel">
+            <!-- SEARCH -->
+
+            <div class="search-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+
+              <input
+                type="search"
+                id="searchInput"
+                placeholder="Search transactions..."
+                autocomplete="off"
+              />
+            </div>
+
+            <!-- TYPE -->
+
+            <select id="typeFilter" class="filter-select">
+              <option value="all">All Types</option>
+
+              <option value="income">Income</option>
+
+              <option value="expense">Expense</option>
+            </select>
+
+            <!-- CATEGORY -->
+
+            <select id="categoryFilter" class="filter-select">
+              <option value="all">All Categories</option>
+            </select>
+
+            <!-- ACCOUNT -->
+
+            <select id="accountFilter" class="filter-select">
+              <option value="all">All Accounts</option>
+            </select>
+
+            <!-- SORT -->
+
+            <select id="sortFilter" class="filter-select">
+              <option value="newest">Newest First</option>
+
+              <option value="oldest">Oldest First</option>
+
+              <option value="highest">Highest Amount</option>
+
+              <option value="lowest">Lowest Amount</option>
+            </select>
+
+            <!-- CLEAR -->
+
+            <button type="button" class="clear-filter" id="clearFilters">
+              Clear
+            </button>
+          </div>
+
+          <!-- =================================================
+                 TRANSACTION TABLE
+            ================================================== -->
+
+          <div class="table-panel">
+            <!-- TABLE HEADER -->
+
+            <div class="table-header">
+              <div>
+                <h3>Transaction History</h3>
+
+                <p id="resultText">0 transactions</p>
+              </div>
+
+              <button type="button" class="export-button" id="exportButton">
+                <i class="fa-solid fa-download"></i>
+
+                Export CSV
+              </button>
+            </div>
+
+            <!-- TABLE -->
+
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>DATE</th>
+
+                    <th>TRANSACTION</th>
+
+                    <th>CATEGORY</th>
+
+                    <th>ACCOUNT</th>
+
+                    <th>TYPE</th>
+
+                    <th>AMOUNT</th>
+
+                    <th>ACTION</th>
+                  </tr>
+                </thead>
+
+                <tbody id="transactionTable">
+                  <tr>
+                    <td colspan="7" class="loading-cell">
+                      <i class="fa-solid fa-spinner fa-spin"></i>
+
+                      Loading transactions...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- EMPTY STATE -->
+
+            <div class="empty-state" id="emptyState">
+              <div class="empty-icon">
+                <i class="fa-solid fa-receipt"></i>
+              </div>
+
+              <h3>No transactions found</h3>
+
+              <p>Add your first transaction to start tracking your finances.</p>
+
+              <button type="button" id="emptyAddButton">
+                <i class="fa-solid fa-plus"></i>
+
+                Add Transaction
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- =========================================================
+     ADD / EDIT TRANSACTION MODAL
+========================================================= -->
+
+    <div class="modal-overlay" id="transactionModal" aria-hidden="true">
+      <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalTitle"
+      >
+        <!-- MODAL HEADER -->
+
+        <div class="modal-header">
+          <div>
+            <span class="modal-label"> TRANSACTION </span>
+
+            <h2 id="modalTitle">Add Transaction</h2>
+          </div>
+
+          <button
+            type="button"
+            class="modal-close"
+            id="modalClose"
+            aria-label="Close modal"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- MODAL MESSAGE -->
+
+        <div class="modal-message" id="modalMessage"></div>
+
+        <!-- FORM -->
+
+        <form id="transactionForm" novalidate>
+          <input type="hidden" id="transactionId" />
+
+          <!-- TYPE -->
+
+          <div class="form-group">
+            <label> Transaction Type </label>
+
+            <div class="type-buttons">
+              <!-- INCOME -->
+
+              <label class="type-option income-option">
+                <input
+                  type="radio"
+                  name="transactionType"
+                  value="INCOME"
+                  checked
+                />
+
+                <span>
+                  <i class="fa-solid fa-arrow-down"></i>
+
+                  Income
+                </span>
+              </label>
+
+              <!-- EXPENSE -->
+
+              <label class="type-option expense-option">
+                <input type="radio" name="transactionType" value="EXPENSE" />
+
+                <span>
+                  <i class="fa-solid fa-arrow-up"></i>
+
+                  Expense
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <!-- AMOUNT -->
+
+          <div class="form-group">
+            <label for="amount"> Amount </label>
+
+            <div class="amount-input">
+              <span> ₹ </span>
+
+              <input
+                type="number"
+                id="amount"
+                min="0.01"
+                step="0.01"
+                placeholder="0.00"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- DESCRIPTION -->
+
+          <div class="form-group">
+            <label for="description"> Description </label>
+
+            <input
+              type="text"
+              id="description"
+              maxlength="200"
+              placeholder="e.g. Salary, Grocery shopping"
+              required
+            />
+          </div>
+
+          <!-- ACCOUNT -->
+
+          <div class="form-group">
+            <label for="accountId"> Account </label>
+
+            <select id="accountId" required>
+              <option value="">Select account</option>
+            </select>
+          </div>
+
+          <!-- CATEGORY -->
+
+          <div class="form-group">
+            <label for="categoryId"> Category </label>
+
+            <select id="categoryId" required>
+              <option value="">Select category</option>
+            </select>
+          </div>
+
+          <!-- DATE -->
+
+          <div class="form-group">
+            <label for="transactionDate"> Date </label>
+
+            <input type="date" id="transactionDate" required />
+          </div>
+
+          <!-- NOTES -->
+
+          <div class="form-group">
+            <label for="notes"> Notes </label>
+
+            <textarea
+              id="notes"
+              rows="3"
+              maxlength="500"
+              placeholder="Optional notes..."
+            ></textarea>
+          </div>
+
+          <!-- REFERENCE -->
+
+          <div class="form-group">
+            <label for="reference"> Reference </label>
+
+            <input
+              type="text"
+              id="reference"
+              maxlength="100"
+              placeholder="Optional reference"
+            />
+          </div>
+
+          <!-- BUTTONS -->
+
+          <div class="modal-actions">
+            <button type="button" class="cancel-button" id="cancelButton">
+              Cancel
+            </button>
+
+            <button type="submit" class="save-button" id="saveButton">
+              <span> Save Transaction </span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- =========================================================
+     DELETE CONFIRMATION
+========================================================= -->
+
+    <div class="confirm-overlay" id="confirmOverlay" aria-hidden="true">
+      <div class="confirm-box">
+        <div class="confirm-icon">
+          <i class="fa-solid fa-trash"></i>
+        </div>
+
+        <h3>Delete transaction?</h3>
+
+        <p>This transaction will be removed from your financial records.</p>
+
+        <div class="confirm-actions">
+          <button type="button" id="confirmCancel">Cancel</button>
+
+          <button type="button" id="confirmDelete">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================
+     TOAST
+========================================================= -->
+
+    <div class="toast" id="toast" aria-live="polite">
+      <i class="fa-solid fa-circle-check" id="toastIcon"></i>
+
+      <span id="toastMessage"> Done </span>
+    </div>
+
+    <!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+    <script src="./static/js/api.js"></script>
+
+    <script src="./static/js/transactions.js"></script>
+  </body>
+</html>

@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Accounts | Finance Tracker</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="./static/css/accounts.css" />
+  </head>
+
+  <body>
+    <div class="app">
+      <!-- SIDEBAR -->
+
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <a href="dashboard.html" class="logo">
+            <span class="logo-icon">
+              <i class="fa-solid fa-wallet"></i>
+            </span>
+
+            <span> Finance<span>Tracker</span> </span>
+          </a>
+
+          <button class="close-sidebar" id="closeSidebar" type="button">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <nav class="sidebar-nav">
+          <span class="nav-title"> MAIN MENU </span>
+
+          <a href="dashboard.html" class="nav-link">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Dashboard</span>
+          </a>
+
+          <a href="transactions.html" class="nav-link">
+            <i class="fa-solid fa-arrow-right-arrow-left"></i>
+            <span>Transactions</span>
+          </a>
+
+          <a href="accounts.html" class="nav-link active">
+            <i class="fa-solid fa-building-columns"></i>
+            <span>Accounts</span>
+          </a>
+
+          <a href="budgets.html" class="nav-link">
+            <i class="fa-solid fa-wallet"></i>
+            <span>Budgets</span>
+          </a>
+
+          <a href="savings.html" class="nav-link">
+            <i class="fa-solid fa-piggy-bank"></i>
+            <span>Savings</span>
+          </a>
+
+          <a href="recurring.html" class="nav-link">
+            <i class="fa-solid fa-repeat"></i>
+            Recurring
+          </a>
+
+          <a href="reports.html" class="nav-link">
+            <i class="fa-solid fa-file-lines"></i>
+            <span>Reports</span>
+          </a>
+
+          <span class="nav-title second"> ACCOUNT </span>
+
+          <a href="profile.html" class="nav-link">
+            <i class="fa-regular fa-user"></i>
+            <span>Profile</span>
+          </a>
+
+          <a href="settings.html" class="nav-link">
+            <i class="fa-solid fa-gear"></i>
+            <span>Settings</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <button class="logout-button" id="logoutButton" type="button">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+
+            <span>Sign out</span>
+          </button>
+        </div>
+      </aside>
+
+      <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+      <!-- MAIN -->
+
+      <main class="main">
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+          <button class="menu-button" id="menuButton" type="button">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+
+          <div class="topbar-title">
+            <h1>Accounts</h1>
+
+            <p>Manage your financial accounts.</p>
+          </div>
+
+          <div class="topbar-right">
+            <button
+              class="refresh-button"
+              id="refreshButton"
+              type="button"
+              title="Refresh"
+            >
+              <i class="fa-solid fa-rotate"></i>
+            </button>
+
+            <a href="profile.html" class="user-menu">
+              <span class="user-avatar" id="userAvatar"> U </span>
+
+              <span class="user-details">
+                <strong id="userName"> User </strong>
+
+                <small id="userEmail"> Account </small>
+              </span>
+            </a>
+          </div>
+        </header>
+
+        <!-- CONTENT -->
+
+        <section class="content">
+          <div class="page-header">
+            <div>
+              <span class="eyebrow"> FINANCIAL ACCOUNTS </span>
+
+              <h2>Your Accounts</h2>
+
+              <p>Add and manage the accounts you use to track money.</p>
+            </div>
+
+            <button class="add-button" id="addAccountButton" type="button">
+              <i class="fa-solid fa-plus"></i>
+
+              Add Account
+            </button>
+          </div>
+
+          <!-- SUMMARY -->
+
+          <div class="summary-grid">
+            <div class="summary-card">
+              <div class="summary-icon total">
+                <i class="fa-solid fa-building-columns"></i>
+              </div>
+
+              <div>
+                <span> TOTAL ACCOUNTS </span>
+
+                <strong id="totalAccounts"> 0 </strong>
+              </div>
+            </div>
+
+            <div class="summary-card">
+              <div class="summary-icon balance">
+                <i class="fa-solid fa-wallet"></i>
+              </div>
+
+              <div>
+                <span> TOTAL BALANCE </span>
+
+                <strong id="totalBalance"> ₹0.00 </strong>
+              </div>
+            </div>
+
+            <div class="summary-card">
+              <div class="summary-icon bank">
+                <i class="fa-solid fa-landmark"></i>
+              </div>
+
+              <div>
+                <span> BANK ACCOUNTS </span>
+
+                <strong id="bankAccounts"> 0 </strong>
+              </div>
+            </div>
+
+            <div class="summary-card">
+              <div class="summary-icon cash">
+                <i class="fa-solid fa-money-bill-wave"></i>
+              </div>
+
+              <div>
+                <span> CASH ACCOUNTS </span>
+
+                <strong id="cashAccounts"> 0 </strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- SEARCH -->
+
+          <div class="filter-panel">
+            <div class="search-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+
+              <input
+                type="search"
+                id="searchInput"
+                placeholder="Search accounts..."
+              />
+            </div>
+
+            <select id="typeFilter" class="filter-select">
+              <option value="all">All Account Types</option>
+
+              <option value="BANK">Bank</option>
+
+              <option value="CASH">Cash</option>
+
+              <option value="CREDIT_CARD">Credit Card</option>
+
+              <option value="WALLET">Wallet</option>
+
+              <option value="INVESTMENT">Investment</option>
+
+              <option value="OTHER">Other</option>
+            </select>
+
+            <button class="clear-filter" id="clearFilters" type="button">
+              Clear
+            </button>
+          </div>
+
+          <!-- ACCOUNT LIST -->
+
+          <div class="accounts-panel">
+            <div class="panel-header">
+              <div>
+                <h3>Account List</h3>
+
+                <p id="resultText">0 accounts</p>
+              </div>
+
+              <button class="panel-add" id="panelAddButton" type="button">
+                <i class="fa-solid fa-plus"></i>
+
+                Add Account
+              </button>
+            </div>
+
+            <div class="accounts-grid" id="accountsGrid">
+              <div class="loading-state">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+
+                Loading accounts...
+              </div>
+            </div>
+
+            <!-- EMPTY -->
+
+            <div class="empty-state" id="emptyState">
+              <div class="empty-icon">
+                <i class="fa-solid fa-building-columns"></i>
+              </div>
+
+              <h3>No accounts found</h3>
+
+              <p>Add your first account to start tracking your finances.</p>
+
+              <button id="emptyAddButton" type="button">
+                <i class="fa-solid fa-plus"></i>
+
+                Add Account
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ACCOUNT MODAL -->
+
+    <div class="modal-overlay" id="accountModal">
+      <div class="modal">
+        <div class="modal-header">
+          <div>
+            <span class="modal-label"> ACCOUNT </span>
+
+            <h2 id="modalTitle">Add Account</h2>
+          </div>
+
+          <button class="modal-close" id="modalClose" type="button">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="modal-message" id="modalMessage"></div>
+
+        <form id="accountForm" novalidate>
+          <input type="hidden" id="accountId" />
+
+          <div class="form-group">
+            <label for="accountName"> Account Name </label>
+
+            <input
+              id="accountName"
+              type="text"
+              maxlength="100"
+              placeholder="e.g. Savings Account"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="accountType"> Account Type </label>
+
+            <select id="accountType" required>
+              <option value="">Select account type</option>
+
+              <option value="BANK">Bank</option>
+
+              <option value="CASH">Cash</option>
+
+              <option value="CREDIT_CARD">Credit Card</option>
+
+              <option value="WALLET">Wallet</option>
+
+              <option value="INVESTMENT">Investment</option>
+
+              <option value="OTHER">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="accountBalance"> Opening Balance </label>
+
+            <div class="amount-input">
+              <span>₹</span>
+
+              <input
+                id="accountBalance"
+                type="number"
+                min="0"
+                step="0.01"
+                value="0"
+                placeholder="0.00"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="accountDescription"> Description </label>
+
+            <textarea
+              id="accountDescription"
+              rows="3"
+              maxlength="300"
+              placeholder="Optional description..."
+            ></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button class="cancel-button" id="cancelButton" type="button">
+              Cancel
+            </button>
+
+            <button class="save-button" id="saveButton" type="submit">
+              Save Account
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- DELETE CONFIRMATION -->
+
+    <div class="confirm-overlay" id="confirmOverlay">
+      <div class="confirm-box">
+        <div class="confirm-icon">
+          <i class="fa-solid fa-trash"></i>
+        </div>
+
+        <h3>Delete account?</h3>
+
+        <p>This account will be removed from your account list.</p>
+
+        <div class="confirm-actions">
+          <button id="confirmCancel" type="button">Cancel</button>
+
+          <button id="confirmDelete" type="button">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+
+    <div class="toast" id="toast">
+      <i id="toastIcon" class="fa-solid fa-circle-check"></i>
+
+      <span id="toastMessage"> Done </span>
+    </div>
+
+    <script src="./static/js/api.js"></script>
+
+    <script src="./static/js/accounts.js"></script>
+  </body>
+</html>

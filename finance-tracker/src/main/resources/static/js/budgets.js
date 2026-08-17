@@ -1,622 +1,1195 @@
 "use strict";
 
 document.addEventListener("DOMContentLoaded", () => {
-  /* =========================================================
+
+    /* =========================================================
        ELEMENTS
     ========================================================= */
 
-  const sidebar = document.getElementById("sidebar");
-  const sidebarOverlay = document.getElementById("sidebarOverlay");
-  const menuButton = document.getElementById("menuButton");
-  const closeSidebar = document.getElementById("closeSidebar");
+    const sidebar = document.getElementById("sidebar");
+    const sidebarOverlay = document.getElementById("sidebarOverlay");
+    const menuButton = document.getElementById("menuButton");
+    const closeSidebar = document.getElementById("closeSidebar");
 
-  const logoutButton = document.getElementById("logoutButton");
-  const refreshButton = document.getElementById("refreshButton");
+    const logoutButton = document.getElementById("logoutButton");
+    const refreshButton = document.getElementById("refreshButton");
 
-  const userName = document.getElementById("userName");
-  const userEmail = document.getElementById("userEmail");
-  const userAvatar = document.getElementById("userAvatar");
+    const userName = document.getElementById("userName");
+    const userEmail = document.getElementById("userEmail");
+    const userAvatar = document.getElementById("userAvatar");
 
-  const totalBudget = document.getElementById("totalBudget");
-  const totalSpent = document.getElementById("totalSpent");
-  const remainingBudget = document.getElementById("remainingBudget");
-  const activeBudgets = document.getElementById("activeBudgets");
+    const totalBudget = document.getElementById("totalBudget");
+    const totalSpent = document.getElementById("totalSpent");
+    const remainingBudget = document.getElementById("remainingBudget");
+    const activeBudgets = document.getElementById("activeBudgets");
 
-  const searchInput = document.getElementById("searchInput");
-  const periodFilter = document.getElementById("periodFilter");
-  const clearFilters = document.getElementById("clearFilters");
+    const searchInput = document.getElementById("searchInput");
+    const periodFilter = document.getElementById("periodFilter");
+    const clearFilters = document.getElementById("clearFilters");
 
-  const budgetGrid = document.getElementById("budgetGrid");
-  const emptyState = document.getElementById("emptyState");
-  const resultText = document.getElementById("resultText");
+    const budgetGrid = document.getElementById("budgetGrid");
+    const emptyState = document.getElementById("emptyState");
+    const resultText = document.getElementById("resultText");
 
-  const addBudgetButton = document.getElementById("addBudgetButton");
-  const panelAddButton = document.getElementById("panelAddButton");
-  const emptyAddButton = document.getElementById("emptyAddButton");
+    const addBudgetButton = document.getElementById("addBudgetButton");
+    const panelAddButton = document.getElementById("panelAddButton");
+    const emptyAddButton = document.getElementById("emptyAddButton");
 
-  const budgetModal = document.getElementById("budgetModal");
-  const modalTitle = document.getElementById("modalTitle");
-  const modalClose = document.getElementById("modalClose");
-  const cancelButton = document.getElementById("cancelButton");
-  const modalMessage = document.getElementById("modalMessage");
+    const budgetModal = document.getElementById("budgetModal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalClose = document.getElementById("modalClose");
+    const cancelButton = document.getElementById("cancelButton");
+    const modalMessage = document.getElementById("modalMessage");
 
-  const budgetForm = document.getElementById("budgetForm");
-  const budgetId = document.getElementById("budgetId");
-  const budgetName = document.getElementById("budgetName");
-  const budgetCategory = document.getElementById("budgetCategory");
-  const budgetPeriod = document.getElementById("budgetPeriod");
-  const budgetAmount = document.getElementById("budgetAmount");
-  const budgetDescription = document.getElementById("budgetDescription");
-  const saveButton = document.getElementById("saveButton");
+    const budgetForm = document.getElementById("budgetForm");
+    const budgetId = document.getElementById("budgetId");
+    const budgetName = document.getElementById("budgetName");
+    const budgetCategory = document.getElementById("budgetCategory");
+    const budgetPeriod = document.getElementById("budgetPeriod");
+    const budgetAmount = document.getElementById("budgetAmount");
+    const budgetDescription = document.getElementById("budgetDescription");
+    const saveButton = document.getElementById("saveButton");
 
-  const confirmOverlay = document.getElementById("confirmOverlay");
-  const confirmCancel = document.getElementById("confirmCancel");
-  const confirmDelete = document.getElementById("confirmDelete");
+    const confirmOverlay = document.getElementById("confirmOverlay");
+    const confirmCancel = document.getElementById("confirmCancel");
+    const confirmDelete = document.getElementById("confirmDelete");
 
-  const toast = document.getElementById("toast");
-  const toastIcon = document.getElementById("toastIcon");
-  const toastMessage = document.getElementById("toastMessage");
+    const toast = document.getElementById("toast");
+    const toastIcon = document.getElementById("toastIcon");
+    const toastMessage = document.getElementById("toastMessage");
 
-  /* =========================================================
+
+    /* =========================================================
        STATE
     ========================================================= */
 
-  let budgets = [];
-  let transactions = [];
+    let budgets = [];
+    let transactions = [];
 
-  let editingId = null;
-  let deletingId = null;
+    let editingId = null;
+    let deletingId = null;
 
-  let toastTimer = null;
+    let toastTimer = null;
 
-  /* =========================================================
+
+    /* =========================================================
        API CHECK
     ========================================================= */
 
-  if (typeof apiGet !== "function") {
-    console.error("budgets.js requires api.js");
+    if (
+        typeof FinanceAPI === "undefined" ||
+        !FinanceAPI.budgets
+    ) {
 
-    if (typeof showToast === "function") {
-      showToast("api.js is not loaded.", "error");
+        console.error(
+            "budgets.js: FinanceAPI.budgets was not found."
+        );
+
+        showToast(
+            "Finance API is not loaded.",
+            "error"
+        );
+
+        return;
     }
 
-    return;
-  }
 
-  /* =========================================================
+    /* =========================================================
        INITIALIZE
     ========================================================= */
 
-  init();
+    init();
 
-  async function init() {
-    setupEvents();
 
-    setupSidebar();
+    async function init() {
 
-    await loadUser();
+        setupEvents();
 
-    await Promise.all([loadBudgets(), loadTransactions()]);
-  }
+        setupSidebar();
 
-  /* =========================================================
+        await loadUser();
+
+        await Promise.all([
+            loadBudgets(),
+            loadTransactions()
+        ]);
+    }
+
+
+    /* =========================================================
        EVENTS
     ========================================================= */
 
-  function setupEvents() {
-    menuButton?.addEventListener("click", openSidebar);
+    function setupEvents() {
 
-    closeSidebar?.addEventListener("click", closeSidebarMenu);
+        menuButton?.addEventListener(
+            "click",
+            openSidebar
+        );
 
-    sidebarOverlay?.addEventListener("click", closeSidebarMenu);
+        closeSidebar?.addEventListener(
+            "click",
+            closeSidebarMenu
+        );
 
-    logoutButton?.addEventListener("click", handleLogout);
+        sidebarOverlay?.addEventListener(
+            "click",
+            closeSidebarMenu
+        );
 
-    refreshButton?.addEventListener("click", refreshData);
+        logoutButton?.addEventListener(
+            "click",
+            handleLogout
+        );
 
-    addBudgetButton?.addEventListener("click", openAddModal);
+        refreshButton?.addEventListener(
+            "click",
+            refreshData
+        );
 
-    panelAddButton?.addEventListener("click", openAddModal);
+        addBudgetButton?.addEventListener(
+            "click",
+            openAddModal
+        );
 
-    emptyAddButton?.addEventListener("click", openAddModal);
+        panelAddButton?.addEventListener(
+            "click",
+            openAddModal
+        );
 
-    modalClose?.addEventListener("click", closeModal);
+        emptyAddButton?.addEventListener(
+            "click",
+            openAddModal
+        );
 
-    cancelButton?.addEventListener("click", closeModal);
+        modalClose?.addEventListener(
+            "click",
+            closeModal
+        );
 
-    budgetModal?.addEventListener("click", (event) => {
-      if (event.target === budgetModal) {
-        closeModal();
-      }
-    });
+        cancelButton?.addEventListener(
+            "click",
+            closeModal
+        );
 
-    budgetForm?.addEventListener("submit", handleSubmit);
+        budgetModal?.addEventListener(
+            "click",
+            event => {
 
-    searchInput?.addEventListener("input", renderBudgets);
+                if (
+                    event.target === budgetModal
+                ) {
 
-    periodFilter?.addEventListener("change", renderBudgets);
+                    closeModal();
+                }
+            }
+        );
 
-    clearFilters?.addEventListener("click", clearFiltersHandler);
+        budgetForm?.addEventListener(
+            "submit",
+            handleSubmit
+        );
 
-    confirmCancel?.addEventListener("click", closeConfirm);
+        searchInput?.addEventListener(
+            "input",
+            renderBudgets
+        );
 
-    confirmDelete?.addEventListener("click", deleteBudget);
+        periodFilter?.addEventListener(
+            "change",
+            renderBudgets
+        );
 
-    confirmOverlay?.addEventListener("click", (event) => {
-      if (event.target === confirmOverlay) {
-        closeConfirm();
-      }
-    });
+        clearFilters?.addEventListener(
+            "click",
+            clearFiltersHandler
+        );
 
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        closeModal();
+        confirmCancel?.addEventListener(
+            "click",
+            closeConfirm
+        );
 
-        closeConfirm();
+        confirmDelete?.addEventListener(
+            "click",
+            deleteBudget
+        );
 
-        closeSidebarMenu();
-      }
-    });
+        confirmOverlay?.addEventListener(
+            "click",
+            event => {
 
-    window.addEventListener("resize", () => {
-      if (window.innerWidth > 950) {
-        closeSidebarMenu();
-      }
-    });
-  }
+                if (
+                    event.target === confirmOverlay
+                ) {
 
-  /* =========================================================
+                    closeConfirm();
+                }
+            }
+        );
+
+        document.addEventListener(
+            "keydown",
+            event => {
+
+                if (event.key === "Escape") {
+
+                    closeModal();
+
+                    closeConfirm();
+
+                    closeSidebarMenu();
+                }
+            }
+        );
+
+        window.addEventListener(
+            "resize",
+            () => {
+
+                if (window.innerWidth > 950) {
+
+                    closeSidebarMenu();
+                }
+            }
+        );
+    }
+
+
+    /* =========================================================
        SIDEBAR
     ========================================================= */
 
-  function setupSidebar() {
-    if (!sidebar) {
-      return;
-    }
+    function setupSidebar() {
 
-    sidebar.querySelectorAll(".nav-link").forEach((link) => {
-      link.addEventListener("click", () => {
-        if (window.innerWidth <= 950) {
-          closeSidebarMenu();
+        if (!sidebar) {
+            return;
         }
-      });
-    });
-  }
 
-  function openSidebar() {
-    if (!sidebar) {
-      return;
+        sidebar
+            .querySelectorAll(".nav-link")
+            .forEach(link => {
+
+                link.addEventListener(
+                    "click",
+                    () => {
+
+                        if (
+                            window.innerWidth <= 950
+                        ) {
+
+                            closeSidebarMenu();
+                        }
+                    }
+                );
+            });
     }
 
-    sidebar.classList.add("open");
 
-    sidebarOverlay?.classList.add("active");
+    function openSidebar() {
 
-    menuButton?.setAttribute("aria-expanded", "true");
+        if (!sidebar) {
+            return;
+        }
 
-    document.body.style.overflow = "hidden";
-  }
+        sidebar.classList.add("open");
 
-  function closeSidebarMenu() {
-    sidebar?.classList.remove("open");
+        sidebarOverlay?.classList.add("active");
 
-    sidebarOverlay?.classList.remove("active");
+        menuButton?.setAttribute(
+            "aria-expanded",
+            "true"
+        );
 
-    menuButton?.setAttribute("aria-expanded", "false");
-
-    if (
-      !budgetModal?.classList.contains("show") &&
-      !confirmOverlay?.classList.contains("show")
-    ) {
-      document.body.style.overflow = "";
+        document.body.style.overflow = "hidden";
     }
-  }
 
-  /* =========================================================
-       USER
+
+    function closeSidebarMenu() {
+
+        sidebar?.classList.remove("open");
+
+        sidebarOverlay?.classList.remove("active");
+
+        menuButton?.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+
+        if (
+            !budgetModal?.classList.contains("show") &&
+            !confirmOverlay?.classList.contains("show")
+        ) {
+
+            document.body.style.overflow = "";
+        }
+    }
+
+
+    /* =========================================================
+       USER DISPLAY
+       
+       The current FinanceAPI provided earlier does not have
+       auth.me(), so we do not call a non-existing endpoint.
+       
+       If user information exists in localStorage, display it.
     ========================================================= */
 
-  async function loadUser() {
-    if (typeof getCurrentUser !== "function") {
-      return;
+    async function loadUser() {
+
+        try {
+
+            let user = null;
+
+            const possibleKeys = [
+                "financeUser",
+                "foodexpress_user",
+                "user",
+                "currentUser"
+            ];
+
+            for (
+                const key of possibleKeys
+            ) {
+
+                const stored =
+                    localStorage.getItem(key);
+
+                if (!stored) {
+                    continue;
+                }
+
+                try {
+
+                    user =
+                        JSON.parse(stored);
+
+                } catch {
+
+                    user = {
+                        name: stored
+                    };
+                }
+
+                if (user) {
+                    break;
+                }
+            }
+
+
+            if (!user) {
+
+                setDefaultUser();
+
+                return;
+            }
+
+
+            const name =
+                user.name ||
+                user.fullName ||
+                user.username ||
+                user.email ||
+                "User";
+
+
+            const email =
+                user.email ||
+                "Finance Account";
+
+
+            if (userName) {
+
+                userName.textContent =
+                    name;
+            }
+
+
+            if (userEmail) {
+
+                userEmail.textContent =
+                    email;
+            }
+
+
+            if (userAvatar) {
+
+                userAvatar.textContent =
+                    getInitials(name);
+            }
+
+        } catch (error) {
+
+            console.warn(
+                "Could not load user information.",
+                error
+            );
+
+            setDefaultUser();
+        }
     }
 
-    try {
-      const response = await getCurrentUser();
 
-      const user = response?.user || response?.data || response;
+    function setDefaultUser() {
 
-      if (!user) {
-        return;
-      }
+        if (userName) {
 
-      const name =
-        user.name || user.fullName || user.username || user.email || "User";
+            userName.textContent =
+                "User";
+        }
 
-      const email = user.email || "Finance Account";
+        if (userEmail) {
 
-      if (userName) {
-        userName.textContent = name;
-      }
+            userEmail.textContent =
+                "Finance Account";
+        }
 
-      if (userEmail) {
-        userEmail.textContent = email;
-      }
+        if (userAvatar) {
 
-      if (userAvatar) {
-        userAvatar.textContent = getInitials(name);
-      }
-    } catch (error) {
-      console.warn("Could not load user.", error);
-    }
-  }
-
-  function getInitials(name) {
-    const parts = String(name).trim().split(/\s+/);
-
-    if (parts.length === 1) {
-      return parts[0].substring(0, 2).toUpperCase();
+            userAvatar.textContent =
+                "U";
+        }
     }
 
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-  }
 
-  /* =========================================================
+    function getInitials(name) {
+
+        const parts =
+            String(name || "User")
+                .trim()
+                .split(/\s+/);
+
+        if (parts.length === 1) {
+
+            return parts[0]
+                .substring(0, 2)
+                .toUpperCase();
+        }
+
+        return (
+            parts[0][0] +
+            parts[parts.length - 1][0]
+        ).toUpperCase();
+    }
+
+
+    /* =========================================================
        LOAD BUDGETS
-    ========================================================= */
 
-  async function loadBudgets() {
-    showLoading();
+       IMPORTANT:
+       Uses FinanceAPI.budgets.getAll()
+       ========================================================= */
 
-    try {
-      /*
-       * CORRECT:
-       *
-       * api.js already contains /api
-       *
-       * /budgets
-       *
-       * becomes:
-       *
-       * http://localhost:8080/api/budgets
-       */
+    async function loadBudgets() {
 
-      const response = await apiGet("/budgets");
+        showLoading();
 
-      budgets = extractArray(response, ["budgets", "data", "content"])
-        .map(normalizeBudget)
-        .filter(Boolean);
+        try {
 
-      updateSummary();
+            const response =
+                await FinanceAPI.budgets.getAll();
 
-      renderBudgets();
-    } catch (error) {
-      console.error("Could not load budgets:", error);
 
-      budgets = [];
+            budgets =
+                extractArray(
+                    response,
+                    [
+                        "budgets",
+                        "data",
+                        "content"
+                    ]
+                )
+                .map(
+                    normalizeBudget
+                )
+                .filter(Boolean);
 
-      updateSummary();
 
-      if (budgetGrid) {
-        budgetGrid.innerHTML = `
+            updateSummary();
 
-                    <div class="loading-state">
+            renderBudgets();
 
-                        <i class="fa-solid fa-triangle-exclamation"></i>
+        } catch (error) {
 
-                        Unable to load budgets.
+            console.error(
+                "Could not load budgets:",
+                error
+            );
 
-                    </div>
 
-                `;
-      }
+            budgets = [];
 
-      if (resultText) {
-        resultText.textContent = "Unable to load budgets";
-      }
+            updateSummary();
+
+            showLoadError(error);
+        }
     }
-  }
 
-  /* =========================================================
+
+    /* =========================================================
        LOAD TRANSACTIONS
-    ========================================================= */
 
-  async function loadTransactions() {
-    try {
-      const response = await apiGet("/transactions");
+       Used to calculate budget spending.
+       ========================================================= */
 
-      transactions = extractArray(response, [
-        "transactions",
-        "data",
-        "content",
-      ]);
-    } catch (error) {
-      console.warn("Could not load transactions.", error);
+    async function loadTransactions() {
 
-      transactions = [];
+        try {
+
+            const response =
+                await FinanceAPI.transactions.getAll();
+
+
+            transactions =
+                extractArray(
+                    response,
+                    [
+                        "transactions",
+                        "data",
+                        "content"
+                    ]
+                );
+
+        } catch (error) {
+
+            console.warn(
+                "Could not load transactions.",
+                error
+            );
+
+            transactions = [];
+        }
     }
-  }
 
-  /* =========================================================
+
+    /* =========================================================
        REFRESH
     ========================================================= */
 
-  async function refreshData() {
-    if (refreshButton) {
-      refreshButton.disabled = true;
+    async function refreshData() {
 
-      refreshButton.querySelector("i")?.classList.add("fa-spin");
+        if (refreshButton) {
+
+            refreshButton.disabled = true;
+
+            refreshButton
+                .querySelector("i")
+                ?.classList.add("fa-spin");
+        }
+
+
+        try {
+
+            await Promise.all([
+                loadBudgets(),
+                loadTransactions()
+            ]);
+
+
+            updateSummary();
+
+            renderBudgets();
+
+
+            showToast(
+                "Budgets refreshed."
+            );
+
+        } catch (error) {
+
+            showToast(
+                getErrorMessage(error),
+                "error"
+            );
+
+        } finally {
+
+            if (refreshButton) {
+
+                refreshButton.disabled = false;
+
+                refreshButton
+                    .querySelector("i")
+                    ?.classList.remove("fa-spin");
+            }
+        }
     }
 
-    try {
-      await Promise.all([loadBudgets(), loadTransactions()]);
 
-      updateSummary();
-
-      renderBudgets();
-
-      showToast("Budgets refreshed.");
-    } catch (error) {
-      showToast(getErrorMessage(error), "error");
-    } finally {
-      if (refreshButton) {
-        refreshButton.disabled = false;
-
-        refreshButton.querySelector("i")?.classList.remove("fa-spin");
-      }
-    }
-  }
-
-  /* =========================================================
+    /* =========================================================
        NORMALIZE BUDGET
     ========================================================= */
 
-  function normalizeBudget(item) {
-    if (!item || typeof item !== "object") {
-      return null;
+    function normalizeBudget(item) {
+
+        if (
+            !item ||
+            typeof item !== "object"
+        ) {
+
+            return null;
+        }
+
+
+        return {
+
+            id:
+                item.id ??
+                item.budgetId ??
+                item.budget_id,
+
+
+            name:
+                item.name ??
+                item.budgetName ??
+                item.title ??
+                "Budget",
+
+
+            category:
+                item.category ??
+                item.categoryName ??
+                "Other",
+
+
+            period:
+                normalizePeriod(
+                    item.period ??
+                    item.budgetPeriod ??
+                    item.frequency ??
+                    "MONTHLY"
+                ),
+
+
+            amount:
+                Number(
+                    item.amount ??
+                    item.budgetAmount ??
+                    item.limit ??
+                    item.total ??
+                    0
+                ) || 0,
+
+
+            spent:
+                Number(
+                    item.spent ??
+                    item.usedAmount ??
+                    item.used ??
+                    0
+                ) || 0,
+
+
+            description:
+                item.description ??
+                item.notes ??
+                ""
+        };
     }
 
-    return {
-      id: item.id ?? item.budgetId ?? item.budget_id,
 
-      name: item.name ?? item.budgetName ?? item.title ?? "Budget",
-
-      category: item.category ?? item.categoryName ?? "Other",
-
-      period: normalizePeriod(
-        item.period ?? item.budgetPeriod ?? item.frequency ?? "MONTHLY",
-      ),
-
-      amount:
-        Number(
-          item.amount ?? item.budgetAmount ?? item.limit ?? item.total ?? 0,
-        ) || 0,
-
-      spent: Number(item.spent ?? item.usedAmount ?? item.used ?? 0) || 0,
-
-      description: item.description ?? item.notes ?? "",
-    };
-  }
-
-  /* =========================================================
+    /* =========================================================
        EXTRACT ARRAY
     ========================================================= */
 
-  function extractArray(response, keys) {
-    if (Array.isArray(response)) {
-      return response;
-    }
+    function extractArray(
+        response,
+        keys
+    ) {
 
-    if (response && typeof response === "object") {
-      for (const key of keys) {
-        if (Array.isArray(response[key])) {
-          return response[key];
+        if (
+            Array.isArray(response)
+        ) {
+
+            return response;
         }
-      }
+
+
+        if (
+            response &&
+            typeof response === "object"
+        ) {
+
+            for (
+                const key of keys
+            ) {
+
+                if (
+                    Array.isArray(
+                        response[key]
+                    )
+                ) {
+
+                    return response[key];
+                }
+            }
+        }
+
+
+        return [];
     }
 
-    return [];
-  }
 
-  /* =========================================================
+    /* =========================================================
        CALCULATE SPENT
     ========================================================= */
 
-  function calculateSpent(budget) {
-    if (Number(budget.spent) > 0) {
-      return Number(budget.spent);
+    function calculateSpent(
+        budget
+    ) {
+
+        /*
+         * If backend already provides spent,
+         * use it.
+         */
+
+        if (
+            Number(budget.spent) > 0
+        ) {
+
+            return Number(
+                budget.spent
+            );
+        }
+
+
+        const category =
+            String(
+                budget.category || ""
+            )
+            .trim()
+            .toLowerCase();
+
+
+        return transactions
+            .filter(
+                transaction => {
+
+                    const type =
+                        String(
+                            transaction.type ||
+                            transaction.transactionType ||
+                            ""
+                        )
+                        .toLowerCase();
+
+
+                    const transactionCategory =
+                        getTransactionCategory(
+                            transaction
+                        );
+
+
+                    return (
+                        (
+                            type === "expense" ||
+                            type === "debit"
+                        ) &&
+                        transactionCategory ===
+                        category
+                    );
+                }
+            )
+            .reduce(
+                (
+                    total,
+                    transaction
+                ) => {
+
+                    return (
+                        total +
+                        (
+                            Number(
+                                transaction.amount
+                            ) || 0
+                        )
+                    );
+                },
+                0
+            );
     }
 
-    const category = String(budget.category || "")
-      .trim()
-      .toLowerCase();
 
-    return transactions
-      .filter((transaction) => {
-        const type = String(
-          transaction.type || transaction.transactionType || "",
-        ).toLowerCase();
+    function getTransactionCategory(
+        transaction
+    ) {
 
-        const transactionCategory = getTransactionCategory(transaction);
+        if (
+            transaction.category &&
+            typeof transaction.category ===
+            "object"
+        ) {
 
-        return (
-          (type === "expense" || type === "debit") &&
-          transactionCategory === category
-        );
-      })
-      .reduce((total, transaction) => {
-        return total + (Number(transaction.amount) || 0);
-      }, 0);
-  }
+            return String(
+                transaction.category.name ||
+                transaction.category.categoryName ||
+                transaction.category.title ||
+                ""
+            )
+            .trim()
+            .toLowerCase();
+        }
 
-  function getTransactionCategory(transaction) {
-    if (transaction.category && typeof transaction.category === "object") {
-      return String(
-        transaction.category.name ||
-          transaction.category.categoryName ||
-          transaction.category.title ||
-          "",
-      )
+
+        return String(
+            transaction.categoryName ||
+            transaction.category ||
+            ""
+        )
         .trim()
         .toLowerCase();
     }
 
-    return String(transaction.categoryName || transaction.category || "")
-      .trim()
-      .toLowerCase();
-  }
 
-  /* =========================================================
+    /* =========================================================
        SUMMARY
     ========================================================= */
 
-  function updateSummary() {
-    const total = budgets.reduce((sum, budget) => {
-      return sum + Number(budget.amount);
-    }, 0);
+    function updateSummary() {
 
-    const spent = budgets.reduce((sum, budget) => {
-      return sum + calculateSpent(budget);
-    }, 0);
+        const total =
+            budgets.reduce(
+                (
+                    sum,
+                    budget
+                ) => {
 
-    const remaining = total - spent;
+                    return (
+                        sum +
+                        Number(
+                            budget.amount
+                        )
+                    );
+                },
+                0
+            );
 
-    if (totalBudget) {
-      totalBudget.textContent = formatCurrency(total);
+
+        const spent =
+            budgets.reduce(
+                (
+                    sum,
+                    budget
+                ) => {
+
+                    return (
+                        sum +
+                        calculateSpent(
+                            budget
+                        )
+                    );
+                },
+                0
+            );
+
+
+        const remaining =
+            total - spent;
+
+
+        if (totalBudget) {
+
+            totalBudget.textContent =
+                formatCurrency(total);
+        }
+
+
+        if (totalSpent) {
+
+            totalSpent.textContent =
+                formatCurrency(spent);
+        }
+
+
+        if (remainingBudget) {
+
+            remainingBudget.textContent =
+                formatCurrency(
+                    Math.max(
+                        remaining,
+                        0
+                    )
+                );
+        }
+
+
+        if (activeBudgets) {
+
+            activeBudgets.textContent =
+                budgets.length;
+        }
     }
 
-    if (totalSpent) {
-      totalSpent.textContent = formatCurrency(spent);
-    }
 
-    if (remainingBudget) {
-      remainingBudget.textContent = formatCurrency(Math.max(remaining, 0));
-    }
-
-    if (activeBudgets) {
-      activeBudgets.textContent = budgets.length;
-    }
-  }
-
-  /* =========================================================
+    /* =========================================================
        RENDER BUDGETS
     ========================================================= */
 
-  function renderBudgets() {
-    if (!budgetGrid) {
-      return;
+    function renderBudgets() {
+
+        if (!budgetGrid) {
+
+            return;
+        }
+
+
+        const search =
+            String(
+                searchInput?.value || ""
+            )
+            .trim()
+            .toLowerCase();
+
+
+        const period =
+            periodFilter?.value ||
+            "all";
+
+
+        const filtered =
+            budgets.filter(
+                budget => {
+
+                    const matchesSearch =
+                        !search ||
+                        String(
+                            budget.name
+                        )
+                        .toLowerCase()
+                        .includes(search) ||
+                        String(
+                            budget.category
+                        )
+                        .toLowerCase()
+                        .includes(search);
+
+
+                    const matchesPeriod =
+                        period === "all" ||
+                        budget.period ===
+                        period;
+
+
+                    return (
+                        matchesSearch &&
+                        matchesPeriod
+                    );
+                }
+            );
+
+
+        budgetGrid.innerHTML = "";
+
+
+        if (
+            budgets.length === 0
+        ) {
+
+            budgetGrid.style.display =
+                "none";
+
+            emptyState?.classList.add(
+                "show"
+            );
+
+
+            const heading =
+                emptyState?.querySelector(
+                    "h3"
+                );
+
+
+            const paragraph =
+                emptyState?.querySelector(
+                    "p"
+                );
+
+
+            if (heading) {
+
+                heading.textContent =
+                    "No budgets yet";
+            }
+
+
+            if (paragraph) {
+
+                paragraph.textContent =
+                    "Create your first budget to start controlling your spending.";
+            }
+
+
+            if (resultText) {
+
+                resultText.textContent =
+                    "0 budgets";
+            }
+
+
+            return;
+        }
+
+
+        if (
+            filtered.length === 0
+        ) {
+
+            budgetGrid.style.display =
+                "none";
+
+            emptyState?.classList.add(
+                "show"
+            );
+
+
+            const heading =
+                emptyState?.querySelector(
+                    "h3"
+                );
+
+
+            const paragraph =
+                emptyState?.querySelector(
+                    "p"
+                );
+
+
+            if (heading) {
+
+                heading.textContent =
+                    "No matching budgets";
+            }
+
+
+            if (paragraph) {
+
+                paragraph.textContent =
+                    "Try changing your search or period filter.";
+            }
+
+
+            if (resultText) {
+
+                resultText.textContent =
+                    "0 matching budgets";
+            }
+
+
+            return;
+        }
+
+
+        budgetGrid.style.display =
+            "grid";
+
+
+        emptyState?.classList.remove(
+            "show"
+        );
+
+
+        if (resultText) {
+
+            resultText.textContent =
+                filtered.length +
+                (
+                    filtered.length === 1
+                        ? " budget"
+                        : " budgets"
+                );
+        }
+
+
+        filtered.forEach(
+            budget => {
+
+                budgetGrid.appendChild(
+                    createBudgetCard(
+                        budget
+                    )
+                );
+            }
+        );
     }
 
-    const search = String(searchInput?.value || "")
-      .trim()
-      .toLowerCase();
 
-    const period = periodFilter?.value || "all";
-
-    const filtered = budgets.filter((budget) => {
-      const matchesSearch =
-        !search ||
-        String(budget.name).toLowerCase().includes(search) ||
-        String(budget.category).toLowerCase().includes(search);
-
-      const matchesPeriod = period === "all" || budget.period === period;
-
-      return matchesSearch && matchesPeriod;
-    });
-
-    budgetGrid.innerHTML = "";
-
-    if (budgets.length === 0) {
-      budgetGrid.style.display = "none";
-
-      emptyState?.classList.add("show");
-
-      if (resultText) {
-        resultText.textContent = "0 budgets";
-      }
-
-      return;
-    }
-
-    if (filtered.length === 0) {
-      budgetGrid.style.display = "none";
-
-      emptyState?.classList.add("show");
-
-      const heading = emptyState?.querySelector("h3");
-
-      const paragraph = emptyState?.querySelector("p");
-
-      if (heading) {
-        heading.textContent = "No matching budgets";
-      }
-
-      if (paragraph) {
-        paragraph.textContent = "Try changing your search or period filter.";
-      }
-
-      if (resultText) {
-        resultText.textContent = "0 matching budgets";
-      }
-
-      return;
-    }
-
-    budgetGrid.style.display = "grid";
-
-    emptyState?.classList.remove("show");
-
-    const heading = emptyState?.querySelector("h3");
-
-    const paragraph = emptyState?.querySelector("p");
-
-    if (heading) {
-      heading.textContent = "No budgets yet";
-    }
-
-    if (paragraph) {
-      paragraph.textContent =
-        "Create your first budget to start controlling your spending.";
-    }
-
-    if (resultText) {
-      resultText.textContent =
-        filtered.length + (filtered.length === 1 ? " budget" : " budgets");
-    }
-
-    filtered.forEach((budget) => {
-      budgetGrid.appendChild(createBudgetCard(budget));
-    });
-  }
-
-  /* =========================================================
+    /* =========================================================
        CREATE BUDGET CARD
     ========================================================= */
 
-  function createBudgetCard(budget) {
-    const card = document.createElement("article");
+    function createBudgetCard(
+        budget
+    ) {
 
-    card.className = "budget-card";
+        const card =
+            document.createElement(
+                "article"
+            );
 
-    const spent = calculateSpent(budget);
 
-    const amount = Number(budget.amount) || 0;
+        card.className =
+            "budget-card";
 
-    const percentage = amount > 0 ? (spent / amount) * 100 : 0;
 
-    const safePercentage = Math.min(Math.max(percentage, 0), 100);
+        const spent =
+            calculateSpent(
+                budget
+            );
 
-    let progressClass = "";
 
-    if (percentage >= 100) {
-      progressClass = "danger";
-    } else if (percentage >= 80) {
-      progressClass = "warning";
-    }
+        const amount =
+            Number(
+                budget.amount
+            ) || 0;
 
-    const remaining = Math.max(amount - spent, 0);
 
-    card.innerHTML = `
+        const percentage =
+            amount > 0
+                ? (
+                    spent /
+                    amount
+                ) * 100
+                : 0;
+
+
+        const safePercentage =
+            Math.min(
+                Math.max(
+                    percentage,
+                    0
+                ),
+                100
+            );
+
+
+        let progressClass =
+            "";
+
+
+        if (
+            percentage >= 100
+        ) {
+
+            progressClass =
+                "danger";
+
+        } else if (
+            percentage >= 80
+        ) {
+
+            progressClass =
+                "warning";
+        }
+
+
+        const remaining =
+            Math.max(
+                amount - spent,
+                0
+            );
+
+
+        card.innerHTML = `
 
             <div class="budget-top">
 
@@ -633,6 +1206,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         class="budget-action edit"
                         type="button"
                         title="Edit budget"
+                        aria-label="Edit budget"
                     >
 
                         <i class="fa-solid fa-pen"></i>
@@ -644,6 +1218,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         class="budget-action delete"
                         type="button"
                         title="Delete budget"
+                        aria-label="Delete budget"
                     >
 
                         <i class="fa-solid fa-trash"></i>
@@ -657,18 +1232,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
             <h3 class="budget-name">
 
-                ${escapeHtml(budget.name)}
+                ${escapeHtml(
+                    budget.name
+                )}
 
             </h3>
 
 
             <span class="budget-category">
 
-                ${escapeHtml(budget.category)}
+                ${escapeHtml(
+                    budget.category
+                )}
 
                 ·
 
-                ${escapeHtml(formatPeriod(budget.period))}
+                ${escapeHtml(
+                    formatPeriod(
+                        budget.period
+                    )
+                )}
 
             </span>
 
@@ -682,7 +1265,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     </span>
 
                     <strong>
-                        ${formatCurrency(spent)}
+                        ${formatCurrency(
+                            spent
+                        )}
                     </strong>
 
                 </div>
@@ -695,7 +1280,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     </span>
 
                     <strong>
-                        ${formatCurrency(amount)}
+                        ${formatCurrency(
+                            amount
+                        )}
                     </strong>
 
                 </div>
@@ -720,7 +1307,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 </span>
 
                 <span>
-                    ${formatCurrency(remaining)} left
+                    ${formatCurrency(
+                        remaining
+                    )} left
                 </span>
 
             </div>
@@ -728,377 +1317,690 @@ document.addEventListener("DOMContentLoaded", () => {
 
             <p class="budget-description">
 
-                ${escapeHtml(budget.description || "No description added.")}
+                ${escapeHtml(
+                    budget.description ||
+                    "No description added."
+                )}
 
             </p>
 
         `;
 
-    card.querySelector(".edit")?.addEventListener("click", () => {
-      openEditModal(budget);
-    });
 
-    card.querySelector(".delete")?.addEventListener("click", () => {
-      openConfirm(budget);
-    });
+        card
+            .querySelector(".edit")
+            ?.addEventListener(
+                "click",
+                () => {
 
-    return card;
-  }
+                    openEditModal(
+                        budget
+                    );
+                }
+            );
 
-  /* =========================================================
+
+        card
+            .querySelector(".delete")
+            ?.addEventListener(
+                "click",
+                () => {
+
+                    openConfirm(
+                        budget
+                    );
+                }
+            );
+
+
+        return card;
+    }
+
+
+    /* =========================================================
        ADD MODAL
     ========================================================= */
 
-  function openAddModal() {
-    editingId = null;
+    function openAddModal() {
 
-    budgetForm?.reset();
+        editingId = null;
 
-    if (budgetId) {
-      budgetId.value = "";
+
+        budgetForm?.reset();
+
+
+        if (budgetId) {
+
+            budgetId.value = "";
+        }
+
+
+        if (modalTitle) {
+
+            modalTitle.textContent =
+                "Add Budget";
+        }
+
+
+        if (saveButton) {
+
+            saveButton.textContent =
+                "Save Budget";
+        }
+
+
+        hideModalMessage();
+
+
+        budgetModal?.classList.add(
+            "show"
+        );
+
+
+        document.body.style.overflow =
+            "hidden";
+
+
+        setTimeout(
+            () => {
+
+                budgetName?.focus();
+
+            },
+            100
+        );
     }
 
-    if (modalTitle) {
-      modalTitle.textContent = "Add Budget";
-    }
 
-    if (saveButton) {
-      saveButton.textContent = "Save Budget";
-    }
-
-    hideModalMessage();
-
-    budgetModal?.classList.add("show");
-
-    document.body.style.overflow = "hidden";
-
-    setTimeout(() => {
-      budgetName?.focus();
-    }, 100);
-  }
-
-  /* =========================================================
+    /* =========================================================
        EDIT MODAL
     ========================================================= */
 
-  function openEditModal(budget) {
-    editingId = budget.id;
+    function openEditModal(
+        budget
+    ) {
 
-    if (budgetId) {
-      budgetId.value = budget.id ?? "";
+        editingId =
+            budget.id;
+
+
+        if (budgetId) {
+
+            budgetId.value =
+                budget.id ?? "";
+        }
+
+
+        if (budgetName) {
+
+            budgetName.value =
+                budget.name ?? "";
+        }
+
+
+        if (budgetCategory) {
+
+            budgetCategory.value =
+                budget.category ?? "";
+        }
+
+
+        if (budgetPeriod) {
+
+            budgetPeriod.value =
+                budget.period ??
+                "MONTHLY";
+        }
+
+
+        if (budgetAmount) {
+
+            budgetAmount.value =
+                budget.amount ?? 0;
+        }
+
+
+        if (budgetDescription) {
+
+            budgetDescription.value =
+                budget.description ?? "";
+        }
+
+
+        if (modalTitle) {
+
+            modalTitle.textContent =
+                "Edit Budget";
+        }
+
+
+        if (saveButton) {
+
+            saveButton.textContent =
+                "Update Budget";
+        }
+
+
+        hideModalMessage();
+
+
+        budgetModal?.classList.add(
+            "show"
+        );
+
+
+        document.body.style.overflow =
+            "hidden";
+
+
+        setTimeout(
+            () => {
+
+                budgetName?.focus();
+
+            },
+            100
+        );
     }
 
-    if (budgetName) {
-      budgetName.value = budget.name ?? "";
-    }
 
-    if (budgetCategory) {
-      budgetCategory.value = budget.category ?? "";
-    }
-
-    if (budgetPeriod) {
-      budgetPeriod.value = budget.period ?? "MONTHLY";
-    }
-
-    if (budgetAmount) {
-      budgetAmount.value = budget.amount ?? 0;
-    }
-
-    if (budgetDescription) {
-      budgetDescription.value = budget.description ?? "";
-    }
-
-    if (modalTitle) {
-      modalTitle.textContent = "Edit Budget";
-    }
-
-    if (saveButton) {
-      saveButton.textContent = "Update Budget";
-    }
-
-    hideModalMessage();
-
-    budgetModal?.classList.add("show");
-
-    document.body.style.overflow = "hidden";
-
-    setTimeout(() => {
-      budgetName?.focus();
-    }, 100);
-  }
-
-  /* =========================================================
+    /* =========================================================
        CLOSE MODAL
     ========================================================= */
 
-  function closeModal() {
-    budgetModal?.classList.remove("show");
+    function closeModal() {
 
-    if (!confirmOverlay?.classList.contains("show")) {
-      document.body.style.overflow = "";
-    }
-  }
-
-  /* =========================================================
-       SAVE / UPDATE
-    ========================================================= */
-
-  async function handleSubmit(event) {
-    event.preventDefault();
-
-    const name = budgetName?.value.trim() || "";
-
-    const category = budgetCategory?.value.trim() || "";
-
-    const period = normalizePeriod(budgetPeriod?.value);
-
-    const amount = Number(budgetAmount?.value);
-
-    const description = budgetDescription?.value.trim() || "";
-
-    if (!name) {
-      showModalMessage("Please enter a budget name.");
-
-      budgetName?.focus();
-
-      return;
-    }
-
-    if (!category) {
-      showModalMessage("Please enter a category.");
-
-      budgetCategory?.focus();
-
-      return;
-    }
-
-    if (!period) {
-      showModalMessage("Please select a budget period.");
-
-      budgetPeriod?.focus();
-
-      return;
-    }
-
-    if (!Number.isFinite(amount) || amount <= 0) {
-      showModalMessage("Please enter a valid budget amount greater than zero.");
-
-      budgetAmount?.focus();
-
-      return;
-    }
-
-    const payload = {
-      name: name,
-
-      budgetName: name,
-
-      category: category,
-
-      period: period,
-
-      budgetPeriod: period,
-
-      amount: amount,
-
-      budgetAmount: amount,
-
-      description: description,
-    };
-
-    if (saveButton) {
-      saveButton.disabled = true;
-
-      saveButton.textContent = editingId ? "Updating..." : "Saving...";
-    }
-
-    try {
-      if (editingId) {
-        /*
-         * CORRECT UPDATE PATH
-         *
-         * api.js already adds /api
-         */
-
-        await apiPut(
-          "/budgets/" + encodeURIComponent(String(editingId)),
-          payload,
+        budgetModal?.classList.remove(
+            "show"
         );
 
-        showToast("Budget updated successfully.");
-      } else {
-        /*
-         * CORRECT CREATE PATH
-         */
 
-        await apiPost("/budgets", payload);
+        if (
+            !confirmOverlay?.classList.contains(
+                "show"
+            )
+        ) {
 
-        showToast("Budget created successfully.");
-      }
-
-      closeModal();
-
-      await loadBudgets();
-
-      updateSummary();
-
-      renderBudgets();
-    } catch (error) {
-      console.error("Budget save failed:", error);
-
-      showModalMessage(getErrorMessage(error));
-    } finally {
-      if (saveButton) {
-        saveButton.disabled = false;
-
-        saveButton.textContent = editingId ? "Update Budget" : "Save Budget";
-      }
+            document.body.style.overflow =
+                "";
+        }
     }
-  }
 
-  /* =========================================================
+
+    /* =========================================================
+       SAVE / UPDATE BUDGET
+       
+       IMPORTANT:
+       FinanceAPI.budgets.create()
+       FinanceAPI.budgets.update()
+    ========================================================= */
+
+    async function handleSubmit(
+        event
+    ) {
+
+        event.preventDefault();
+
+
+        const name =
+            budgetName?.value.trim() ||
+            "";
+
+
+        const category =
+            budgetCategory?.value.trim() ||
+            "";
+
+
+        const period =
+            normalizePeriod(
+                budgetPeriod?.value
+            );
+
+
+        const amount =
+            Number(
+                budgetAmount?.value
+            );
+
+
+        const description =
+            budgetDescription?.value.trim() ||
+            "";
+
+
+        if (!name) {
+
+            showModalMessage(
+                "Please enter a budget name."
+            );
+
+            budgetName?.focus();
+
+            return;
+        }
+
+
+        if (!category) {
+
+            showModalMessage(
+                "Please enter a category."
+            );
+
+            budgetCategory?.focus();
+
+            return;
+        }
+
+
+        if (!period) {
+
+            showModalMessage(
+                "Please select a budget period."
+            );
+
+            budgetPeriod?.focus();
+
+            return;
+        }
+
+
+        if (
+            !Number.isFinite(amount) ||
+            amount <= 0
+        ) {
+
+            showModalMessage(
+                "Please enter a valid budget amount greater than zero."
+            );
+
+            budgetAmount?.focus();
+
+            return;
+        }
+
+
+        const payload = {
+
+            name: name,
+
+            budgetName: name,
+
+            category: category,
+
+            period: period,
+
+            budgetPeriod: period,
+
+            amount: amount,
+
+            budgetAmount: amount,
+
+            description: description
+        };
+
+
+        if (saveButton) {
+
+            saveButton.disabled =
+                true;
+
+
+            saveButton.textContent =
+                editingId
+                    ? "Updating..."
+                    : "Saving...";
+        }
+
+
+        try {
+
+            if (
+                editingId !== null &&
+                editingId !== undefined
+            ) {
+
+                /*
+                 * CORRECT:
+                 *
+                 * FinanceAPI.accounts.update(id, data)
+                 *
+                 * For budgets:
+                 *
+                 * FinanceAPI.budgets.update(id, data)
+                 */
+
+                await FinanceAPI.budgets.update(
+                    editingId,
+                    payload
+                );
+
+
+                showToast(
+                    "Budget updated successfully."
+                );
+
+            } else {
+
+                /*
+                 * CORRECT CREATE:
+                 *
+                 * FinanceAPI.budgets.create(data)
+                 */
+
+                await FinanceAPI.budgets.create(
+                    payload
+                );
+
+
+                showToast(
+                    "Budget created successfully."
+                );
+            }
+
+
+            closeModal();
+
+
+            await loadBudgets();
+
+
+            updateSummary();
+
+
+            renderBudgets();
+
+        } catch (error) {
+
+            console.error(
+                "Budget save failed:",
+                error
+            );
+
+
+            showModalMessage(
+                getErrorMessage(
+                    error
+                )
+            );
+
+        } finally {
+
+            if (saveButton) {
+
+                saveButton.disabled =
+                    false;
+
+
+                saveButton.textContent =
+                    editingId
+                        ? "Update Budget"
+                        : "Save Budget";
+            }
+        }
+    }
+
+
+    /* =========================================================
        DELETE CONFIRMATION
     ========================================================= */
 
-  function openConfirm(budget) {
-    deletingId = budget.id;
+    function openConfirm(
+        budget
+    ) {
 
-    confirmOverlay?.classList.add("show");
+        deletingId =
+            budget.id;
 
-    document.body.style.overflow = "hidden";
-  }
 
-  function closeConfirm() {
-    confirmOverlay?.classList.remove("show");
+        confirmOverlay?.classList.add(
+            "show"
+        );
 
-    deletingId = null;
 
-    if (!budgetModal?.classList.contains("show")) {
-      document.body.style.overflow = "";
+        document.body.style.overflow =
+            "hidden";
     }
-  }
 
-  /* =========================================================
+
+    function closeConfirm() {
+
+        confirmOverlay?.classList.remove(
+            "show"
+        );
+
+
+        deletingId =
+            null;
+
+
+        if (
+            !budgetModal?.classList.contains(
+                "show"
+            )
+        ) {
+
+            document.body.style.overflow =
+                "";
+        }
+    }
+
+
+    /* =========================================================
        DELETE BUDGET
+       
+       IMPORTANT:
+       FinanceAPI.budgets.delete(id)
     ========================================================= */
 
-  async function deleteBudget() {
-    if (deletingId === null || deletingId === undefined) {
-      return;
+    async function deleteBudget() {
+
+        if (
+            deletingId === null ||
+            deletingId === undefined
+        ) {
+
+            return;
+        }
+
+
+        const id =
+            deletingId;
+
+
+        if (confirmDelete) {
+
+            confirmDelete.disabled =
+                true;
+
+
+            confirmDelete.textContent =
+                "Deleting...";
+        }
+
+
+        try {
+
+            /*
+             * CORRECT:
+             *
+             * FinanceAPI.budgets.delete(id)
+             */
+
+            await FinanceAPI.budgets.delete(
+                id
+            );
+
+
+            closeConfirm();
+
+
+            showToast(
+                "Budget deleted successfully."
+            );
+
+
+            await loadBudgets();
+
+
+            updateSummary();
+
+
+            renderBudgets();
+
+        } catch (error) {
+
+            console.error(
+                "Budget deletion failed:",
+                error
+            );
+
+
+            showToast(
+                getErrorMessage(
+                    error
+                ),
+                "error"
+            );
+
+        } finally {
+
+            if (confirmDelete) {
+
+                confirmDelete.disabled =
+                    false;
+
+
+                confirmDelete.textContent =
+                    "Delete";
+            }
+        }
     }
 
-    if (confirmDelete) {
-      confirmDelete.disabled = true;
 
-      confirmDelete.textContent = "Deleting...";
-    }
-
-    try {
-      /*
-       * THIS IS THE IMPORTANT FIX.
-       *
-       * WRONG:
-       * /api/budgets/1
-       *
-       * CORRECT:
-       * /budgets/1
-       *
-       * api.js adds /api automatically.
-       */
-
-      await apiDelete("/budgets/" + encodeURIComponent(String(deletingId)));
-
-      closeConfirm();
-
-      showToast("Budget deleted successfully.");
-
-      await loadBudgets();
-
-      updateSummary();
-
-      renderBudgets();
-    } catch (error) {
-      console.error("Budget deletion failed:", error);
-
-      showToast(getErrorMessage(error), "error");
-    } finally {
-      if (confirmDelete) {
-        confirmDelete.disabled = false;
-
-        confirmDelete.textContent = "Delete";
-      }
-    }
-  }
-
-  /* =========================================================
+    /* =========================================================
        FILTERS
     ========================================================= */
 
-  function clearFiltersHandler() {
-    if (searchInput) {
-      searchInput.value = "";
+    function clearFiltersHandler() {
+
+        if (searchInput) {
+
+            searchInput.value = "";
+        }
+
+
+        if (periodFilter) {
+
+            periodFilter.value =
+                "all";
+        }
+
+
+        renderBudgets();
     }
 
-    if (periodFilter) {
-      periodFilter.value = "all";
-    }
 
-    renderBudgets();
-  }
-
-  /* =========================================================
+    /* =========================================================
        PERIOD
     ========================================================= */
 
-  function normalizePeriod(value) {
-    return String(value || "")
-      .trim()
-      .toUpperCase()
-      .replace(/[\s-]+/g, "_");
-  }
+    function normalizePeriod(
+        value
+    ) {
 
-  function formatPeriod(period) {
-    const names = {
-      MONTHLY: "Monthly",
+        return String(
+            value || ""
+        )
+        .trim()
+        .toUpperCase()
+        .replace(
+            /[\s-]+/g,
+            "_"
+        );
+    }
 
-      WEEKLY: "Weekly",
 
-      YEARLY: "Yearly",
-    };
+    function formatPeriod(
+        period
+    ) {
 
-    return names[period] || String(period || "").replace(/_/g, " ");
-  }
+        const names = {
 
-  /* =========================================================
+            MONTHLY:
+                "Monthly",
+
+            WEEKLY:
+                "Weekly",
+
+            YEARLY:
+                "Yearly",
+
+            DAILY:
+                "Daily"
+        };
+
+
+        return (
+            names[period] ||
+            String(
+                period || ""
+            )
+            .replace(
+                /_/g,
+                " "
+            )
+        );
+    }
+
+
+    /* =========================================================
        CURRENCY
     ========================================================= */
 
-  function formatCurrency(amount) {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
+    function formatCurrency(
+        amount
+    ) {
 
-      currency: "INR",
+        return new Intl.NumberFormat(
+            "en-IN",
+            {
+                style: "currency",
 
-      minimumFractionDigits: 2,
+                currency: "INR",
 
-      maximumFractionDigits: 2,
-    }).format(Number(amount) || 0);
-  }
+                minimumFractionDigits: 2,
 
-  /* =========================================================
+                maximumFractionDigits: 2
+            }
+        ).format(
+            Number(amount) || 0
+        );
+    }
+
+
+    /* =========================================================
        LOADING
     ========================================================= */
 
-  function showLoading() {
-    if (!budgetGrid) {
-      return;
-    }
+    function showLoading() {
 
-    budgetGrid.style.display = "grid";
+        if (!budgetGrid) {
 
-    emptyState?.classList.remove("show");
+            return;
+        }
 
-    budgetGrid.innerHTML = `
+
+        budgetGrid.style.display =
+            "grid";
+
+
+        emptyState?.classList.remove(
+            "show"
+        );
+
+
+        budgetGrid.innerHTML = `
 
             <div class="loading-state">
 
@@ -1109,100 +2011,278 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
 
         `;
-  }
+    }
 
-  /* =========================================================
+
+    function showLoadError(
+        error
+    ) {
+
+        if (!budgetGrid) {
+
+            return;
+        }
+
+
+        budgetGrid.style.display =
+            "grid";
+
+
+        emptyState?.classList.remove(
+            "show"
+        );
+
+
+        budgetGrid.innerHTML = `
+
+            <div class="loading-state">
+
+                <i class="fa-solid fa-triangle-exclamation"></i>
+
+                Unable to load budgets.
+
+            </div>
+
+        `;
+
+
+        if (resultText) {
+
+            resultText.textContent =
+                "Unable to load budgets";
+        }
+
+
+        showToast(
+            getErrorMessage(error),
+            "error"
+        );
+    }
+
+
+    /* =========================================================
        MODAL MESSAGE
     ========================================================= */
 
-  function showModalMessage(message) {
-    if (!modalMessage) {
-      return;
+    function showModalMessage(
+        message
+    ) {
+
+        if (!modalMessage) {
+
+            return;
+        }
+
+
+        modalMessage.textContent =
+            message;
+
+
+        modalMessage.classList.add(
+            "show"
+        );
     }
 
-    modalMessage.textContent = message;
 
-    modalMessage.classList.add("show");
-  }
+    function hideModalMessage() {
 
-  function hideModalMessage() {
-    if (!modalMessage) {
-      return;
+        if (!modalMessage) {
+
+            return;
+        }
+
+
+        modalMessage.textContent =
+            "";
+
+
+        modalMessage.classList.remove(
+            "show"
+        );
     }
 
-    modalMessage.textContent = "";
 
-    modalMessage.classList.remove("show");
-  }
-
-  /* =========================================================
+    /* =========================================================
        TOAST
     ========================================================= */
 
-  function showToast(message, type = "success") {
-    if (!toast) {
-      return;
+    function showToast(
+        message,
+        type = "success"
+    ) {
+
+        if (!toast) {
+
+            return;
+        }
+
+
+        clearTimeout(
+            toastTimer
+        );
+
+
+        if (toastMessage) {
+
+            toastMessage.textContent =
+                message;
+        }
+
+
+        if (toastIcon) {
+
+            if (
+                type === "error"
+            ) {
+
+                toastIcon.className =
+                    "fa-solid fa-circle-exclamation";
+
+                toastIcon.style.color =
+                    "#f87171";
+
+            } else {
+
+                toastIcon.className =
+                    "fa-solid fa-circle-check";
+
+                toastIcon.style.color =
+                    "#4ade80";
+            }
+        }
+
+
+        toast.classList.add(
+            "show"
+        );
+
+
+        toastTimer =
+            setTimeout(
+                () => {
+
+                    toast.classList.remove(
+                        "show"
+                    );
+
+                },
+                3200
+            );
     }
 
-    clearTimeout(toastTimer);
 
-    if (toastMessage) {
-      toastMessage.textContent = message;
-    }
-
-    if (toastIcon) {
-      if (type === "error") {
-        toastIcon.className = "fa-solid fa-circle-exclamation";
-
-        toastIcon.style.color = "#f87171";
-      } else {
-        toastIcon.className = "fa-solid fa-circle-check";
-
-        toastIcon.style.color = "#4ade80";
-      }
-    }
-
-    toast.classList.add("show");
-
-    toastTimer = setTimeout(() => {
-      toast.classList.remove("show");
-    }, 3200);
-  }
-
-  /* =========================================================
+    /* =========================================================
        ERROR MESSAGE
     ========================================================= */
 
-  function getErrorMessage(error) {
-    return error?.message || "Something went wrong. Please try again.";
-  }
+    function getErrorMessage(
+        error
+    ) {
 
-  /* =========================================================
+        if (
+            error?.message
+        ) {
+
+            return error.message;
+        }
+
+
+        return (
+            "Something went wrong. Please try again."
+        );
+    }
+
+
+    /* =========================================================
        ESCAPE HTML
     ========================================================= */
 
-  function escapeHtml(value) {
-    return String(value ?? "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
+    function escapeHtml(
+        value
+    ) {
 
-  /* =========================================================
+        return String(
+            value ?? ""
+        )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+    }
+
+
+    /* =========================================================
        LOGOUT
+       
+       Uses the current FinanceAPI.
     ========================================================= */
 
-  async function handleLogout() {
-    try {
-      if (typeof logoutUser === "function") {
-        await logoutUser();
-      }
-    } catch (error) {
-      console.warn("Logout error:", error);
-    } finally {
-      window.location.href = "login.html";
+    async function handleLogout() {
+
+        try {
+
+            if (
+                typeof FinanceAPI !==
+                "undefined" &&
+                FinanceAPI.auth &&
+                typeof FinanceAPI.auth.logout ===
+                "function"
+            ) {
+
+                await FinanceAPI.auth.logout();
+            }
+
+        } catch (error) {
+
+            console.warn(
+                "Logout API request failed.",
+                error
+            );
+
+        } finally {
+
+            try {
+
+                localStorage.removeItem(
+                    "financeUser"
+                );
+
+                localStorage.removeItem(
+                    "user"
+                );
+
+                localStorage.removeItem(
+                    "loggedIn"
+                );
+
+            } catch (error) {
+
+                console.warn(
+                    "Local logout cleanup failed.",
+                    error
+                );
+            }
+
+
+            window.location.href =
+                "login.html";
+        }
     }
-  }
+
 });

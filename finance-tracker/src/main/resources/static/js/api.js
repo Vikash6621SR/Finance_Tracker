@@ -119,18 +119,6 @@ const FinanceAPI = {
             );
         }
     },
-    
-
-    async me() {
-
-    return await apiRequest(
-        "/auth/me",
-        {
-            method: "GET"
-        }
-    );
-},
-
 
     /*
     =====================================================

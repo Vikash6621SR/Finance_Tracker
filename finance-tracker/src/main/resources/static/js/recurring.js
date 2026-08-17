@@ -1,119 +1,43 @@
 "use strict";
 
-document.addEventListener("DOMContentLoaded", () => {
-  /* =====================================================
-       ELEMENTS
-     ===================================================== */
 
-  const sidebar = document.getElementById("sidebar");
-  const sidebarOverlay = document.getElementById("sidebarOverlay");
-  const menuButton = document.getElementById("menuButton");
-  const closeSidebar = document.getElementById("closeSidebar");
+/* =====================================================
+   FINANCE TRACKER
+   RECURRING TRANSACTIONS
+   ===================================================== */
 
-  const logoutButton = document.getElementById("logoutButton");
-  const refreshButton = document.getElementById("refreshButton");
 
-  const userName = document.getElementById("userName");
-  const userEmail = document.getElementById("userEmail");
-  const userAvatar = document.getElementById("userAvatar");
+/* =====================================================
+   STATE
+===================================================== */
 
-  const totalRecurring = document.getElementById("totalRecurring");
-  const activeRecurring = document.getElementById("activeRecurring");
-  const pausedRecurring = document.getElementById("pausedRecurring");
-  const totalAmount = document.getElementById("totalAmount");
+let recurringTransactions = [];
 
-  const searchInput = document.getElementById("searchInput");
-  const typeFilter = document.getElementById("typeFilter");
-  const statusFilter = document.getElementById("statusFilter");
-  const clearFilters = document.getElementById("clearFilters");
+let editingId = null;
 
-  const recurringGrid = document.getElementById("recurringGrid");
-  const emptyState = document.getElementById("emptyState");
-  const resultText = document.getElementById("resultText");
+let deletingId = null;
 
-  const addRecurringButton = document.getElementById("addRecurringButton");
+let toastTimer = null;
 
-  const panelAddButton = document.getElementById("panelAddButton");
 
-  const emptyAddButton = document.getElementById("emptyAddButton");
+/* =====================================================
+   INITIALIZATION
+===================================================== */
 
-  const recurringModal = document.getElementById("recurringModal");
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-  const modalTitle = document.getElementById("modalTitle");
+        initializeRecurringPage();
 
-  const modalClose = document.getElementById("modalClose");
-
-  const cancelButton = document.getElementById("cancelButton");
-
-  const modalMessage = document.getElementById("modalMessage");
-
-  const recurringForm = document.getElementById("recurringForm");
-
-  const recurringId = document.getElementById("recurringId");
-
-  const recurringName = document.getElementById("recurringName");
-
-  const recurringType = document.getElementById("recurringType");
-
-  const recurringCategory = document.getElementById("recurringCategory");
-
-  const recurringAmount = document.getElementById("recurringAmount");
-
-  const recurringFrequency = document.getElementById("recurringFrequency");
-
-  const recurringStartDate = document.getElementById("recurringStartDate");
-
-  const recurringDescription = document.getElementById("recurringDescription");
-
-  const recurringActive = document.getElementById("recurringActive");
-
-  const saveButton = document.getElementById("saveButton");
-
-  const confirmOverlay = document.getElementById("confirmOverlay");
-
-  const confirmCancel = document.getElementById("confirmCancel");
-
-  const confirmDelete = document.getElementById("confirmDelete");
-
-  const toast = document.getElementById("toast");
-
-  const toastIcon = document.getElementById("toastIcon");
-
-  const toastMessage = document.getElementById("toastMessage");
-
-  /* =====================================================
-       STATE
-     ===================================================== */
-
-  let recurringTransactions = [];
-
-  let editingId = null;
-
-  let deletingId = null;
-
-  let toastTimer = null;
-
-  /* =====================================================
-       API CHECK
-     ===================================================== */
-
-  if (typeof apiGet !== "function") {
-    console.error("api.js is required.");
-
-    if (typeof showToast === "function") {
-      showToast("api.js is not loaded.", "error");
     }
+);
 
-    return;
-  }
 
-  /* =====================================================
-       INIT
-     ===================================================== */
+async function initializeRecurringPage() {
 
-  init();
+    setupElements();
 
-  async function init() {
     setupEvents();
 
     setDefaultDate();
@@ -121,1251 +45,2751 @@ document.addEventListener("DOMContentLoaded", () => {
     await loadUser();
 
     await loadRecurring();
-  }
 
-  /* =====================================================
-       EVENTS
-     ===================================================== */
+}
 
-  function setupEvents() {
-    menuButton?.addEventListener("click", openSidebar);
 
-    closeSidebar?.addEventListener("click", closeSidebarMenu);
+/* =====================================================
+   ELEMENTS
+===================================================== */
 
-    sidebarOverlay?.addEventListener("click", closeSidebarMenu);
+let sidebar;
+let sidebarOverlay;
+let menuButton;
+let closeSidebarButton;
 
-    window.addEventListener("resize", () => {
-      if (window.innerWidth > 950) {
-        closeSidebarMenu();
-      }
-    });
+let logoutButton;
+let refreshButton;
 
-    logoutButton?.addEventListener("click", handleLogout);
+let userName;
+let userEmail;
+let userAvatar;
 
-    refreshButton?.addEventListener("click", refreshData);
+let totalRecurring;
+let activeRecurring;
+let pausedRecurring;
+let totalAmount;
 
-    addRecurringButton?.addEventListener("click", openAddModal);
+let searchInput;
+let typeFilter;
+let statusFilter;
+let clearFilters;
+
+let recurringGrid;
+let emptyState;
+let resultText;
+
+let addRecurringButton;
+let panelAddButton;
+let emptyAddButton;
 
-    panelAddButton?.addEventListener("click", openAddModal);
+let recurringModal;
+let modalTitle;
+let modalClose;
+let cancelButton;
+let modalMessage;
 
-    emptyAddButton?.addEventListener("click", openAddModal);
+let recurringForm;
+let recurringId;
+let recurringName;
+let recurringType;
+let recurringCategory;
+let recurringAmount;
+let recurringFrequency;
+let recurringStartDate;
+let recurringDescription;
+let recurringActive;
+
+let saveButton;
+
+let confirmOverlay;
+let confirmCancel;
+let confirmDelete;
 
-    modalClose?.addEventListener("click", closeModal);
+let toast;
+let toastIcon;
+let toastMessage;
 
-    cancelButton?.addEventListener("click", closeModal);
-
-    recurringModal?.addEventListener("click", (event) => {
-      if (event.target === recurringModal) {
-        closeModal();
-      }
-    });
-
-    recurringForm?.addEventListener("submit", handleSubmit);
-
-    searchInput?.addEventListener("input", renderRecurring);
-
-    typeFilter?.addEventListener("change", renderRecurring);
-
-    statusFilter?.addEventListener("change", renderRecurring);
-
-    clearFilters?.addEventListener("click", () => {
-      if (searchInput) {
-        searchInput.value = "";
-      }
-
-      if (typeFilter) {
-        typeFilter.value = "all";
-      }
-
-      if (statusFilter) {
-        statusFilter.value = "all";
-      }
-
-      renderRecurring();
-    });
-
-    confirmCancel?.addEventListener("click", closeConfirm);
-
-    confirmDelete?.addEventListener("click", deleteRecurring);
-
-    confirmOverlay?.addEventListener("click", (event) => {
-      if (event.target === confirmOverlay) {
-        closeConfirm();
-      }
-    });
-
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        closeModal();
-
-        closeConfirm();
-
-        closeSidebarMenu();
-      }
-    });
-  }
-
-  /* =====================================================
-       SIDEBAR
-     ===================================================== */
-
-  function openSidebar() {
-    if (!sidebar) {
-      return;
-    }
-
-    sidebar.classList.add("open");
-
-    if (sidebarOverlay) {
-      sidebarOverlay.classList.add("active");
-    }
-
-    if (menuButton) {
-      menuButton.setAttribute("aria-expanded", "true");
-    }
-
-    document.body.style.overflow = "hidden";
-  }
-
-  function closeSidebarMenu() {
-    if (sidebar) {
-      sidebar.classList.remove("open");
-    }
-
-    if (sidebarOverlay) {
-      sidebarOverlay.classList.remove("active");
-    }
-
-    if (menuButton) {
-      menuButton.setAttribute("aria-expanded", "false");
-    }
-
-    document.body.style.overflow = "";
-  }
-
-  /* =====================================================
-       USER
-     ===================================================== */
-
-  async function loadUser() {
-    if (typeof getCurrentUser !== "function") {
-      return;
-    }
-
-    try {
-      const response = await getCurrentUser();
-
-      const user = response?.user || response?.data || response;
-
-      if (!user) {
-        return;
-      }
-
-      const name =
-        user.name || user.fullName || user.username || user.email || "User";
-
-      const email = user.email || "Finance Account";
-
-      if (userName) {
-        userName.textContent = name;
-      }
-
-      if (userEmail) {
-        userEmail.textContent = email;
-      }
-
-      if (userAvatar) {
-        userAvatar.textContent = getInitials(name);
-      }
-    } catch (error) {
-      console.warn("Could not load user.", error);
-    }
-  }
-
-  function getInitials(name) {
-    const parts = String(name).trim().split(/\s+/);
-
-    if (parts.length === 1) {
-      return parts[0].substring(0, 2).toUpperCase();
-    }
-
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-  }
-
-  /* =====================================================
-       DEFAULT DATE
-     ===================================================== */
-
-  function setDefaultDate() {
-    if (recurringStartDate && !recurringStartDate.value) {
-      const today = new Date();
-
-      recurringStartDate.value = today.toISOString().split("T")[0];
-    }
-  }
-
-  /* =====================================================
-       LOAD
-     ===================================================== */
-
-  async function loadRecurring() {
-    showLoading();
-
-    try {
-      /*
-       * IMPORTANT:
-       * api.js already contains /api
-       *
-       * CORRECT:
-       * apiGet("/recurring")
-       *
-       * RESULT:
-       * http://localhost:8080/api/recurring
-       */
-
-      const response = await apiGet("/recurring");
-
-      recurringTransactions = extractArray(response, [
-        "recurringTransactions",
-        "recurring",
-        "data",
-        "content",
-      ])
-        .map(normalizeRecurring)
-        .filter(Boolean);
-
-      updateSummary();
-
-      renderRecurring();
-    } catch (error) {
-      console.error("Could not load recurring transactions:", error);
-
-      recurringTransactions = [];
-
-      updateSummary();
-
-      if (recurringGrid) {
-        recurringGrid.innerHTML = `
-
-          <div class="loading-state">
-
-            <i class="fa-solid fa-triangle-exclamation"></i>
-
-            Unable to load recurring transactions.
-
-          </div>
-
-        `;
-      }
-
-      if (resultText) {
-        resultText.textContent = "Unable to load recurring transactions";
-      }
-    }
-  }
-
-  /* =====================================================
-       NORMALIZE
-     ===================================================== */
-
-  function normalizeRecurring(item) {
-    if (!item || typeof item !== "object") {
-      return null;
-    }
-
-    return {
-      id:
-        item.id ??
-        item.recurringId ??
-        item.recurringTransactionId ??
-        item.recurring_id,
-
-      name:
-        item.name ?? item.title ?? item.description ?? "Recurring Transaction",
-
-      type: normalizeType(item.type ?? item.transactionType ?? "expense"),
-
-      category: item.category ?? item.categoryName ?? "Other",
-
-      amount: Number(item.amount ?? 0) || 0,
-
-      frequency: normalizeFrequency(
-        item.frequency ?? item.interval ?? item.period ?? "MONTHLY",
-      ),
-
-      nextDate:
-        item.nextDate ??
-        item.startDate ??
-        item.date ??
-        item.nextPaymentDate ??
-        "",
-
-      description: item.description ?? item.notes ?? "",
-
-      active: normalizeActive(
-        item.active ?? item.isActive ?? item.enabled ?? item.status,
-      ),
-    };
-  }
-
-  /* =====================================================
-       ARRAY
-     ===================================================== */
-
-  function extractArray(response, keys) {
-    if (Array.isArray(response)) {
-      return response;
-    }
-
-    if (response && typeof response === "object") {
-      for (const key of keys) {
-        if (Array.isArray(response[key])) {
-          return response[key];
+
+function setupElements() {
+
+    sidebar =
+        document.getElementById(
+            "sidebar"
+        );
+
+    sidebarOverlay =
+        document.getElementById(
+            "sidebarOverlay"
+        );
+
+    menuButton =
+        document.getElementById(
+            "menuButton"
+        );
+
+    closeSidebarButton =
+        document.getElementById(
+            "closeSidebar"
+        );
+
+
+    logoutButton =
+        document.getElementById(
+            "logoutButton"
+        );
+
+    refreshButton =
+        document.getElementById(
+            "refreshButton"
+        );
+
+
+    userName =
+        document.getElementById(
+            "userName"
+        );
+
+    userEmail =
+        document.getElementById(
+            "userEmail"
+        );
+
+    userAvatar =
+        document.getElementById(
+            "userAvatar"
+        );
+
+
+    totalRecurring =
+        document.getElementById(
+            "totalRecurring"
+        );
+
+    activeRecurring =
+        document.getElementById(
+            "activeRecurring"
+        );
+
+    pausedRecurring =
+        document.getElementById(
+            "pausedRecurring"
+        );
+
+    totalAmount =
+        document.getElementById(
+            "totalAmount"
+        );
+
+
+    searchInput =
+        document.getElementById(
+            "searchInput"
+        );
+
+    typeFilter =
+        document.getElementById(
+            "typeFilter"
+        );
+
+    statusFilter =
+        document.getElementById(
+            "statusFilter"
+        );
+
+    clearFilters =
+        document.getElementById(
+            "clearFilters"
+        );
+
+
+    recurringGrid =
+        document.getElementById(
+            "recurringGrid"
+        );
+
+    emptyState =
+        document.getElementById(
+            "emptyState"
+        );
+
+    resultText =
+        document.getElementById(
+            "resultText"
+        );
+
+
+    addRecurringButton =
+        document.getElementById(
+            "addRecurringButton"
+        );
+
+    panelAddButton =
+        document.getElementById(
+            "panelAddButton"
+        );
+
+    emptyAddButton =
+        document.getElementById(
+            "emptyAddButton"
+        );
+
+
+    recurringModal =
+        document.getElementById(
+            "recurringModal"
+        );
+
+    modalTitle =
+        document.getElementById(
+            "modalTitle"
+        );
+
+    modalClose =
+        document.getElementById(
+            "modalClose"
+        );
+
+    cancelButton =
+        document.getElementById(
+            "cancelButton"
+        );
+
+    modalMessage =
+        document.getElementById(
+            "modalMessage"
+        );
+
+
+    recurringForm =
+        document.getElementById(
+            "recurringForm"
+        );
+
+    recurringId =
+        document.getElementById(
+            "recurringId"
+        );
+
+    recurringName =
+        document.getElementById(
+            "recurringName"
+        );
+
+    recurringType =
+        document.getElementById(
+            "recurringType"
+        );
+
+    recurringCategory =
+        document.getElementById(
+            "recurringCategory"
+        );
+
+    recurringAmount =
+        document.getElementById(
+            "recurringAmount"
+        );
+
+    recurringFrequency =
+        document.getElementById(
+            "recurringFrequency"
+        );
+
+    recurringStartDate =
+        document.getElementById(
+            "recurringStartDate"
+        );
+
+    recurringDescription =
+        document.getElementById(
+            "recurringDescription"
+        );
+
+    recurringActive =
+        document.getElementById(
+            "recurringActive"
+        );
+
+    saveButton =
+        document.getElementById(
+            "saveButton"
+        );
+
+
+    confirmOverlay =
+        document.getElementById(
+            "confirmOverlay"
+        );
+
+    confirmCancel =
+        document.getElementById(
+            "confirmCancel"
+        );
+
+    confirmDelete =
+        document.getElementById(
+            "confirmDelete"
+        );
+
+
+    toast =
+        document.getElementById(
+            "toast"
+        );
+
+    toastIcon =
+        document.getElementById(
+            "toastIcon"
+        );
+
+    toastMessage =
+        document.getElementById(
+            "toastMessage"
+        );
+}
+
+
+/* =====================================================
+   API CHECK
+===================================================== */
+
+function isFinanceAPIReady() {
+
+    return (
+        window.FinanceAPI &&
+        FinanceAPI.recurring &&
+        typeof FinanceAPI.recurring.getAll ===
+            "function"
+    );
+}
+
+
+/* =====================================================
+   EVENTS
+===================================================== */
+
+function setupEvents() {
+
+    menuButton?.addEventListener(
+        "click",
+        openSidebar
+    );
+
+
+    closeSidebarButton?.addEventListener(
+        "click",
+        closeSidebar
+    );
+
+
+    sidebarOverlay?.addEventListener(
+        "click",
+        closeSidebar
+    );
+
+
+    window.addEventListener(
+        "resize",
+        function () {
+
+            if (
+                window.innerWidth >
+                950
+            ) {
+
+                closeSidebar();
+            }
         }
-      }
+    );
+
+
+    logoutButton?.addEventListener(
+        "click",
+        handleLogout
+    );
+
+
+    refreshButton?.addEventListener(
+        "click",
+        refreshData
+    );
+
+
+    addRecurringButton?.addEventListener(
+        "click",
+        openAddModal
+    );
+
+
+    panelAddButton?.addEventListener(
+        "click",
+        openAddModal
+    );
+
+
+    emptyAddButton?.addEventListener(
+        "click",
+        openAddModal
+    );
+
+
+    modalClose?.addEventListener(
+        "click",
+        closeModal
+    );
+
+
+    cancelButton?.addEventListener(
+        "click",
+        closeModal
+    );
+
+
+    recurringModal?.addEventListener(
+        "click",
+        function (event) {
+
+            if (
+                event.target ===
+                recurringModal
+            ) {
+
+                closeModal();
+            }
+        }
+    );
+
+
+    recurringForm?.addEventListener(
+        "submit",
+        handleSubmit
+    );
+
+
+    searchInput?.addEventListener(
+        "input",
+        renderRecurring
+    );
+
+
+    typeFilter?.addEventListener(
+        "change",
+        renderRecurring
+    );
+
+
+    statusFilter?.addEventListener(
+        "change",
+        renderRecurring
+    );
+
+
+    clearFilters?.addEventListener(
+        "click",
+        function () {
+
+            if (searchInput) {
+
+                searchInput.value = "";
+            }
+
+
+            if (typeFilter) {
+
+                typeFilter.value =
+                    "all";
+            }
+
+
+            if (statusFilter) {
+
+                statusFilter.value =
+                    "all";
+            }
+
+
+            renderRecurring();
+        }
+    );
+
+
+    confirmCancel?.addEventListener(
+        "click",
+        closeConfirm
+    );
+
+
+    confirmDelete?.addEventListener(
+        "click",
+        deleteRecurring
+    );
+
+
+    confirmOverlay?.addEventListener(
+        "click",
+        function (event) {
+
+            if (
+                event.target ===
+                confirmOverlay
+            ) {
+
+                closeConfirm();
+            }
+        }
+    );
+
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key ===
+                "Escape"
+            ) {
+
+                closeModal();
+
+                closeConfirm();
+
+                closeSidebar();
+            }
+        }
+    );
+}
+
+
+/* =====================================================
+   SIDEBAR
+===================================================== */
+
+function openSidebar() {
+
+    if (!sidebar) {
+
+        return;
     }
 
-    return [];
-  }
 
-  /* =====================================================
-       NORMALIZERS
-     ===================================================== */
+    sidebar.classList.add(
+        "open"
+    );
 
-  function normalizeType(value) {
-    const type = String(value || "")
-      .trim()
-      .toLowerCase();
 
-    if (type === "income" || type === "credit") {
-      return "income";
+    sidebarOverlay?.classList.add(
+        "active"
+    );
+
+
+    menuButton?.setAttribute(
+        "aria-expanded",
+        "true"
+    );
+
+
+    document.body.style.overflow =
+        "hidden";
+}
+
+
+function closeSidebar() {
+
+    sidebar?.classList.remove(
+        "open"
+    );
+
+
+    sidebarOverlay?.classList.remove(
+        "active"
+    );
+
+
+    menuButton?.setAttribute(
+        "aria-expanded",
+        "false"
+    );
+
+
+    document.body.style.overflow =
+        "";
+}
+
+
+/* =====================================================
+   USER
+===================================================== */
+
+async function loadUser() {
+
+    try {
+
+        /*
+         * Profile API is used here.
+         */
+
+        if (
+            !window.FinanceAPI ||
+            !FinanceAPI.profile ||
+            typeof FinanceAPI.profile.get !==
+                "function"
+        ) {
+
+            return;
+        }
+
+
+        const response =
+            await FinanceAPI.profile.get();
+
+
+        const user =
+            response?.user ||
+            response?.data ||
+            response;
+
+
+        if (!user) {
+
+            return;
+        }
+
+
+        const name =
+            user.name ||
+            user.fullName ||
+            user.username ||
+            user.email ||
+            "User";
+
+
+        const email =
+            user.email ||
+            "Finance Account";
+
+
+        if (userName) {
+
+            userName.textContent =
+                name;
+        }
+
+
+        if (userEmail) {
+
+            userEmail.textContent =
+                email;
+        }
+
+
+        if (userAvatar) {
+
+            userAvatar.textContent =
+                getInitials(name);
+        }
+
+    } catch (error) {
+
+        console.warn(
+            "Could not load user.",
+            error
+        );
     }
+}
 
-    return "expense";
-  }
 
-  function normalizeFrequency(value) {
-    const frequency = String(value || "")
-      .trim()
-      .toUpperCase()
-      .replace(/[\s-]+/g, "_");
+function getInitials(
+    name
+) {
 
-    const allowed = ["DAILY", "WEEKLY", "MONTHLY", "YEARLY"];
+    const parts =
+        String(name)
+            .trim()
+            .split(/\s+/);
 
-    return allowed.includes(frequency) ? frequency : "MONTHLY";
-  }
-
-  function normalizeActive(value) {
-    if (typeof value === "boolean") {
-      return value;
-    }
-
-    if (typeof value === "number") {
-      return value !== 0;
-    }
-
-    const text = String(value ?? "")
-      .trim()
-      .toLowerCase();
 
     if (
-      text === "paused" ||
-      text === "inactive" ||
-      text === "disabled" ||
-      text === "false"
+        parts.length ===
+        1
     ) {
-      return false;
+
+        return parts[0]
+            .substring(0, 2)
+            .toUpperCase();
     }
+
+
+    return (
+        parts[0][0] +
+        parts[
+            parts.length - 1
+        ][0]
+    ).toUpperCase();
+}
+
+
+/* =====================================================
+   DEFAULT DATE
+===================================================== */
+
+function setDefaultDate() {
+
+    if (
+        recurringStartDate &&
+        !recurringStartDate.value
+    ) {
+
+        const today =
+            new Date();
+
+
+        recurringStartDate.value =
+            today
+                .toISOString()
+                .split("T")[0];
+    }
+}
+
+
+/* =====================================================
+   LOAD RECURRING
+===================================================== */
+
+async function loadRecurring() {
+
+    showLoading();
+
+
+    try {
+
+        if (
+            !isFinanceAPIReady()
+        ) {
+
+            throw new Error(
+                "FinanceAPI.recurring is not available. Check api.js."
+            );
+        }
+
+
+        /*
+         * CORRECT API CALL
+         *
+         * GET /api/recurring
+         */
+
+        const response =
+            await FinanceAPI
+                .recurring
+                .getAll();
+
+
+        const data =
+            extractArray(
+                response,
+                [
+                    "recurringTransactions",
+                    "recurring",
+                    "data",
+                    "content"
+                ]
+            );
+
+
+        recurringTransactions =
+            data
+                .map(
+                    normalizeRecurring
+                )
+                .filter(Boolean);
+
+
+        updateSummary();
+
+        renderRecurring();
+
+    } catch (error) {
+
+        console.error(
+            "Could not load recurring transactions:",
+            error
+        );
+
+
+        recurringTransactions =
+            [];
+
+
+        updateSummary();
+
+
+        if (recurringGrid) {
+
+            recurringGrid.innerHTML = `
+
+                <div class="loading-state">
+
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+
+                    <strong>
+                        Unable to load recurring transactions
+                    </strong>
+
+                    <span>
+                        ${escapeHtml(
+                            getErrorMessage(
+                                error
+                            )
+                        )}
+                    </span>
+
+                    <button
+                        type="button"
+                        class="panel-add"
+                        onclick="loadRecurring()"
+                    >
+                        Try Again
+                    </button>
+
+                </div>
+
+            `;
+        }
+
+
+        if (resultText) {
+
+            resultText.textContent =
+                "Unable to load recurring transactions";
+        }
+
+
+        showToast(
+            getErrorMessage(error),
+            "error"
+        );
+    }
+}
+
+
+/* =====================================================
+   NORMALIZE
+===================================================== */
+
+function normalizeRecurring(
+    item
+) {
+
+    if (
+        !item ||
+        typeof item !==
+            "object"
+    ) {
+
+        return null;
+    }
+
+
+    return {
+
+        id:
+            item.id ??
+            item.recurringId ??
+            item.recurringTransactionId ??
+            item.recurring_id ??
+            null,
+
+
+        name:
+            item.name ??
+            item.title ??
+            item.description ??
+            "Recurring Transaction",
+
+
+        type:
+            normalizeType(
+                item.type ??
+                item.transactionType ??
+                "expense"
+            ),
+
+
+        category:
+            item.category ??
+            item.categoryName ??
+            "Other",
+
+
+        amount:
+            Number(
+                item.amount ??
+                0
+            ) || 0,
+
+
+        frequency:
+            normalizeFrequency(
+                item.frequency ??
+                item.interval ??
+                item.period ??
+                "MONTHLY"
+            ),
+
+
+        nextDate:
+            item.nextDate ??
+            item.startDate ??
+            item.date ??
+            item.nextPaymentDate ??
+            "",
+
+
+        description:
+            item.description ??
+            item.notes ??
+            "",
+
+
+        active:
+            normalizeActive(
+                item.active ??
+                item.isActive ??
+                item.enabled ??
+                item.status
+            )
+    };
+}
+
+
+/* =====================================================
+   ARRAY
+===================================================== */
+
+function extractArray(
+    response,
+    keys
+) {
+
+    if (
+        Array.isArray(
+            response
+        )
+    ) {
+
+        return response;
+    }
+
+
+    if (
+        response &&
+        typeof response ===
+            "object"
+    ) {
+
+        for (
+            const key of keys
+        ) {
+
+            if (
+                Array.isArray(
+                    response[key]
+                )
+            ) {
+
+                return response[key];
+            }
+        }
+    }
+
+
+    return [];
+}
+
+
+/* =====================================================
+   NORMALIZERS
+===================================================== */
+
+function normalizeType(
+    value
+) {
+
+    const type =
+        String(
+            value || ""
+        )
+        .trim()
+        .toLowerCase();
+
+
+    if (
+        type === "income" ||
+        type === "credit"
+    ) {
+
+        return "income";
+    }
+
+
+    return "expense";
+}
+
+
+function normalizeFrequency(
+    value
+) {
+
+    const frequency =
+        String(
+            value || ""
+        )
+        .trim()
+        .toUpperCase()
+        .replace(
+            /[\s-]+/g,
+            "_"
+        );
+
+
+    const allowed = [
+
+        "DAILY",
+
+        "WEEKLY",
+
+        "MONTHLY",
+
+        "YEARLY"
+    ];
+
+
+    return allowed.includes(
+        frequency
+    )
+        ? frequency
+        : "MONTHLY";
+}
+
+
+function normalizeActive(
+    value
+) {
+
+    if (
+        typeof value ===
+        "boolean"
+    ) {
+
+        return value;
+    }
+
+
+    if (
+        typeof value ===
+        "number"
+    ) {
+
+        return value !== 0;
+    }
+
+
+    const text =
+        String(
+            value ?? ""
+        )
+        .trim()
+        .toLowerCase();
+
+
+    if (
+
+        text === "paused" ||
+
+        text === "inactive" ||
+
+        text === "disabled" ||
+
+        text === "false"
+
+    ) {
+
+        return false;
+    }
+
 
     return true;
-  }
+}
 
-  /* =====================================================
-       SUMMARY
-     ===================================================== */
 
-  function updateSummary() {
-    const total = recurringTransactions.length;
+/* =====================================================
+   SUMMARY
+===================================================== */
 
-    const active = recurringTransactions.filter((item) => item.active).length;
+function updateSummary() {
 
-    const paused = total - active;
+    const total =
+        recurringTransactions.length;
 
-    const amount = recurringTransactions
-      .filter((item) => item.active)
-      .reduce((sum, item) => sum + Number(item.amount), 0);
+
+    const active =
+        recurringTransactions
+            .filter(
+                item => item.active
+            )
+            .length;
+
+
+    const paused =
+        total - active;
+
+
+    const amount =
+        recurringTransactions
+            .filter(
+                item => item.active
+            )
+            .reduce(
+                function (
+                    sum,
+                    item
+                ) {
+
+                    return (
+                        sum +
+                        Number(
+                            item.amount
+                        )
+                    );
+                },
+                0
+            );
+
 
     if (totalRecurring) {
-      totalRecurring.textContent = total;
+
+        totalRecurring.textContent =
+            total;
     }
+
 
     if (activeRecurring) {
-      activeRecurring.textContent = active;
+
+        activeRecurring.textContent =
+            active;
     }
+
 
     if (pausedRecurring) {
-      pausedRecurring.textContent = paused;
+
+        pausedRecurring.textContent =
+            paused;
     }
+
 
     if (totalAmount) {
-      totalAmount.textContent = formatCurrency(amount);
+
+        totalAmount.textContent =
+            formatCurrency(
+                amount
+            );
     }
-  }
+}
 
-  /* =====================================================
-       RENDER
-     ===================================================== */
 
-  function renderRecurring() {
+/* =====================================================
+   RENDER
+===================================================== */
+
+function renderRecurring() {
+
     if (!recurringGrid) {
-      return;
+
+        return;
     }
 
-    const search = String(searchInput?.value || "")
-      .trim()
-      .toLowerCase();
 
-    const type = typeFilter?.value || "all";
+    const search =
+        String(
+            searchInput?.value ||
+            ""
+        )
+        .trim()
+        .toLowerCase();
 
-    const status = statusFilter?.value || "all";
 
-    const filtered = recurringTransactions.filter((item) => {
-      const matchesSearch =
-        !search ||
-        item.name.toLowerCase().includes(search) ||
-        String(item.category).toLowerCase().includes(search) ||
-        String(item.description).toLowerCase().includes(search);
+    const type =
+        typeFilter?.value ||
+        "all";
 
-      const matchesType = type === "all" || item.type === type;
 
-      const matchesStatus =
-        status === "all" ||
-        (status === "active" && item.active) ||
-        (status === "paused" && !item.active);
+    const status =
+        statusFilter?.value ||
+        "all";
 
-      return matchesSearch && matchesType && matchesStatus;
-    });
 
-    recurringGrid.innerHTML = "";
+    const filtered =
+        recurringTransactions
+            .filter(
+                function (item) {
 
-    if (recurringTransactions.length === 0) {
-      recurringGrid.style.display = "none";
+                    const matchesSearch =
+                        !search ||
+                        item.name
+                            .toLowerCase()
+                            .includes(
+                                search
+                            ) ||
+                        String(
+                            item.category
+                        )
+                            .toLowerCase()
+                            .includes(
+                                search
+                            ) ||
+                        String(
+                            item.description
+                        )
+                            .toLowerCase()
+                            .includes(
+                                search
+                            );
 
-      emptyState?.classList.add("show");
 
-      if (resultText) {
-        resultText.textContent = "0 recurring transactions";
-      }
+                    const matchesType =
+                        type ===
+                            "all" ||
+                        item.type ===
+                            type;
 
-      return;
+
+                    const matchesStatus =
+                        status ===
+                            "all" ||
+                        (
+                            status ===
+                                "active" &&
+                            item.active
+                        ) ||
+                        (
+                            status ===
+                                "paused" &&
+                            !item.active
+                        );
+
+
+                    return (
+                        matchesSearch &&
+                        matchesType &&
+                        matchesStatus
+                    );
+                }
+            );
+
+
+    recurringGrid.innerHTML =
+        "";
+
+
+    if (
+        recurringTransactions.length ===
+        0
+    ) {
+
+        recurringGrid.style.display =
+            "none";
+
+
+        emptyState?.classList.add(
+            "show"
+        );
+
+
+        if (resultText) {
+
+            resultText.textContent =
+                "0 recurring transactions";
+        }
+
+
+        return;
     }
 
-    if (filtered.length === 0) {
-      recurringGrid.style.display = "none";
 
-      emptyState?.classList.add("show");
+    if (
+        filtered.length ===
+        0
+    ) {
 
-      const heading = emptyState?.querySelector("h3");
+        recurringGrid.style.display =
+            "none";
 
-      const paragraph = emptyState?.querySelector("p");
 
-      if (heading) {
-        heading.textContent = "No matching transactions";
-      }
+        emptyState?.classList.add(
+            "show"
+        );
 
-      if (paragraph) {
-        paragraph.textContent = "Try changing your search or filters.";
-      }
 
-      if (resultText) {
-        resultText.textContent = "0 matching transactions";
-      }
+        const heading =
+            emptyState?.querySelector(
+                "h3"
+            );
 
-      return;
+
+        const paragraph =
+            emptyState?.querySelector(
+                "p"
+            );
+
+
+        if (heading) {
+
+            heading.textContent =
+                "No matching transactions";
+        }
+
+
+        if (paragraph) {
+
+            paragraph.textContent =
+                "Try changing your search or filters.";
+        }
+
+
+        if (resultText) {
+
+            resultText.textContent =
+                "0 matching transactions";
+        }
+
+
+        return;
     }
 
-    recurringGrid.style.display = "grid";
 
-    emptyState?.classList.remove("show");
+    recurringGrid.style.display =
+        "grid";
 
-    const heading = emptyState?.querySelector("h3");
 
-    const paragraph = emptyState?.querySelector("p");
+    emptyState?.classList.remove(
+        "show"
+    );
+
+
+    const heading =
+        emptyState?.querySelector(
+            "h3"
+        );
+
+
+    const paragraph =
+        emptyState?.querySelector(
+            "p"
+        );
+
 
     if (heading) {
-      heading.textContent = "No recurring transactions yet";
+
+        heading.textContent =
+            "No recurring transactions yet";
     }
+
 
     if (paragraph) {
-      paragraph.textContent = "Add your first recurring income or expense.";
+
+        paragraph.textContent =
+            "Add your first recurring income or expense.";
     }
+
 
     if (resultText) {
-      resultText.textContent =
-        filtered.length +
-        (filtered.length === 1
-          ? " recurring transaction"
-          : " recurring transactions");
+
+        resultText.textContent =
+            filtered.length +
+            (
+                filtered.length ===
+                1
+                    ? " recurring transaction"
+                    : " recurring transactions"
+            );
     }
 
-    filtered.forEach((item) => {
-      recurringGrid.appendChild(createCard(item));
-    });
-  }
 
-  /* =====================================================
-       CARD
-     ===================================================== */
+    filtered.forEach(
+        function (item) {
 
-  function createCard(item) {
-    const card = document.createElement("article");
+            recurringGrid.appendChild(
+                createCard(item)
+            );
+        }
+    );
+}
 
-    card.className = "recurring-card";
 
-    const typeClass = item.type === "income" ? "income" : "expense";
+/* =====================================================
+   CARD
+===================================================== */
 
-    const sign = item.type === "income" ? "+" : "-";
+function createCard(
+    item
+) {
 
-    const statusText = item.active ? "Active" : "Paused";
+    const card =
+        document.createElement(
+            "article"
+        );
 
-    const statusClass = item.active ? "" : "paused";
+
+    card.className =
+        "recurring-card";
+
+
+    const typeClass =
+        item.type === "income"
+            ? "income"
+            : "expense";
+
+
+    const sign =
+        item.type === "income"
+            ? "+"
+            : "-";
+
+
+    const statusText =
+        item.active
+            ? "Active"
+            : "Paused";
+
+
+    const statusClass =
+        item.active
+            ? ""
+            : "paused";
+
 
     card.innerHTML = `
 
-      <div class="recurring-top">
+        <div class="recurring-top">
 
-        <div class="recurring-icon ${typeClass}">
+            <div class="recurring-icon ${typeClass}">
 
-          <i class="fa-solid fa-repeat"></i>
-
-        </div>
-
-        <div class="recurring-actions">
-
-          <button
-            class="recurring-action toggle"
-            type="button"
-            title="${item.active ? "Pause" : "Activate"}"
-          >
-
-            <i class="fa-solid ${item.active ? "fa-pause" : "fa-play"}"></i>
-
-          </button>
-
-          <button
-            class="recurring-action edit"
-            type="button"
-            title="Edit"
-          >
-
-            <i class="fa-solid fa-pen"></i>
-
-          </button>
-
-          <button
-            class="recurring-action delete"
-            type="button"
-            title="Delete"
-          >
-
-            <i class="fa-solid fa-trash"></i>
-
-          </button>
-
-        </div>
-
-      </div>
-
-      <h3 class="recurring-name">
-
-        ${escapeHtml(item.name)}
-
-      </h3>
-
-      <span class="recurring-category">
-
-        ${escapeHtml(item.category)}
-
-      </span>
-
-      <span class="recurring-status ${statusClass}">
-
-        ${statusText}
-
-      </span>
-
-      <div class="recurring-amount ${typeClass}">
-
-        ${sign}${formatCurrency(item.amount)}
-
-      </div>
-
-      <div class="recurring-frequency">
-
-        <i class="fa-solid fa-arrows-rotate"></i>
-
-        ${formatFrequency(item.frequency)}
-
-      </div>
-
-      ${
-        item.nextDate
-          ? `
-
-            <div class="recurring-next">
-
-              <i class="fa-regular fa-calendar"></i>
-
-              Next:
-              ${formatDate(item.nextDate)}
+                <i class="fa-solid fa-repeat"></i>
 
             </div>
 
-          `
-          : ""
-      }
 
-      <p class="recurring-description">
+            <div class="recurring-actions">
 
-        ${escapeHtml(item.description || "No description added.")}
+                <button
+                    class="recurring-action toggle"
+                    type="button"
+                    title="${
+                        item.active
+                            ? "Pause"
+                            : "Activate"
+                    }"
+                >
 
-      </p>
+                    <i class="fa-solid ${
+                        item.active
+                            ? "fa-pause"
+                            : "fa-play"
+                    }"></i>
+
+                </button>
+
+
+                <button
+                    class="recurring-action edit"
+                    type="button"
+                    title="Edit"
+                >
+
+                    <i class="fa-solid fa-pen"></i>
+
+                </button>
+
+
+                <button
+                    class="recurring-action delete"
+                    type="button"
+                    title="Delete"
+                >
+
+                    <i class="fa-solid fa-trash"></i>
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <h3 class="recurring-name">
+
+            ${escapeHtml(
+                item.name
+            )}
+
+        </h3>
+
+
+        <span class="recurring-category">
+
+            ${escapeHtml(
+                item.category
+            )}
+
+        </span>
+
+
+        <span class="recurring-status ${statusClass}">
+
+            ${statusText}
+
+        </span>
+
+
+        <div class="recurring-amount ${typeClass}">
+
+            ${sign}${formatCurrency(
+                item.amount
+            )}
+
+        </div>
+
+
+        <div class="recurring-frequency">
+
+            <i class="fa-solid fa-arrows-rotate"></i>
+
+            ${formatFrequency(
+                item.frequency
+            )}
+
+        </div>
+
+
+        ${
+            item.nextDate
+                ? `
+
+                    <div class="recurring-next">
+
+                        <i class="fa-regular fa-calendar"></i>
+
+                        Next:
+                        ${formatDate(
+                            item.nextDate
+                        )}
+
+                    </div>
+
+                `
+                : ""
+        }
+
+
+        <p class="recurring-description">
+
+            ${escapeHtml(
+                item.description ||
+                "No description added."
+            )}
+
+        </p>
 
     `;
 
-    card
-      .querySelector(".toggle")
-      ?.addEventListener("click", () => toggleRecurring(item));
 
     card
-      .querySelector(".edit")
-      ?.addEventListener("click", () => openEditModal(item));
+        .querySelector(
+            ".toggle"
+        )
+        ?.addEventListener(
+            "click",
+            function () {
+
+                toggleRecurring(
+                    item
+                );
+            }
+        );
+
 
     card
-      .querySelector(".delete")
-      ?.addEventListener("click", () => openConfirm(item));
+        .querySelector(
+            ".edit"
+        )
+        ?.addEventListener(
+            "click",
+            function () {
+
+                openEditModal(
+                    item
+                );
+            }
+        );
+
+
+    card
+        .querySelector(
+            ".delete"
+        )
+        ?.addEventListener(
+            "click",
+            function () {
+
+                openConfirm(
+                    item
+                );
+            }
+        );
+
 
     return card;
-  }
+}
 
-  /* =====================================================
-       ADD MODAL
-     ===================================================== */
 
-  function openAddModal() {
-    editingId = null;
+/* =====================================================
+   ADD MODAL
+===================================================== */
+
+function openAddModal() {
+
+    editingId =
+        null;
+
 
     recurringForm?.reset();
 
+
     if (recurringId) {
-      recurringId.value = "";
+
+        recurringId.value =
+            "";
     }
+
 
     if (recurringActive) {
-      recurringActive.checked = true;
+
+        recurringActive.checked =
+            true;
     }
+
 
     if (modalTitle) {
-      modalTitle.textContent = "Add Recurring Transaction";
+
+        modalTitle.textContent =
+            "Add Recurring Transaction";
     }
+
 
     if (saveButton) {
-      saveButton.textContent = "Save Recurring";
+
+        saveButton.textContent =
+            "Save Recurring";
     }
 
+
     hideModalMessage();
+
 
     setDefaultDate();
 
-    recurringModal?.classList.add("show");
 
-    document.body.style.overflow = "hidden";
+    recurringModal?.classList.add(
+        "show"
+    );
 
-    setTimeout(() => {
-      recurringName?.focus();
-    }, 100);
-  }
 
-  /* =====================================================
-       EDIT MODAL
-     ===================================================== */
+    document.body.style.overflow =
+        "hidden";
 
-  function openEditModal(item) {
-    editingId = item.id;
+
+    setTimeout(
+        function () {
+
+            recurringName?.focus();
+
+        },
+        100
+    );
+}
+
+
+/* =====================================================
+   EDIT MODAL
+===================================================== */
+
+function openEditModal(
+    item
+) {
+
+    editingId =
+        item.id;
+
 
     if (recurringId) {
-      recurringId.value = item.id ?? "";
+
+        recurringId.value =
+            item.id ?? "";
     }
+
 
     if (recurringName) {
-      recurringName.value = item.name ?? "";
+
+        recurringName.value =
+            item.name ?? "";
     }
+
 
     if (recurringType) {
-      recurringType.value = item.type ?? "expense";
+
+        recurringType.value =
+            item.type ??
+            "expense";
     }
+
 
     if (recurringCategory) {
-      recurringCategory.value = item.category ?? "";
+
+        recurringCategory.value =
+            item.category ??
+            "";
     }
+
 
     if (recurringAmount) {
-      recurringAmount.value = item.amount ?? 0;
+
+        recurringAmount.value =
+            item.amount ??
+            0;
     }
+
 
     if (recurringFrequency) {
-      recurringFrequency.value = item.frequency ?? "MONTHLY";
+
+        recurringFrequency.value =
+            item.frequency ??
+            "MONTHLY";
     }
+
 
     if (recurringStartDate) {
-      recurringStartDate.value = normalizeDateInput(item.nextDate);
+
+        recurringStartDate.value =
+            normalizeDateInput(
+                item.nextDate
+            );
     }
+
 
     if (recurringDescription) {
-      recurringDescription.value = item.description ?? "";
+
+        recurringDescription.value =
+            item.description ??
+            "";
     }
+
 
     if (recurringActive) {
-      recurringActive.checked = Boolean(item.active);
+
+        recurringActive.checked =
+            Boolean(
+                item.active
+            );
     }
+
 
     if (modalTitle) {
-      modalTitle.textContent = "Edit Recurring Transaction";
+
+        modalTitle.textContent =
+            "Edit Recurring Transaction";
     }
 
+
     if (saveButton) {
-      saveButton.textContent = "Update Recurring";
+
+        saveButton.textContent =
+            "Update Recurring";
     }
+
 
     hideModalMessage();
 
-    recurringModal?.classList.add("show");
 
-    document.body.style.overflow = "hidden";
+    recurringModal?.classList.add(
+        "show"
+    );
 
-    setTimeout(() => {
-      recurringName?.focus();
-    }, 100);
-  }
 
-  /* =====================================================
-       CLOSE MODAL
-     ===================================================== */
+    document.body.style.overflow =
+        "hidden";
 
-  function closeModal() {
-    recurringModal?.classList.remove("show");
 
-    if (!confirmOverlay?.classList.contains("show")) {
-      document.body.style.overflow = "";
+    setTimeout(
+        function () {
+
+            recurringName?.focus();
+
+        },
+        100
+    );
+}
+
+
+/* =====================================================
+   CLOSE MODAL
+===================================================== */
+
+function closeModal() {
+
+    recurringModal?.classList.remove(
+        "show"
+    );
+
+
+    if (
+        !confirmOverlay?.classList.contains(
+            "show"
+        )
+    ) {
+
+        document.body.style.overflow =
+            "";
     }
-  }
+}
 
-  /* =====================================================
-       SUBMIT
-     ===================================================== */
 
-  async function handleSubmit(event) {
+/* =====================================================
+   SUBMIT
+===================================================== */
+
+async function handleSubmit(
+    event
+) {
+
     event.preventDefault();
 
-    const name = recurringName?.value.trim() || "";
 
-    const type = normalizeType(recurringType?.value);
+    const name =
+        recurringName?.value
+            .trim() ||
+        "";
 
-    const category = recurringCategory?.value.trim() || "";
 
-    const amount = Number(recurringAmount?.value);
-
-    const frequency = normalizeFrequency(recurringFrequency?.value);
-
-    const nextDate = recurringStartDate?.value || "";
-
-    const description = recurringDescription?.value.trim() || "";
-
-    const active = recurringActive?.checked ?? true;
-
-    if (!name) {
-      showModalMessage("Please enter a transaction name.");
-
-      recurringName?.focus();
-
-      return;
-    }
-
-    if (!type) {
-      showModalMessage("Please select a transaction type.");
-
-      recurringType?.focus();
-
-      return;
-    }
-
-    if (!category) {
-      showModalMessage("Please enter a category.");
-
-      recurringCategory?.focus();
-
-      return;
-    }
-
-    if (!Number.isFinite(amount) || amount <= 0) {
-      showModalMessage("Please enter an amount greater than zero.");
-
-      recurringAmount?.focus();
-
-      return;
-    }
-
-    if (!frequency) {
-      showModalMessage("Please select a frequency.");
-
-      recurringFrequency?.focus();
-
-      return;
-    }
-
-    if (!nextDate) {
-      showModalMessage("Please select the next date.");
-
-      recurringStartDate?.focus();
-
-      return;
-    }
-
-    const payload = {
-      name: name,
-
-      title: name,
-
-      type: type,
-
-      transactionType: type,
-
-      category: category,
-
-      amount: amount,
-
-      frequency: frequency,
-
-      nextDate: nextDate,
-
-      startDate: nextDate,
-
-      description: description,
-
-      active: active,
-
-      isActive: active,
-    };
-
-    if (saveButton) {
-      saveButton.disabled = true;
-
-      saveButton.textContent = editingId ? "Updating..." : "Saving...";
-    }
-
-    try {
-      if (editingId) {
-        /*
-         * CORRECT:
-         * api.js already adds /api
-         */
-
-        await apiPut(
-          "/recurring/" + encodeURIComponent(String(editingId)),
-          payload,
+    const type =
+        normalizeType(
+            recurringType?.value
         );
 
-        showToast("Recurring transaction updated.");
-      } else {
-        /*
-         * CORRECT:
-         * api.js already adds /api
-         */
 
-        await apiPost("/recurring", payload);
+    const category =
+        recurringCategory?.value
+            .trim() ||
+        "";
 
-        showToast("Recurring transaction created.");
-      }
 
-      closeModal();
+    const amount =
+        Number(
+            recurringAmount?.value
+        );
 
-      await loadRecurring();
 
-      updateSummary();
+    const frequency =
+        normalizeFrequency(
+            recurringFrequency?.value
+        );
 
-      renderRecurring();
-    } catch (error) {
-      console.error("Recurring transaction save failed:", error);
 
-      showModalMessage(getErrorMessage(error));
-    } finally {
-      if (saveButton) {
-        saveButton.disabled = false;
+    const nextDate =
+        recurringStartDate?.value ||
+        "";
 
-        saveButton.textContent = editingId
-          ? "Update Recurring"
-          : "Save Recurring";
-      }
-    }
-  }
 
-  /* =====================================================
-       TOGGLE ACTIVE / PAUSED
-     ===================================================== */
+    const description =
+        recurringDescription?.value
+            .trim() ||
+        "";
 
-  async function toggleRecurring(item) {
-    if (item.id === null || item.id === undefined) {
-      showToast("This recurring transaction has no ID.", "error");
 
-      return;
-    }
+    const active =
+        recurringActive?.checked ??
+        true;
 
-    const newActive = !item.active;
 
-    try {
-      const payload = {
-        name: item.name,
+    if (!name) {
 
-        title: item.name,
+        showModalMessage(
+            "Please enter a transaction name."
+        );
 
-        type: item.type,
+        recurringName?.focus();
 
-        transactionType: item.type,
-
-        category: item.category,
-
-        amount: item.amount,
-
-        frequency: item.frequency,
-
-        nextDate: normalizeDateInput(item.nextDate),
-
-        startDate: normalizeDateInput(item.nextDate),
-
-        description: item.description,
-
-        active: newActive,
-
-        isActive: newActive,
-      };
-
-      /*
-       * CORRECT UPDATE PATH
-       */
-
-      await apiPut(
-        "/recurring/" + encodeURIComponent(String(item.id)),
-        payload,
-      );
-
-      showToast(
-        newActive
-          ? "Recurring transaction activated."
-          : "Recurring transaction paused.",
-      );
-
-      await loadRecurring();
-
-      updateSummary();
-
-      renderRecurring();
-    } catch (error) {
-      console.error("Could not update recurring status:", error);
-
-      showToast(getErrorMessage(error), "error");
-    }
-  }
-
-  /* =====================================================
-       DELETE CONFIRM
-     ===================================================== */
-
-  function openConfirm(item) {
-    deletingId = item.id;
-
-    confirmOverlay?.classList.add("show");
-
-    document.body.style.overflow = "hidden";
-  }
-
-  function closeConfirm() {
-    confirmOverlay?.classList.remove("show");
-
-    deletingId = null;
-
-    if (!recurringModal?.classList.contains("show")) {
-      document.body.style.overflow = "";
-    }
-  }
-
-  /* =====================================================
-       DELETE
-     ===================================================== */
-
-  async function deleteRecurring() {
-    if (deletingId === null || deletingId === undefined) {
-      return;
+        return;
     }
 
-    if (confirmDelete) {
-      confirmDelete.disabled = true;
 
-      confirmDelete.textContent = "Deleting...";
+    if (!category) {
+
+        showModalMessage(
+            "Please enter a category."
+        );
+
+        recurringCategory?.focus();
+
+        return;
     }
 
-    try {
-      /*
-       * CORRECT DELETE PATH
-       *
-       * api.js adds /api automatically.
-       */
 
-      await apiDelete("/recurring/" + encodeURIComponent(String(deletingId)));
+    if (
+        !Number.isFinite(
+            amount
+        ) ||
+        amount <= 0
+    ) {
 
-      closeConfirm();
+        showModalMessage(
+            "Please enter an amount greater than zero."
+        );
 
-      showToast("Recurring transaction deleted.");
+        recurringAmount?.focus();
 
-      await loadRecurring();
-
-      updateSummary();
-
-      renderRecurring();
-    } catch (error) {
-      console.error("Could not delete recurring transaction:", error);
-
-      showToast(getErrorMessage(error), "error");
-    } finally {
-      if (confirmDelete) {
-        confirmDelete.disabled = false;
-
-        confirmDelete.textContent = "Delete";
-      }
-    }
-  }
-
-  /* =====================================================
-       REFRESH
-     ===================================================== */
-
-  async function refreshData() {
-    if (refreshButton) {
-      refreshButton.disabled = true;
-
-      refreshButton.querySelector("i")?.classList.add("fa-spin");
+        return;
     }
 
-    try {
-      await loadRecurring();
 
-      showToast("Recurring transactions refreshed.");
-    } catch (error) {
-      showToast(getErrorMessage(error), "error");
-    } finally {
-      if (refreshButton) {
-        refreshButton.disabled = false;
+    if (!nextDate) {
 
-        refreshButton.querySelector("i")?.classList.remove("fa-spin");
-      }
-    }
-  }
+        showModalMessage(
+            "Please select the next date."
+        );
 
-  /* =====================================================
-       DATE
-     ===================================================== */
+        recurringStartDate?.focus();
 
-  function normalizeDateInput(value) {
-    if (!value) {
-      return "";
+        return;
     }
 
-    const text = String(value);
 
-    if (/^\d{4}-\d{2}-\d{2}$/.test(text)) {
-      return text;
-    }
+    const payload = {
 
-    const date = new Date(value);
+        name: name,
 
-    if (Number.isNaN(date.getTime())) {
-      return "";
-    }
+        title: name,
 
-    return (
-      date.getFullYear() +
-      "-" +
-      String(date.getMonth() + 1).padStart(2, "0") +
-      "-" +
-      String(date.getDate()).padStart(2, "0")
-    );
-  }
+        type: type,
 
-  function formatDate(value) {
-    const date = new Date(value);
+        transactionType: type,
 
-    if (Number.isNaN(date.getTime())) {
-      return String(value);
-    }
+        category: category,
 
-    return new Intl.DateTimeFormat("en-IN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    }).format(date);
-  }
+        amount: amount,
 
-  /* =====================================================
-       FREQUENCY
-     ===================================================== */
+        frequency: frequency,
 
-  function formatFrequency(value) {
-    const names = {
-      DAILY: "Daily",
+        nextDate: nextDate,
 
-      WEEKLY: "Weekly",
+        startDate: nextDate,
 
-      MONTHLY: "Monthly",
+        description: description,
 
-      YEARLY: "Yearly",
+        active: active,
+
+        isActive: active
     };
 
-    return names[value] || String(value).replace(/_/g, " ");
-  }
 
-  /* =====================================================
-       CURRENCY
-     ===================================================== */
+    if (saveButton) {
 
-  function formatCurrency(amount) {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
+        saveButton.disabled =
+            true;
 
-      currency: "INR",
 
-      minimumFractionDigits: 2,
-
-      maximumFractionDigits: 2,
-    }).format(Number(amount) || 0);
-  }
-
-  /* =====================================================
-       LOADING
-     ===================================================== */
-
-  function showLoading() {
-    if (!recurringGrid) {
-      return;
+        saveButton.textContent =
+            editingId
+                ? "Updating..."
+                : "Saving...";
     }
 
-    recurringGrid.style.display = "grid";
 
-    emptyState?.classList.remove("show");
+    try {
+
+        let response;
+
+
+        if (
+            editingId !== null &&
+            editingId !== undefined &&
+            editingId !== ""
+        ) {
+
+            response =
+                await FinanceAPI
+                    .recurring
+                    .update(
+                        editingId,
+                        payload
+                    );
+
+
+            showToast(
+                response?.message ||
+                "Recurring transaction updated."
+            );
+
+        } else {
+
+            response =
+                await FinanceAPI
+                    .recurring
+                    .create(
+                        payload
+                    );
+
+
+            showToast(
+                response?.message ||
+                "Recurring transaction created."
+            );
+        }
+
+
+        closeModal();
+
+
+        await loadRecurring();
+
+
+    } catch (error) {
+
+        console.error(
+            "Recurring transaction save failed:",
+            error
+        );
+
+
+        showModalMessage(
+            getErrorMessage(
+                error
+            )
+        );
+
+    } finally {
+
+        if (saveButton) {
+
+            saveButton.disabled =
+                false;
+
+
+            saveButton.textContent =
+                editingId
+                    ? "Update Recurring"
+                    : "Save Recurring";
+        }
+    }
+}
+
+
+/* =====================================================
+   TOGGLE ACTIVE / PAUSED
+===================================================== */
+
+async function toggleRecurring(
+    item
+) {
+
+    if (
+        item.id === null ||
+        item.id === undefined
+    ) {
+
+        showToast(
+            "This recurring transaction has no ID.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const newActive =
+        !item.active;
+
+
+    const payload = {
+
+        name:
+            item.name,
+
+        title:
+            item.name,
+
+        type:
+            item.type,
+
+        transactionType:
+            item.type,
+
+        category:
+            item.category,
+
+        amount:
+            item.amount,
+
+        frequency:
+            item.frequency,
+
+        nextDate:
+            normalizeDateInput(
+                item.nextDate
+            ),
+
+        startDate:
+            normalizeDateInput(
+                item.nextDate
+            ),
+
+        description:
+            item.description,
+
+        active:
+            newActive,
+
+        isActive:
+            newActive
+    };
+
+
+    try {
+
+        await FinanceAPI
+            .recurring
+            .update(
+                item.id,
+                payload
+            );
+
+
+        showToast(
+            newActive
+                ? "Recurring transaction activated."
+                : "Recurring transaction paused."
+        );
+
+
+        await loadRecurring();
+
+
+    } catch (error) {
+
+        console.error(
+            "Could not update recurring status:",
+            error
+        );
+
+
+        showToast(
+            getErrorMessage(
+                error
+            ),
+            "error"
+        );
+    }
+}
+
+
+/* =====================================================
+   DELETE CONFIRM
+===================================================== */
+
+function openConfirm(
+    item
+) {
+
+    deletingId =
+        item.id;
+
+
+    confirmOverlay?.classList.add(
+        "show"
+    );
+
+
+    document.body.style.overflow =
+        "hidden";
+}
+
+
+function closeConfirm() {
+
+    confirmOverlay?.classList.remove(
+        "show"
+    );
+
+
+    deletingId =
+        null;
+
+
+    if (
+        !recurringModal?.classList.contains(
+            "show"
+        )
+    ) {
+
+        document.body.style.overflow =
+            "";
+    }
+}
+
+
+/* =====================================================
+   DELETE
+===================================================== */
+
+async function deleteRecurring() {
+
+    if (
+        deletingId === null ||
+        deletingId === undefined
+    ) {
+
+        return;
+    }
+
+
+    if (confirmDelete) {
+
+        confirmDelete.disabled =
+            true;
+
+
+        confirmDelete.textContent =
+            "Deleting...";
+    }
+
+
+    try {
+
+        const response =
+            await FinanceAPI
+                .recurring
+                .delete(
+                    deletingId
+                );
+
+
+        closeConfirm();
+
+
+        showToast(
+            response?.message ||
+            "Recurring transaction deleted."
+        );
+
+
+        await loadRecurring();
+
+
+    } catch (error) {
+
+        console.error(
+            "Could not delete recurring transaction:",
+            error
+        );
+
+
+        showToast(
+            getErrorMessage(
+                error
+            ),
+            "error"
+        );
+
+
+    } finally {
+
+        if (confirmDelete) {
+
+            confirmDelete.disabled =
+                false;
+
+
+            confirmDelete.textContent =
+                "Delete";
+        }
+    }
+}
+
+
+/* =====================================================
+   REFRESH
+===================================================== */
+
+async function refreshData() {
+
+    if (refreshButton) {
+
+        refreshButton.disabled =
+            true;
+
+
+        refreshButton
+            .querySelector("i")
+            ?.classList.add(
+                "fa-spin"
+            );
+    }
+
+
+    try {
+
+        await loadRecurring();
+
+
+        showToast(
+            "Recurring transactions refreshed."
+        );
+
+
+    } catch (error) {
+
+        showToast(
+            getErrorMessage(
+                error
+            ),
+            "error"
+        );
+
+
+    } finally {
+
+        if (refreshButton) {
+
+            refreshButton.disabled =
+                false;
+
+
+            refreshButton
+                .querySelector("i")
+                ?.classList.remove(
+                    "fa-spin"
+                );
+        }
+    }
+}
+
+
+/* =====================================================
+   DATE
+===================================================== */
+
+function normalizeDateInput(
+    value
+) {
+
+    if (!value) {
+
+        return "";
+    }
+
+
+    const text =
+        String(value);
+
+
+    if (
+        /^\d{4}-\d{2}-\d{2}$/
+            .test(text)
+    ) {
+
+        return text;
+    }
+
+
+    if (
+        /^\d{4}-\d{2}-\d{2}/
+            .test(text)
+    ) {
+
+        return text.substring(
+            0,
+            10
+        );
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "";
+    }
+
+
+    return (
+        date.getFullYear() +
+        "-" +
+        String(
+            date.getMonth() + 1
+        ).padStart(
+            2,
+            "0"
+        ) +
+        "-" +
+        String(
+            date.getDate()
+        ).padStart(
+            2,
+            "0"
+        )
+    );
+}
+
+
+function formatDate(
+    value
+) {
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return String(
+            value
+        );
+    }
+
+
+    return new Intl.DateTimeFormat(
+        "en-IN",
+        {
+
+            day: "2-digit",
+
+            month: "short",
+
+            year: "numeric"
+        }
+    ).format(
+        date
+    );
+}
+
+
+/* =====================================================
+   FREQUENCY
+===================================================== */
+
+function formatFrequency(
+    value
+) {
+
+    const names = {
+
+        DAILY:
+            "Daily",
+
+        WEEKLY:
+            "Weekly",
+
+        MONTHLY:
+            "Monthly",
+
+        YEARLY:
+            "Yearly"
+    };
+
+
+    return (
+        names[value] ||
+        String(value)
+            .replace(
+                /_/g,
+                " "
+            )
+    );
+}
+
+
+/* =====================================================
+   CURRENCY
+===================================================== */
+
+function formatCurrency(
+    amount
+) {
+
+    return new Intl.NumberFormat(
+        "en-IN",
+        {
+
+            style: "currency",
+
+            currency: "INR",
+
+            minimumFractionDigits: 2,
+
+            maximumFractionDigits: 2
+        }
+    ).format(
+        Number(amount) ||
+        0
+    );
+}
+
+
+/* =====================================================
+   LOADING
+===================================================== */
+
+function showLoading() {
+
+    if (!recurringGrid) {
+
+        return;
+    }
+
+
+    recurringGrid.style.display =
+        "grid";
+
+
+    emptyState?.classList.remove(
+        "show"
+    );
+
 
     recurringGrid.innerHTML = `
 
-      <div class="loading-state">
+        <div class="loading-state">
 
-        <i class="fa-solid fa-spinner fa-spin"></i>
+            <i class="fa-solid fa-spinner fa-spin"></i>
 
-        Loading recurring transactions...
+            Loading recurring transactions...
 
-      </div>
+        </div>
 
     `;
-  }
+}
 
-  /* =====================================================
-       MODAL MESSAGE
-     ===================================================== */
 
-  function showModalMessage(message) {
+/* =====================================================
+   MODAL MESSAGE
+===================================================== */
+
+function showModalMessage(
+    message
+) {
+
     if (!modalMessage) {
-      return;
+
+        return;
     }
 
-    modalMessage.textContent = message;
 
-    modalMessage.classList.add("show");
-  }
+    modalMessage.textContent =
+        message;
 
-  function hideModalMessage() {
+
+    modalMessage.classList.add(
+        "show"
+    );
+}
+
+
+function hideModalMessage() {
+
     if (!modalMessage) {
-      return;
+
+        return;
     }
 
-    modalMessage.textContent = "";
 
-    modalMessage.classList.remove("show");
-  }
+    modalMessage.textContent =
+        "";
 
-  /* =====================================================
-       TOAST
-     ===================================================== */
 
-  function showToast(message, type = "success") {
+    modalMessage.classList.remove(
+        "show"
+    );
+}
+
+
+/* =====================================================
+   TOAST
+===================================================== */
+
+function showToast(
+    message,
+    type = "success"
+) {
+
     if (!toast) {
-      return;
+
+        return;
     }
 
-    clearTimeout(toastTimer);
+
+    clearTimeout(
+        toastTimer
+    );
+
 
     if (toastMessage) {
-      toastMessage.textContent = message;
+
+        toastMessage.textContent =
+            message;
     }
+
 
     if (toastIcon) {
-      if (type === "error") {
-        toastIcon.className = "fa-solid fa-circle-exclamation";
 
-        toastIcon.style.color = "#f87171";
-      } else {
-        toastIcon.className = "fa-solid fa-circle-check";
-
-        toastIcon.style.color = "#4ade80";
-      }
+        toastIcon.className =
+            type === "error"
+                ? "fa-solid fa-circle-exclamation"
+                : "fa-solid fa-circle-check";
     }
 
-    toast.classList.add("show");
 
-    toastTimer = setTimeout(() => {
-      toast.classList.remove("show");
-    }, 3200);
-  }
+    toast.classList.add(
+        "show"
+    );
 
-  /* =====================================================
-       ERROR
-     ===================================================== */
 
-  function getErrorMessage(error) {
-    return error?.message || "Something went wrong. Please try again.";
-  }
+    toastTimer =
+        setTimeout(
+            function () {
 
-  /* =====================================================
-       ESCAPE HTML
-     ===================================================== */
+                toast.classList.remove(
+                    "show"
+                );
 
-  function escapeHtml(value) {
-    return String(value ?? "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
+            },
+            3200
+        );
+}
 
-  /* =====================================================
-       LOGOUT
-     ===================================================== */
 
-  async function handleLogout() {
+/* =====================================================
+   ERROR
+===================================================== */
+
+function getErrorMessage(
+    error
+) {
+
+    return (
+
+        error?.message ||
+
+        error?.error ||
+
+        error?.response?.message ||
+
+        error?.response?.error ||
+
+        "Something went wrong. Please try again."
+
+    );
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHtml(
+    value
+) {
+
+    return String(
+        value ?? ""
+    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+async function handleLogout() {
+
     try {
-      if (typeof logoutUser === "function") {
-        await logoutUser();
-      }
+
+        if (
+            window.FinanceAPI &&
+            FinanceAPI.auth &&
+            typeof FinanceAPI.auth.logout ===
+                "function"
+        ) {
+
+            await FinanceAPI.auth.logout();
+        }
+
     } catch (error) {
-      console.warn("Logout error:", error);
+
+        console.warn(
+            "Logout error:",
+            error
+        );
+
     } finally {
-      window.location.href = "login.html";
+
+        window.location.href =
+            "login.html";
     }
-  }
-});
+}
+
+
+/* =====================================================
+   GLOBAL FUNCTIONS
+===================================================== */
+
+window.loadRecurring =
+    loadRecurring;
+
+window.openAddModal =
+    openAddModal;
+
+window.closeModal =
+    closeModal;
+
+window.closeConfirm =
+    closeConfirm;

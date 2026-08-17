@@ -289,53 +289,51 @@ const FinanceAPI = {
 
     budgets: {
 
-        async getAll() {
+    async getAll() {
 
-            return await apiRequest(
-                "/budgets",
-                {
-                    method: "GET"
-                }
-            );
-        },
-
-
-        async create(budget) {
-
-            return await apiRequest(
-                "/budgets",
-                {
-                    method: "POST",
-
-                    body: JSON.stringify(budget)
-                }
-            );
-        },
-
-
-        async update(id, budget) {
-
-            return await apiRequest(
-                `/budgets/${id`,
-                {
-                    method: "PUT",
-
-                    body: JSON.stringify(budget)
-                }
-            );
-        },
-
-
-        async delete(id) {
-
-            return await apiRequest(
-                `/budgets/${id}`,
-                {
-                    method: "DELETE"
-                }
-            );
-        }
+        return await apiRequest(
+            "/budgets",
+            {
+                method: "GET"
+            }
+        );
     },
+
+
+    async create(budget) {
+
+        return await apiRequest(
+            "/budgets",
+            {
+                method: "POST",
+                body: JSON.stringify(budget)
+            }
+        );
+    },
+
+
+    async update(id, budget) {
+
+        return await apiRequest(
+            `/budgets/${id}`,
+            {
+                method: "PUT",
+                body: JSON.stringify(budget)
+            }
+        );
+    },
+
+
+    async delete(id) {
+
+        return await apiRequest(
+            `/budgets/${id}`,
+            {
+                method: "DELETE"
+            }
+        );
+    }
+},
 
 
     /*

@@ -64,45 +64,45 @@ public class SecurityConfig {
     ========================================================= */
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+public CorsConfigurationSource corsConfigurationSource() {
 
-        CorsConfiguration configuration =
-                new CorsConfiguration();
+    CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(
-                List.of(
-                        "http://127.0.0.1:5500",
-                        "http://localhost:5500"
-                )
-        );
+    configuration.setAllowedOriginPatterns(
+            List.of(
+                    "https://financetracker-production-3fe4.up.railway.app",
+                    "http://localhost:5500",
+                    "http://127.0.0.1:5500"
+            )
+    );
 
-        configuration.setAllowedMethods(
-                List.of(
-                        "GET",
-                        "POST",
-                        "PUT",
-                        "DELETE",
-                        "PATCH",
-                        "OPTIONS"
-                )
-        );
+    configuration.setAllowedMethods(
+            List.of(
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "DELETE",
+                    "PATCH",
+                    "OPTIONS"
+            )
+    );
 
-        configuration.setAllowedHeaders(
-                List.of("*")
-        );
+    configuration.setAllowedHeaders(
+            List.of("*")
+    );
 
-        configuration.setAllowCredentials(true);
+    configuration.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source =
-                new UrlBasedCorsConfigurationSource();
+    UrlBasedCorsConfigurationSource source =
+            new UrlBasedCorsConfigurationSource();
 
-        source.registerCorsConfiguration(
-                "/**",
-                configuration
-        );
+    source.registerCorsConfiguration(
+            "/**",
+            configuration
+    );
 
-        return source;
-    }
+    return source;
+}
 
 
     /* =========================================================

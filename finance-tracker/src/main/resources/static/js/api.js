@@ -24,13 +24,6 @@ async function apiRequest(endpoint, options = {}) {
         {
             ...options,
 
-            /*
-            IMPORTANT:
-            Send the session cookie with every request.
-            Your Spring Boot backend uses HTTP session
-            authentication.
-            */
-
             credentials: "include",
 
             headers: {
@@ -40,12 +33,6 @@ async function apiRequest(endpoint, options = {}) {
         }
     );
 
-
-    /*
-    =====================================================
-    READ RESPONSE
-    =====================================================
-    */
 
     let data = null;
 
@@ -59,12 +46,6 @@ async function apiRequest(endpoint, options = {}) {
     }
 
 
-    /*
-    =====================================================
-    HANDLE HTTP ERRORS
-    =====================================================
-    */
-
     if (!response.ok) {
 
         const error = new Error(
@@ -73,30 +54,12 @@ async function apiRequest(endpoint, options = {}) {
             `Request failed with status ${response.status}`
         );
 
-
-        /*
-        IMPORTANT:
-        Keep the HTTP status available.
-
-        dashboard.js uses this to detect:
-
-        401 = Unauthorized
-        403 = Forbidden
-        */
-
         error.status = response.status;
-
         error.data = data;
 
         throw error;
     }
 
-
-    /*
-    =====================================================
-    RETURN SUCCESS RESPONSE
-    =====================================================
-    */
 
     return data;
 }
@@ -119,13 +82,6 @@ const FinanceAPI = {
 
     auth: {
 
-
-        /*
-        -------------------------------------------------
-        LOGIN
-        -------------------------------------------------
-        */
-
         async login(email, password) {
 
             return await apiRequest(
@@ -142,12 +98,6 @@ const FinanceAPI = {
         },
 
 
-        /*
-        -------------------------------------------------
-        REGISTER / FIRST-TIME SETUP
-        -------------------------------------------------
-        */
-
         async register(userData) {
 
             return await apiRequest(
@@ -161,35 +111,6 @@ const FinanceAPI = {
         },
 
 
-        /*
-        -------------------------------------------------
-        CURRENT LOGGED-IN USER
-        -------------------------------------------------
-
-        Backend endpoint:
-
-        GET /api/auth/me
-
-        This is used by dashboard.js:
-
-        FinanceAPI.auth.me()
-
-        The backend returns:
-
-        {
-            success: true,
-            user: {
-                id,
-                name,
-                email,
-                phone,
-                occupation,
-                createdAt
-            }
-        }
-        -------------------------------------------------
-        */
-
         async me() {
 
             return await apiRequest(
@@ -200,12 +121,6 @@ const FinanceAPI = {
             );
         },
 
-
-        /*
-        -------------------------------------------------
-        LOGOUT
-        -------------------------------------------------
-        */
 
         async logout() {
 
@@ -218,15 +133,6 @@ const FinanceAPI = {
         },
 
 
-        /*
-        -------------------------------------------------
-        SETUP STATUS
-        -------------------------------------------------
-
-        GET /api/auth/setup-status
-        -------------------------------------------------
-        */
-
         async setupStatus() {
 
             return await apiRequest(
@@ -238,16 +144,10 @@ const FinanceAPI = {
         },
 
 
-        /*
-        -------------------------------------------------
-        CHANGE PASSWORD
-        -------------------------------------------------
-
-        POST /api/auth/change-password
-        -------------------------------------------------
-        */
-
-        async changePassword(currentPassword, newPassword) {
+        async changePassword(
+            currentPassword,
+            newPassword
+        ) {
 
             return await apiRequest(
                 "/auth/change-password",
@@ -255,8 +155,11 @@ const FinanceAPI = {
                     method: "POST",
 
                     body: JSON.stringify({
-                        currentPassword: currentPassword,
-                        newPassword: newPassword
+                        currentPassword:
+                            currentPassword,
+
+                        newPassword:
+                            newPassword
                     })
                 }
             );
@@ -272,13 +175,6 @@ const FinanceAPI = {
 
     accounts: {
 
-
-        /*
-        -------------------------------------------------
-        GET ALL ACCOUNTS
-        -------------------------------------------------
-        */
-
         async getAll() {
 
             return await apiRequest(
@@ -289,12 +185,6 @@ const FinanceAPI = {
             );
         },
 
-
-        /*
-        -------------------------------------------------
-        CREATE ACCOUNT
-        -------------------------------------------------
-        */
 
         async create(account) {
 
@@ -309,12 +199,6 @@ const FinanceAPI = {
         },
 
 
-        /*
-        -------------------------------------------------
-        UPDATE ACCOUNT
-        -------------------------------------------------
-        */
-
         async update(id, account) {
 
             return await apiRequest(
@@ -328,12 +212,6 @@ const FinanceAPI = {
         },
 
 
-        /*
-        -------------------------------------------------
-        DELETE ACCOUNT
-        -------------------------------------------------
-        */
-
         async delete(id) {
 
             return await apiRequest(
@@ -346,8 +224,6 @@ const FinanceAPI = {
     },
 
 
-    
-
     /*
     =====================================================
     TRANSACTIONS
@@ -355,13 +231,6 @@ const FinanceAPI = {
     */
 
     transactions: {
-
-
-        /*
-        -------------------------------------------------
-        GET ALL TRANSACTIONS
-        -------------------------------------------------
-        */
 
         async getAll() {
 
@@ -373,12 +242,6 @@ const FinanceAPI = {
             );
         },
 
-
-        /*
-        -------------------------------------------------
-        CREATE TRANSACTION
-        -------------------------------------------------
-        */
 
         async create(transaction) {
 
@@ -393,12 +256,6 @@ const FinanceAPI = {
         },
 
 
-        /*
-        -------------------------------------------------
-        UPDATE TRANSACTION
-        -------------------------------------------------
-        */
-
         async update(id, transaction) {
 
             return await apiRequest(
@@ -411,12 +268,6 @@ const FinanceAPI = {
             );
         },
 
-
-        /*
-        -------------------------------------------------
-        DELETE TRANSACTION
-        -------------------------------------------------
-        */
 
         async delete(id) {
 
@@ -438,13 +289,6 @@ const FinanceAPI = {
 
     budgets: {
 
-
-        /*
-        -------------------------------------------------
-        GET ALL BUDGETS
-        -------------------------------------------------
-        */
-
         async getAll() {
 
             return await apiRequest(
@@ -455,12 +299,6 @@ const FinanceAPI = {
             );
         },
 
-
-        /*
-        -------------------------------------------------
-        CREATE BUDGET
-        -------------------------------------------------
-        */
 
         async create(budget) {
 
@@ -475,16 +313,10 @@ const FinanceAPI = {
         },
 
 
-        /*
-        -------------------------------------------------
-        UPDATE BUDGET
-        -------------------------------------------------
-        */
-
         async update(id, budget) {
 
             return await apiRequest(
-                `/budgets/${id}`,
+                `/budgets/${id`,
                 {
                     method: "PUT",
 
@@ -493,12 +325,6 @@ const FinanceAPI = {
             );
         },
 
-
-        /*
-        -------------------------------------------------
-        DELETE BUDGET
-        -------------------------------------------------
-        */
 
         async delete(id) {
 
@@ -520,13 +346,6 @@ const FinanceAPI = {
 
     savings: {
 
-
-        /*
-        -------------------------------------------------
-        GET ALL SAVINGS
-        -------------------------------------------------
-        */
-
         async getAll() {
 
             return await apiRequest(
@@ -537,12 +356,6 @@ const FinanceAPI = {
             );
         },
 
-
-        /*
-        -------------------------------------------------
-        CREATE SAVING
-        -------------------------------------------------
-        */
 
         async create(saving) {
 
@@ -557,12 +370,6 @@ const FinanceAPI = {
         },
 
 
-        /*
-        -------------------------------------------------
-        UPDATE SAVING
-        -------------------------------------------------
-        */
-
         async update(id, saving) {
 
             return await apiRequest(
@@ -575,12 +382,6 @@ const FinanceAPI = {
             );
         },
 
-
-        /*
-        -------------------------------------------------
-        DELETE SAVING
-        -------------------------------------------------
-        */
 
         async delete(id) {
 
@@ -595,59 +396,460 @@ const FinanceAPI = {
 
 
     /*
-=====================================================
-RECURRING TRANSACTIONS
-=====================================================
-*/
+    =====================================================
+    RECURRING TRANSACTIONS
+    =====================================================
+    */
 
-recurring: {
+    recurring: {
 
-    async getAll() {
+        async getAll() {
 
-        return await apiRequest(
-            "/recurring",
-            {
-                method: "GET"
-            }
-        );
+            return await apiRequest(
+                "/recurring",
+                {
+                    method: "GET"
+                }
+            );
+        },
+
+
+        async create(recurring) {
+
+            return await apiRequest(
+                "/recurring",
+                {
+                    method: "POST",
+
+                    body: JSON.stringify(recurring)
+                }
+            );
+        },
+
+
+        async update(id, recurring) {
+
+            return await apiRequest(
+                `/recurring/${id}`,
+                {
+                    method: "PUT",
+
+                    body: JSON.stringify(recurring)
+                }
+            );
+        },
+
+
+        async delete(id) {
+
+            return await apiRequest(
+                `/recurring/${id}`,
+                {
+                    method: "DELETE"
+                }
+            );
+        }
     },
 
 
-    async create(recurring) {
+    /*
+    =====================================================
+    REPORTS
+    =====================================================
 
-        return await apiRequest(
-            "/recurring",
-            {
-                method: "POST",
-                body: JSON.stringify(recurring)
+    IMPORTANT:
+
+    There is NO separate /api/reports endpoint required.
+
+    Reports are generated from:
+
+        GET /api/transactions
+
+    This keeps the application compatible with the
+    existing Spring Boot backend.
+    =====================================================
+    */
+
+    reports: {
+
+        async getAll() {
+
+            const response =
+                await FinanceAPI.transactions.getAll();
+
+
+            /*
+            ---------------------------------------------
+            EXTRACT TRANSACTIONS
+            ---------------------------------------------
+            */
+
+            let transactions = [];
+
+            if (Array.isArray(response)) {
+
+                transactions = response;
+
+            } else if (
+                response &&
+                typeof response === "object"
+            ) {
+
+                const possibleKeys = [
+                    "transactions",
+                    "data",
+                    "content",
+                    "items",
+                    "results"
+                ];
+
+                for (
+                    const key of possibleKeys
+                ) {
+
+                    if (
+                        Array.isArray(response[key])
+                    ) {
+
+                        transactions =
+                            response[key];
+
+                        break;
+                    }
+                }
             }
-        );
+
+
+            /*
+            ---------------------------------------------
+            NORMALIZE TRANSACTIONS
+            ---------------------------------------------
+            */
+
+            transactions =
+                transactions
+                    .map(transaction => {
+
+                        if (
+                            !transaction ||
+                            typeof transaction !== "object"
+                        ) {
+
+                            return null;
+                        }
+
+
+                        const rawType =
+                            transaction.type ??
+                            transaction.transactionType ??
+                            transaction.transaction_type ??
+                            "";
+
+
+                        const typeText =
+                            String(rawType)
+                                .trim()
+                                .toLowerCase();
+
+
+                        const type =
+                            (
+                                typeText === "income" ||
+                                typeText === "credit" ||
+                                typeText === "deposit" ||
+                                typeText === "earning"
+                            )
+                                ? "income"
+                                : "expense";
+
+
+                        const amount =
+                            Number(
+                                transaction.amount ??
+                                transaction.value ??
+                                0
+                            );
+
+
+                        if (
+                            !Number.isFinite(amount)
+                        ) {
+
+                            return null;
+                        }
+
+
+                        return {
+
+                            id:
+                                transaction.id ??
+                                transaction.transactionId ??
+                                transaction.transaction_id,
+
+                            type: type,
+
+                            amount:
+                                Math.abs(amount),
+
+                            category:
+                                String(
+                                    transaction.category ??
+                                    transaction.categoryName ??
+                                    transaction.category_name ??
+                                    "Other"
+                                ),
+
+                            description:
+                                String(
+                                    transaction.description ??
+                                    transaction.name ??
+                                    transaction.title ??
+                                    ""
+                                ),
+
+                            date:
+                                transaction.date ??
+                                transaction.transactionDate ??
+                                transaction.transaction_date ??
+                                transaction.createdAt ??
+                                ""
+                        };
+
+                    })
+                    .filter(Boolean);
+
+
+            /*
+            ---------------------------------------------
+            CALCULATE INCOME
+            ---------------------------------------------
+            */
+
+            const income =
+                transactions
+                    .filter(
+                        transaction =>
+                            transaction.type === "income"
+                    )
+                    .reduce(
+                        (total, transaction) =>
+                            total + transaction.amount,
+                        0
+                    );
+
+
+            /*
+            ---------------------------------------------
+            CALCULATE EXPENSE
+            ---------------------------------------------
+            */
+
+            const expense =
+                transactions
+                    .filter(
+                        transaction =>
+                            transaction.type === "expense"
+                    )
+                    .reduce(
+                        (total, transaction) =>
+                            total + transaction.amount,
+                        0
+                    );
+
+
+            /*
+            ---------------------------------------------
+            NET BALANCE
+            ---------------------------------------------
+            */
+
+            const netBalance =
+                income - expense;
+
+
+            /*
+            ---------------------------------------------
+            CATEGORY REPORT
+            ---------------------------------------------
+            */
+
+            const categoryTotals = {};
+
+
+            transactions
+                .filter(
+                    transaction =>
+                        transaction.type === "expense"
+                )
+                .forEach(transaction => {
+
+                    const category =
+                        transaction.category ||
+                        "Other";
+
+
+                    if (
+                        !categoryTotals[category]
+                    ) {
+
+                        categoryTotals[category] = 0;
+                    }
+
+
+                    categoryTotals[category] +=
+                        transaction.amount;
+                });
+
+
+            const categories =
+                Object.entries(categoryTotals)
+                    .map(
+                        ([category, amount]) => ({
+                            category,
+                            amount
+                        })
+                    )
+                    .sort(
+                        (a, b) =>
+                            b.amount - a.amount
+                    );
+
+
+            /*
+            ---------------------------------------------
+            MONTHLY REPORT
+            ---------------------------------------------
+            */
+
+            const monthlyTotals = {};
+
+
+            transactions.forEach(transaction => {
+
+                if (!transaction.date) {
+                    return;
+                }
+
+
+                const date =
+                    new Date(transaction.date);
+
+
+                if (
+                    Number.isNaN(
+                        date.getTime()
+                    )
+                ) {
+
+                    return;
+                }
+
+
+                const year =
+                    date.getFullYear();
+
+
+                const month =
+                    String(
+                        date.getMonth() + 1
+                    ).padStart(2, "0");
+
+
+                const key =
+                    `${year}-${month}`;
+
+
+                if (
+                    !monthlyTotals[key]
+                ) {
+
+                    monthlyTotals[key] = {
+
+                        income: 0,
+
+                        expense: 0
+                    };
+                }
+
+
+                if (
+                    transaction.type === "income"
+                ) {
+
+                    monthlyTotals[key].income +=
+                        transaction.amount;
+
+                } else {
+
+                    monthlyTotals[key].expense +=
+                        transaction.amount;
+                }
+
+            });
+
+
+            /*
+            ---------------------------------------------
+            MONTHLY ARRAY
+            ---------------------------------------------
+            */
+
+            const monthly =
+                Object.entries(monthlyTotals)
+                    .map(
+                        ([month, values]) => ({
+
+                            month,
+
+                            income:
+                                values.income,
+
+                            expense:
+                                values.expense,
+
+                            net:
+                                values.income -
+                                values.expense
+                        })
+                    )
+                    .sort(
+                        (a, b) =>
+                            b.month.localeCompare(
+                                a.month
+                            )
+                    );
+
+
+            /*
+            ---------------------------------------------
+            RETURN COMPLETE REPORT
+            ---------------------------------------------
+            */
+
+            return {
+
+                success: true,
+
+                transactions,
+
+                summary: {
+
+                    transactionCount:
+                        transactions.length,
+
+                    income,
+
+                    expense,
+
+                    netBalance
+                },
+
+                categories,
+
+                monthly
+            };
+        }
     },
-
-
-    async update(id, recurring) {
-
-        return await apiRequest(
-            `/recurring/${id}`,
-            {
-                method: "PUT",
-                body: JSON.stringify(recurring)
-            }
-        );
-    },
-
-
-    async delete(id) {
-
-        return await apiRequest(
-            `/recurring/${id}`,
-            {
-                method: "DELETE"
-            }
-        );
-    }
-},
-
 
 
     /*
@@ -657,22 +859,6 @@ recurring: {
     */
 
     profile: {
-
-
-        /*
-        -------------------------------------------------
-        GET CURRENT PROFILE
-        -------------------------------------------------
-
-        Backend does NOT have:
-
-        GET /api/profile
-
-        Instead the backend provides:
-
-        GET /api/auth/me
-        -------------------------------------------------
-        */
 
         async get() {
 
@@ -684,17 +870,6 @@ recurring: {
             );
         },
 
-
-        /*
-        -------------------------------------------------
-        UPDATE PROFILE
-        -------------------------------------------------
-
-        Backend endpoint:
-
-        PUT /api/auth/profile
-        -------------------------------------------------
-        */
 
         async update(profile) {
 
@@ -724,10 +899,6 @@ recurring: {
         }
 
 
-        /*
-        Backend error message
-        */
-
         if (
             error.data &&
             error.data.message
@@ -737,10 +908,6 @@ recurring: {
         }
 
 
-        /*
-        Backend error field
-        */
-
         if (
             error.data &&
             error.data.error
@@ -749,10 +916,6 @@ recurring: {
             return error.data.error;
         }
 
-
-        /*
-        JavaScript error message
-        */
 
         if (error.message) {
 

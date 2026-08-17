@@ -1,12 +1,10 @@
-/* =========================================================
-   FINANCE TRACKER - TRANSACTIONS
-========================================================= */
-
 "use strict";
 
-/* =========================================================
-   GLOBAL STATE
-========================================================= */
+/*
+=========================================================
+FINANCE TRACKER - TRANSACTIONS
+=========================================================
+*/
 
 let transactions = [];
 let accounts = [];
@@ -15,1103 +13,1687 @@ let categories = [];
 let editingTransactionId = null;
 let deletingTransactionId = null;
 
-/* =========================================================
-   INITIALIZE
-========================================================= */
+
+/*
+=========================================================
+INITIALIZE
+=========================================================
+*/
 
 document.addEventListener("DOMContentLoaded", () => {
-  initializeSidebar();
-  initializeTransactions();
+    initializeSidebar();
+    initializeTransactions();
 });
 
+
 async function initializeTransactions() {
-  try {
-    if (typeof FinanceAPI === "undefined") {
-      console.error("FinanceAPI is not loaded.");
-      return;
+
+    try {
+
+        if (typeof FinanceAPI === "undefined") {
+            console.error("FinanceAPI is not loaded.");
+            return;
+        }
+
+        setupEventListeners();
+        initializeUser();
+
+        await Promise.all([
+            loadAccounts(),
+            loadTransactions()
+        ]);
+
+        /*
+        Categories are currently not available
+        from the Spring Boot backend.
+        */
+
+        categories = [];
+
+        populateAccountFilter();
+        populateAccountSelect();
+
+        populateCategoryFilter();
+        populateCategorySelect();
+
+        renderTransactions();
+        updateStatistics();
+
+    } catch (error) {
+
+        console.error(
+            "Transactions initialization failed:",
+            error
+        );
     }
-
-    setupEventListeners();
-
-    await Promise.all([loadAccounts(), loadTransactions()]);
-
-    /*
-     * Categories endpoint is currently not available
-     * in the Spring Boot backend.
-     *
-     * Do not call it until /api/categories exists.
-     */
-
-    categories = [];
-
-    populateAccountFilter();
-    populateAccountSelect();
-
-    populateCategoryFilter();
-    populateCategorySelect();
-
-    renderTransactions();
-
-    updateStatistics();
-  } catch (error) {
-    console.error("Transactions initialization failed:", error);
-  }
 }
+
+
+/*
+=========================================================
+SIDEBAR
+=========================================================
+*/
 
 function initializeSidebar() {
-  const menuButton = document.getElementById("menuButton");
-  const sidebar = document.getElementById("sidebar");
-  const overlay = document.getElementById("sidebarOverlay");
-  const closeButton = document.getElementById("closeSidebar");
 
-  if (!menuButton || !sidebar) {
-    console.error("Sidebar elements not found.");
-    return;
-  }
+    const menuButton =
+        document.getElementById("menuButton");
 
-  function openSidebar() {
-    sidebar.classList.add("open");
+    const sidebar =
+        document.getElementById("sidebar");
 
-    if (overlay) {
-      overlay.classList.add("active");
+    const overlay =
+        document.getElementById("sidebarOverlay");
+
+    const closeButton =
+        document.getElementById("closeSidebar");
+
+    if (!sidebar) {
+        return;
     }
 
-    menuButton.setAttribute("aria-expanded", "true");
 
-    document.body.style.overflow = "hidden";
-  }
+    function openSidebar() {
 
-  function closeSidebar() {
-    sidebar.classList.remove("open");
+        sidebar.classList.add("open");
 
-    if (overlay) {
-      overlay.classList.remove("active");
+        if (overlay) {
+            overlay.classList.add("active");
+        }
+
+        if (menuButton) {
+            menuButton.setAttribute(
+                "aria-expanded",
+                "true"
+            );
+        }
+
+        document.body.style.overflow = "hidden";
     }
 
-    menuButton.setAttribute("aria-expanded", "false");
 
-    document.body.style.overflow = "";
-  }
+    function closeSidebarMenu() {
 
-  menuButton.addEventListener("click", function (event) {
-    event.preventDefault();
-    event.stopPropagation();
+        sidebar.classList.remove("open");
 
-    if (sidebar.classList.contains("open")) {
-      closeSidebar();
-    } else {
-      openSidebar();
+        if (overlay) {
+            overlay.classList.remove("active");
+        }
+
+        if (menuButton) {
+            menuButton.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+        }
+
+        document.body.style.overflow = "";
     }
-  });
 
-  if (closeButton) {
-    closeButton.addEventListener("click", closeSidebar);
-  }
-
-  if (overlay) {
-    overlay.addEventListener("click", closeSidebar);
-  }
-
-  sidebar.querySelectorAll(".nav-link").forEach((link) => {
-    link.addEventListener("click", () => {
-      if (window.innerWidth <= 800) {
-        closeSidebar();
-      }
-    });
-  });
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      closeSidebar();
-    }
-  });
-}
-
-/* =========================================================
-   SIDEBAR / HAMBURGER MENU
-========================================================= */
-
-function initializeSidebar() {
-  const menuButton = document.getElementById("menuButton");
-
-  const sidebar = document.getElementById("sidebar");
-
-  const overlay = document.getElementById("sidebarOverlay");
-
-  const closeButton = document.getElementById("closeSidebar");
-
-  if (!sidebar) {
-    return;
-  }
-
-  function openSidebar() {
-    sidebar.classList.add("open");
-
-    if (overlay) {
-      overlay.classList.add("active");
-    }
 
     if (menuButton) {
-      menuButton.setAttribute("aria-expanded", "true");
+
+        menuButton.addEventListener(
+            "click",
+            (event) => {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                if (
+                    sidebar.classList.contains("open")
+                ) {
+                    closeSidebarMenu();
+                } else {
+                    openSidebar();
+                }
+            }
+        );
     }
 
-    document.body.style.overflow = "hidden";
-  }
 
-  function closeSidebarMenu() {
-    sidebar.classList.remove("open");
+    if (closeButton) {
+
+        closeButton.addEventListener(
+            "click",
+            (event) => {
+
+                event.preventDefault();
+
+                closeSidebarMenu();
+            }
+        );
+    }
+
 
     if (overlay) {
-      overlay.classList.remove("active");
+
+        overlay.addEventListener(
+            "click",
+            closeSidebarMenu
+        );
     }
 
-    if (menuButton) {
-      menuButton.setAttribute("aria-expanded", "false");
-    }
 
-    document.body.style.overflow = "";
-  }
+    sidebar
+        .querySelectorAll(".nav-link")
+        .forEach((link) => {
 
-  if (menuButton) {
-    menuButton.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
+            link.addEventListener(
+                "click",
+                () => {
 
-      if (sidebar.classList.contains("open")) {
-        closeSidebarMenu();
-      } else {
-        openSidebar();
-      }
-    });
-  }
+                    if (window.innerWidth <= 800) {
+                        closeSidebarMenu();
+                    }
+                }
+            );
+        });
 
-  if (closeButton) {
-    closeButton.addEventListener("click", (event) => {
-      event.preventDefault();
 
-      closeSidebarMenu();
-    });
-  }
+    document.addEventListener(
+        "keydown",
+        (event) => {
 
-  if (overlay) {
-    overlay.addEventListener("click", () => {
-      closeSidebarMenu();
-    });
-  }
+            if (event.key === "Escape") {
 
-  /* Close menu when clicking navigation link */
+                closeSidebarMenu();
+                closeTransactionModal();
+                closeDeleteConfirmation();
+            }
+        }
+    );
 
-  const navigationLinks = sidebar.querySelectorAll(".nav-link");
 
-  navigationLinks.forEach((link) => {
-    link.addEventListener("click", () => {
-      if (window.innerWidth <= 800) {
-        closeSidebarMenu();
-      }
-    });
-  });
+    window.addEventListener(
+        "resize",
+        () => {
 
-  /* Close sidebar on Escape */
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      closeSidebarMenu();
-
-      closeTransactionModal();
-
-      closeDeleteConfirmation();
-    }
-  });
-
-  /* Automatically close sidebar when resizing */
-
-  window.addEventListener("resize", () => {
-    if (window.innerWidth > 800) {
-      closeSidebarMenu();
-    }
-  });
+            if (window.innerWidth > 800) {
+                closeSidebarMenu();
+            }
+        }
+    );
 }
 
-/* =========================================================
-   USER INFORMATION
-========================================================= */
+
+/*
+=========================================================
+USER INFORMATION
+=========================================================
+*/
 
 function initializeUser() {
-  const userName = document.getElementById("userName");
 
-  const userEmail = document.getElementById("userEmail");
+    const userName =
+        document.getElementById("userName");
 
-  const userAvatar = document.getElementById("userAvatar");
+    const userEmail =
+        document.getElementById("userEmail");
 
-  let user = null;
+    const userAvatar =
+        document.getElementById("userAvatar");
 
-  try {
-    const storedUser = localStorage.getItem("financeUser");
+    let user = null;
 
-    if (storedUser) {
-      user = JSON.parse(storedUser);
-    }
-  } catch (error) {
-    console.warn("Unable to read financeUser.", error);
-  }
 
-  /* Try common project keys */
-
-  if (!user) {
     try {
-      const storedUser = localStorage.getItem("user");
 
-      if (storedUser) {
-        user = JSON.parse(storedUser);
-      }
+        const storedUser =
+            localStorage.getItem("financeUser");
+
+        if (storedUser) {
+            user = JSON.parse(storedUser);
+        }
+
     } catch (error) {
-      console.warn("Unable to read user.", error);
+
+        console.warn(
+            "Unable to read financeUser.",
+            error
+        );
     }
-  }
 
-  if (!user) {
-    return;
-  }
 
-  const name = user.name || user.fullName || user.username || "User";
+    if (!user) {
 
-  const email = user.email || user.username || "Account";
+        try {
 
-  if (userName) {
-    userName.textContent = name;
-  }
+            const storedUser =
+                localStorage.getItem("user");
 
-  if (userEmail) {
-    userEmail.textContent = email;
-  }
+            if (storedUser) {
+                user = JSON.parse(storedUser);
+            }
 
-  if (userAvatar) {
-    userAvatar.textContent = name.trim().charAt(0).toUpperCase() || "U";
-  }
+        } catch (error) {
+
+            console.warn(
+                "Unable to read user.",
+                error
+            );
+        }
+    }
+
+
+    if (!user) {
+        return;
+    }
+
+
+    const name =
+        user.name ||
+        user.fullName ||
+        user.username ||
+        "User";
+
+    const email =
+        user.email ||
+        user.username ||
+        "Account";
+
+
+    if (userName) {
+        userName.textContent = name;
+    }
+
+    if (userEmail) {
+        userEmail.textContent = email;
+    }
+
+    if (userAvatar) {
+
+        userAvatar.textContent =
+            name.trim()
+                .charAt(0)
+                .toUpperCase() || "U";
+    }
 }
 
-/* =========================================================
-   EVENT LISTENERS
-========================================================= */
+
+/*
+=========================================================
+EVENT LISTENERS
+=========================================================
+*/
 
 function setupEventListeners() {
-  /* Add transaction */
 
-  const openAddButton = document.getElementById("openAddButton");
+    const openAddButton =
+        document.getElementById("openAddButton");
 
-  if (openAddButton) {
-    openAddButton.addEventListener("click", () => {
-      openTransactionModal();
-    });
-  }
+    if (openAddButton) {
 
-  /* Empty state add */
+        openAddButton.addEventListener(
+            "click",
+            () => openTransactionModal()
+        );
+    }
 
-  const emptyAddButton = document.getElementById("emptyAddButton");
 
-  if (emptyAddButton) {
-    emptyAddButton.addEventListener("click", () => {
-      openTransactionModal();
-    });
-  }
+    const emptyAddButton =
+        document.getElementById("emptyAddButton");
 
-  /* Form */
+    if (emptyAddButton) {
 
-  const form = document.getElementById("transactionForm");
+        emptyAddButton.addEventListener(
+            "click",
+            () => openTransactionModal()
+        );
+    }
 
-  if (form) {
-    form.addEventListener("submit", handleTransactionSubmit);
-  }
 
-  /* Modal close */
+    const form =
+        document.getElementById("transactionForm");
 
-  const modalClose = document.getElementById("modalClose");
+    if (form) {
+        form.addEventListener(
+            "submit",
+            handleTransactionSubmit
+        );
+    }
 
-  if (modalClose) {
-    modalClose.addEventListener("click", closeTransactionModal);
-  }
 
-  /* Cancel */
+    const modalClose =
+        document.getElementById("modalClose");
 
-  const cancelButton = document.getElementById("cancelButton");
+    if (modalClose) {
+        modalClose.addEventListener(
+            "click",
+            closeTransactionModal
+        );
+    }
 
-  if (cancelButton) {
-    cancelButton.addEventListener("click", closeTransactionModal);
-  }
 
-  /* Search */
+    const cancelButton =
+        document.getElementById("cancelButton");
 
-  const searchInput = document.getElementById("searchInput");
+    if (cancelButton) {
+        cancelButton.addEventListener(
+            "click",
+            closeTransactionModal
+        );
+    }
 
-  if (searchInput) {
-    searchInput.addEventListener("input", renderTransactions);
-  }
 
-  /* Type filter */
+    const searchInput =
+        document.getElementById("searchInput");
 
-  const typeFilter = document.getElementById("typeFilter");
+    if (searchInput) {
+        searchInput.addEventListener(
+            "input",
+            renderTransactions
+        );
+    }
 
-  if (typeFilter) {
-    typeFilter.addEventListener("change", renderTransactions);
-  }
 
-  /* Category filter */
+    const typeFilter =
+        document.getElementById("typeFilter");
 
-  const categoryFilter = document.getElementById("categoryFilter");
+    if (typeFilter) {
+        typeFilter.addEventListener(
+            "change",
+            renderTransactions
+        );
+    }
 
-  if (categoryFilter) {
-    categoryFilter.addEventListener("change", renderTransactions);
-  }
 
-  /* Account filter */
+    const categoryFilter =
+        document.getElementById("categoryFilter");
 
-  const accountFilter = document.getElementById("accountFilter");
+    if (categoryFilter) {
+        categoryFilter.addEventListener(
+            "change",
+            renderTransactions
+        );
+    }
 
-  if (accountFilter) {
-    accountFilter.addEventListener("change", renderTransactions);
-  }
 
-  /* Sort */
+    const accountFilter =
+        document.getElementById("accountFilter");
 
-  const sortFilter = document.getElementById("sortFilter");
+    if (accountFilter) {
+        accountFilter.addEventListener(
+            "change",
+            renderTransactions
+        );
+    }
 
-  if (sortFilter) {
-    sortFilter.addEventListener("change", renderTransactions);
-  }
 
-  /* Clear filters */
+    const sortFilter =
+        document.getElementById("sortFilter");
 
-  const clearFilters = document.getElementById("clearFilters");
+    if (sortFilter) {
+        sortFilter.addEventListener(
+            "change",
+            renderTransactions
+        );
+    }
 
-  if (clearFilters) {
-    clearFilters.addEventListener("click", clearAllFilters);
-  }
 
-  /* Refresh */
+    const clearFilters =
+        document.getElementById("clearFilters");
 
-  const refreshButton = document.getElementById("refreshButton");
+    if (clearFilters) {
+        clearFilters.addEventListener(
+            "click",
+            clearAllFilters
+        );
+    }
 
-  if (refreshButton) {
-    refreshButton.addEventListener("click", refreshTransactions);
-  }
 
-  /* Export */
+    const refreshButton =
+        document.getElementById("refreshButton");
 
-  const exportButton = document.getElementById("exportButton");
+    if (refreshButton) {
+        refreshButton.addEventListener(
+            "click",
+            refreshTransactions
+        );
+    }
 
-  if (exportButton) {
-    exportButton.addEventListener("click", exportTransactionsCSV);
-  }
 
-  /* Delete cancel */
+    const exportButton =
+        document.getElementById("exportButton");
 
-  const confirmCancel = document.getElementById("confirmCancel");
+    if (exportButton) {
+        exportButton.addEventListener(
+            "click",
+            exportTransactionsCSV
+        );
+    }
 
-  if (confirmCancel) {
-    confirmCancel.addEventListener("click", closeDeleteConfirmation);
-  }
 
-  /* Delete confirm */
+    const confirmCancel =
+        document.getElementById("confirmCancel");
 
-  const confirmDelete = document.getElementById("confirmDelete");
+    if (confirmCancel) {
+        confirmCancel.addEventListener(
+            "click",
+            closeDeleteConfirmation
+        );
+    }
 
-  if (confirmDelete) {
-    confirmDelete.addEventListener("click", confirmDeleteTransaction);
-  }
 
-  /* Close modal when clicking outside */
+    const confirmDelete =
+        document.getElementById("confirmDelete");
 
-  const modal = document.getElementById("transactionModal");
+    if (confirmDelete) {
+        confirmDelete.addEventListener(
+            "click",
+            confirmDeleteTransaction
+        );
+    }
 
-  if (modal) {
-    modal.addEventListener("click", (event) => {
-      if (event.target === modal) {
-        closeTransactionModal();
-      }
-    });
-  }
+
+    const modal =
+        document.getElementById("transactionModal");
+
+    if (modal) {
+
+        modal.addEventListener(
+            "click",
+            (event) => {
+
+                if (event.target === modal) {
+                    closeTransactionModal();
+                }
+            }
+        );
+    }
 }
 
-/* =========================================================
-   LOAD ACCOUNTS
-========================================================= */
+
+/*
+=========================================================
+LOAD ACCOUNTS
+=========================================================
+*/
 
 async function loadAccounts() {
-  try {
-    /*
-     * FinanceAPI already contains /api.
-     *
-     * Correct:
-     * /accounts
-     *
-     * Result:
-     * http://localhost:8080/api/accounts
-     */
 
-    const response = await FinanceAPI.get("/accounts");
+    try {
 
-    accounts = normalizeArray(response);
+        /*
+        IMPORTANT:
+        Current FinanceAPI uses:
 
-    populateAccountSelect();
+        FinanceAPI.accounts.getAll()
 
-    console.log("Accounts loaded:", accounts);
-  } catch (error) {
-    console.error("Accounts loading failed:", error);
+        NOT:
 
-    accounts = [];
+        FinanceAPI.get()
+        */
 
-    populateAccountSelect();
-  }
+        const response =
+            await FinanceAPI.accounts.getAll();
+
+        accounts = normalizeArray(response);
+
+        populateAccountSelect();
+
+        console.log(
+            "Accounts loaded:",
+            accounts
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Accounts loading failed:",
+            error
+        );
+
+        accounts = [];
+
+        populateAccountSelect();
+    }
 }
 
-/* =========================================================
-   LOAD CATEGORIES
-========================================================= */
+
+/*
+=========================================================
+LOAD CATEGORIES
+=========================================================
+*/
 
 async function loadCategories() {
-  try {
+
     /*
-     * IMPORTANT:
-     *
-     * Do NOT use /api/categories.
-     *
-     * FinanceAPI already has /api.
-     *
-     * Correct:
-     * /categories
-     */
+    There is currently no categories endpoint
+    configured in the backend.
 
-    const response = await FinanceAPI.get("/categories");
-
-    categories = normalizeArray(response);
-
-    populateCategorySelect();
-
-    console.log("Categories loaded:", categories);
-  } catch (error) {
-    console.error("Categories loading failed:", error);
+    Therefore we do not make a fake API request.
+    */
 
     categories = [];
 
     populateCategorySelect();
-  }
+    populateCategoryFilter();
+
+    console.log(
+        "Categories loaded: no categories endpoint configured."
+    );
 }
 
-/* =========================================================
-   LOAD TRANSACTIONS
-========================================================= */
+
+/*
+=========================================================
+LOAD TRANSACTIONS
+=========================================================
+*/
 
 async function loadTransactions() {
-  try {
-    /*
-     * Correct endpoint:
-     *
-     * /transactions
-     *
-     * NOT:
-     * /api/transactions
-     */
 
-    const response = await FinanceAPI.get("/transactions");
+    try {
 
-    transactions = normalizeArray(response);
+        /*
+        Current FinanceAPI:
 
-    console.log("Transactions loaded:", transactions);
-  } catch (error) {
-    console.error("Transaction loading failed:", error);
+        FinanceAPI.transactions.getAll()
+        */
 
-    transactions = [];
-  }
+        const response =
+            await FinanceAPI.transactions.getAll();
+
+        transactions =
+            normalizeArray(response);
+
+        console.log(
+            "Transactions loaded:",
+            transactions
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Transaction loading failed:",
+            error
+        );
+
+        transactions = [];
+    }
 }
 
-/* =========================================================
-   NORMALIZE API RESPONSE
-========================================================= */
+
+/*
+=========================================================
+NORMALIZE API RESPONSE
+=========================================================
+*/
 
 function normalizeArray(response) {
-  if (Array.isArray(response)) {
-    return response;
-  }
 
-  if (response && Array.isArray(response.data)) {
-    return response.data;
-  }
+    if (Array.isArray(response)) {
+        return response;
+    }
 
-  if (response && Array.isArray(response.content)) {
-    return response.content;
-  }
 
-  return [];
+    if (
+        response &&
+        Array.isArray(response.data)
+    ) {
+        return response.data;
+    }
+
+
+    if (
+        response &&
+        Array.isArray(response.content)
+    ) {
+        return response.content;
+    }
+
+
+    if (
+        response &&
+        Array.isArray(response.transactions)
+    ) {
+        return response.transactions;
+    }
+
+
+    if (
+        response &&
+        Array.isArray(response.accounts)
+    ) {
+        return response.accounts;
+    }
+
+
+    return [];
 }
 
-/* =========================================================
-   POPULATE ACCOUNT SELECT
-========================================================= */
+
+/*
+=========================================================
+POPULATE ACCOUNT SELECT
+=========================================================
+*/
 
 function populateAccountSelect() {
-  const select = document.getElementById("accountId");
 
-  if (!select) {
-    return;
-  }
+    const select =
+        document.getElementById("accountId");
 
-  select.innerHTML = `<option value="">Select account</option>`;
+    if (!select) {
+        return;
+    }
 
-  accounts.forEach((account) => {
-    const option = document.createElement("option");
 
-    option.value = account.id;
+    select.innerHTML =
+        `<option value="">Select account</option>`;
 
-    option.textContent =
-      account.name ||
-      account.accountName ||
-      account.title ||
-      `Account ${account.id}`;
 
-    select.appendChild(option);
-  });
+    accounts.forEach((account) => {
+
+        const option =
+            document.createElement("option");
+
+        option.value =
+            account.id;
+
+        option.textContent =
+            account.name ||
+            account.accountName ||
+            account.title ||
+            `Account ${account.id}`;
+
+        select.appendChild(option);
+    });
 }
 
-/* =========================================================
-   POPULATE CATEGORY SELECT
-========================================================= */
+
+/*
+=========================================================
+POPULATE CATEGORY SELECT
+=========================================================
+*/
 
 function populateCategorySelect() {
-  const select = document.getElementById("categoryId");
 
-  if (!select) {
-    return;
-  }
+    const select =
+        document.getElementById("categoryId");
 
-  select.innerHTML = `<option value="">Select category</option>`;
+    if (!select) {
+        return;
+    }
 
-  categories.forEach((category) => {
-    const name = getCategoryName(category);
 
-    const value =
-      category?.id ?? category?.name ?? category?.categoryName ?? category;
+    select.innerHTML =
+        `<option value="">Select category</option>`;
 
-    const option = document.createElement("option");
 
-    option.value = value;
+    categories.forEach((category) => {
 
-    option.textContent = name;
+        const name =
+            getCategoryName(category);
 
-    select.appendChild(option);
-  });
+        const value =
+            category?.id ??
+            category?.name ??
+            category?.categoryName ??
+            category;
+
+
+        const option =
+            document.createElement("option");
+
+        option.value = value;
+        option.textContent = name;
+
+        select.appendChild(option);
+    });
 }
 
-/* =========================================================
-   POPULATE CATEGORY FILTER
-========================================================= */
+
+/*
+=========================================================
+POPULATE CATEGORY FILTER
+=========================================================
+*/
 
 function populateCategoryFilter() {
-  const filter = document.getElementById("categoryFilter");
 
-  if (!filter) {
-    return;
-  }
+    const filter =
+        document.getElementById("categoryFilter");
 
-  filter.innerHTML = `<option value="all">All Categories</option>`;
-
-  categories.forEach((category) => {
-    const name = getCategoryName(category);
-
-    if (!name) {
-      return;
+    if (!filter) {
+        return;
     }
 
-    const option = document.createElement("option");
 
-    option.value = name;
+    filter.innerHTML =
+        `<option value="all">All Categories</option>`;
 
-    option.textContent = name;
 
-    filter.appendChild(option);
-  });
+    categories.forEach((category) => {
+
+        const name =
+            getCategoryName(category);
+
+        if (!name) {
+            return;
+        }
+
+
+        const option =
+            document.createElement("option");
+
+        option.value = name;
+        option.textContent = name;
+
+        filter.appendChild(option);
+    });
 }
 
-/* =========================================================
-   POPULATE ACCOUNT FILTER
-========================================================= */
+
+/*
+=========================================================
+POPULATE ACCOUNT FILTER
+=========================================================
+*/
 
 function populateAccountFilter() {
-  const filter = document.getElementById("accountFilter");
 
-  if (!filter) {
-    return;
-  }
+    const filter =
+        document.getElementById("accountFilter");
 
-  filter.innerHTML = `<option value="all">All Accounts</option>`;
+    if (!filter) {
+        return;
+    }
 
-  accounts.forEach((account) => {
-    const name =
-      account.name ||
-      account.accountName ||
-      account.title ||
-      `Account ${account.id}`;
 
-    const option = document.createElement("option");
+    filter.innerHTML =
+        `<option value="all">All Accounts</option>`;
 
-    option.value = String(account.id);
 
-    option.textContent = name;
+    accounts.forEach((account) => {
 
-    filter.appendChild(option);
-  });
+        const name =
+            account.name ||
+            account.accountName ||
+            account.title ||
+            `Account ${account.id}`;
+
+
+        const option =
+            document.createElement("option");
+
+        option.value =
+            String(account.id);
+
+        option.textContent =
+            name;
+
+        filter.appendChild(option);
+    });
 }
 
-/* =========================================================
-   CATEGORY NAME
-========================================================= */
+
+/*
+=========================================================
+CATEGORY NAME
+=========================================================
+*/
 
 function getCategoryName(category) {
-  if (typeof category === "string") {
-    return category;
-  }
 
-  if (category && typeof category === "object") {
-    return category.name || category.categoryName || category.title || "";
-  }
+    if (typeof category === "string") {
+        return category;
+    }
 
-  return "";
+
+    if (
+        category &&
+        typeof category === "object"
+    ) {
+
+        return (
+            category.name ||
+            category.categoryName ||
+            category.title ||
+            ""
+        );
+    }
+
+
+    return "";
 }
 
-/* =========================================================
-   OPEN TRANSACTION MODAL
-========================================================= */
+
+/*
+=========================================================
+OPEN TRANSACTION MODAL
+=========================================================
+*/
 
 function openTransactionModal(transaction = null) {
-  const modal = document.getElementById("transactionModal");
 
-  const form = document.getElementById("transactionForm");
+    const modal =
+        document.getElementById("transactionModal");
 
-  if (!modal || !form) {
-    return;
-  }
+    const form =
+        document.getElementById("transactionForm");
 
-  editingTransactionId = transaction?.id ?? null;
+    if (!modal || !form) {
+        return;
+    }
 
-  form.reset();
 
-  const modalTitle = document.getElementById("modalTitle");
+    editingTransactionId =
+        transaction?.id ?? null;
 
-  if (modalTitle) {
-    modalTitle.textContent = transaction
-      ? "Edit Transaction"
-      : "Add Transaction";
-  }
 
-  const amount = document.getElementById("amount");
+    form.reset();
 
-  const description = document.getElementById("description");
 
-  const accountId = document.getElementById("accountId");
+    const modalTitle =
+        document.getElementById("modalTitle");
 
-  const categoryId = document.getElementById("categoryId");
+    if (modalTitle) {
 
-  const date = document.getElementById("transactionDate");
+        modalTitle.textContent =
+            transaction
+                ? "Edit Transaction"
+                : "Add Transaction";
+    }
 
-  const notes = document.getElementById("notes");
 
-  const reference = document.getElementById("reference");
+    const amount =
+        document.getElementById("amount");
 
-  if (transaction) {
+    const description =
+        document.getElementById("description");
+
+    const accountId =
+        document.getElementById("accountId");
+
+    const categoryId =
+        document.getElementById("categoryId");
+
+    const date =
+        document.getElementById("transactionDate");
+
+    const notes =
+        document.getElementById("notes");
+
+    const reference =
+        document.getElementById("reference");
+
+
+    if (transaction) {
+
+        if (amount) {
+            amount.value =
+                transaction.amount ?? "";
+        }
+
+
+        if (description) {
+
+            description.value =
+                transaction.description ||
+                transaction.title ||
+                "";
+        }
+
+
+        if (accountId) {
+
+            accountId.value =
+                transaction.accountId ??
+                transaction.account?.id ??
+                "";
+        }
+
+
+        if (categoryId) {
+
+            categoryId.value =
+                transaction.categoryId ??
+                (
+                    typeof transaction.category ===
+                    "object"
+                        ? transaction.category?.id
+                        : transaction.category
+                ) ??
+                "";
+        }
+
+
+        if (date) {
+
+            date.value =
+                formatDateForInput(
+                    transaction.transactionDate
+                );
+        }
+
+
+        if (notes) {
+            notes.value =
+                transaction.notes || "";
+        }
+
+
+        if (reference) {
+            reference.value =
+                transaction.reference || "";
+        }
+
+
+        const type =
+            String(
+                transaction.type ||
+                "EXPENSE"
+            ).toUpperCase();
+
+
+        const typeRadio =
+            document.querySelector(
+                `input[name="transactionType"][value="${type}"]`
+            );
+
+
+        if (typeRadio) {
+            typeRadio.checked = true;
+        }
+
+    } else {
+
+        if (date) {
+            date.value =
+                getTodayDate();
+        }
+
+
+        const expenseRadio =
+            document.querySelector(
+                'input[name="transactionType"][value="EXPENSE"]'
+            );
+
+
+        if (expenseRadio) {
+            expenseRadio.checked = true;
+        }
+    }
+
+
+    clearModalMessage();
+
+    modal.classList.add("active");
+
+    modal.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+
+    document.body.style.overflow =
+        "hidden";
+
+
     if (amount) {
-      amount.value = transaction.amount ?? "";
+
+        setTimeout(
+            () => amount.focus(),
+            100
+        );
     }
-
-    if (description) {
-      description.value = transaction.description || transaction.title || "";
-    }
-
-    if (accountId) {
-      accountId.value = transaction.accountId ?? transaction.account?.id ?? "";
-    }
-
-    if (categoryId) {
-      categoryId.value = transaction.categoryId ?? transaction.category ?? "";
-    }
-
-    if (date) {
-      date.value = formatDateForInput(transaction.transactionDate);
-    }
-
-    if (notes) {
-      notes.value = transaction.notes || "";
-    }
-
-    if (reference) {
-      reference.value = transaction.reference || "";
-    }
-
-    const type = String(transaction.type || "EXPENSE").toUpperCase();
-
-    const typeRadio = document.querySelector(
-      `input[name="transactionType"][value="${type}"]`,
-    );
-
-    if (typeRadio) {
-      typeRadio.checked = true;
-    }
-  } else {
-    if (date) {
-      date.value = getTodayDate();
-    }
-
-    const incomeRadio = document.querySelector(
-      'input[name="transactionType"][value="INCOME"]',
-    );
-
-    if (incomeRadio) {
-      incomeRadio.checked = true;
-    }
-  }
-
-  clearModalMessage();
-
-  modal.classList.add("active");
-
-  modal.setAttribute("aria-hidden", "false");
-
-  document.body.style.overflow = "hidden";
-
-  if (amount) {
-    setTimeout(() => amount.focus(), 100);
-  }
 }
 
-/* =========================================================
-   CLOSE TRANSACTION MODAL
-========================================================= */
+
+/*
+=========================================================
+CLOSE TRANSACTION MODAL
+=========================================================
+*/
 
 function closeTransactionModal() {
-  const modal = document.getElementById("transactionModal");
 
-  if (!modal) {
-    return;
-  }
+    const modal =
+        document.getElementById("transactionModal");
 
-  modal.classList.remove("active");
+    if (!modal) {
+        return;
+    }
 
-  modal.setAttribute("aria-hidden", "true");
 
-  editingTransactionId = null;
+    modal.classList.remove("active");
 
-  document.body.style.overflow = "";
+    modal.setAttribute(
+        "aria-hidden",
+        "true"
+    );
 
-  clearModalMessage();
+
+    editingTransactionId = null;
+
+    document.body.style.overflow =
+        "";
+
+    clearModalMessage();
 }
 
-/* =========================================================
-   HANDLE TRANSACTION SUBMIT
-========================================================= */
+
+/*
+=========================================================
+HANDLE TRANSACTION SUBMIT
+=========================================================
+*/
 
 async function handleTransactionSubmit(event) {
-  event.preventDefault();
 
-  const type = getSelectedTransactionType();
+    event.preventDefault();
 
-  const amount = parseFloat(getValue("amount"));
 
-  const description = getValue("description");
+    const type =
+        getSelectedTransactionType();
 
-  const accountId = getValue("accountId");
+    const amount =
+        parseFloat(
+            getValue("amount")
+        );
 
-  const categoryId = getValue("categoryId");
+    const description =
+        getValue("description");
 
-  const transactionDate = getValue("transactionDate");
+    const accountId =
+        getValue("accountId");
 
-  const notes = getValue("notes");
+    const categoryId =
+        getValue("categoryId");
 
-  const reference = getValue("reference");
+    const transactionDate =
+        getValue("transactionDate");
 
-  /* =====================================================
-       VALIDATION
-    ===================================================== */
+    const notes =
+        getValue("notes");
 
-  if (!amount || amount <= 0) {
-    showModalMessage("Please enter a valid amount.", "error");
+    const reference =
+        getValue("reference");
 
-    return;
-  }
 
-  if (!description) {
-    showModalMessage("Please enter a transaction description.", "error");
+    /*
+    =====================================================
+    VALIDATION
+    =====================================================
+    */
 
-    return;
-  }
+    if (!amount || amount <= 0) {
 
-  if (!type) {
-    showModalMessage("Please select a transaction type.", "error");
+        showModalMessage(
+            "Please enter a valid amount.",
+            "error"
+        );
 
-    return;
-  }
-
-  if (!accountId) {
-    showModalMessage("Please select an account.", "error");
-
-    return;
-  }
-
-  if (!transactionDate) {
-    showModalMessage("Please select a transaction date.", "error");
-
-    return;
-  }
-
-  /* =====================================================
-       PAYLOAD
-    ===================================================== */
-
-  const payload = {
-    title: description,
-
-    description: description,
-
-    amount: amount,
-
-    type: type,
-
-    category: categoryId || null,
-
-    categoryId: categoryId || null,
-
-    accountId: Number(accountId),
-
-    transactionDate: transactionDate,
-
-    notes: notes || null,
-
-    reference: reference || null,
-  };
-
-  const saveButton = document.getElementById("saveButton");
-
-  try {
-    if (saveButton) {
-      saveButton.disabled = true;
+        return;
     }
 
-    let response;
 
-    /* =================================================
-           UPDATE
-        ================================================= */
+    if (!description) {
 
-    if (editingTransactionId) {
-      response = await FinanceAPI.put(
-        `/transactions/${editingTransactionId}`,
-        payload,
-      );
+        showModalMessage(
+            "Please enter a transaction description.",
+            "error"
+        );
 
-      showMessage("Transaction updated successfully.", "success");
-    } else {
-      /* =================================================
-           CREATE
-        ================================================= */
-      response = await FinanceAPI.post("/transactions", payload);
-
-      showMessage("Transaction added successfully.", "success");
+        return;
     }
 
-    console.log("Transaction response:", response);
 
-    closeTransactionModal();
+    if (!type) {
 
-    await loadTransactions();
+        showModalMessage(
+            "Please select a transaction type.",
+            "error"
+        );
 
-    renderTransactions();
-
-    updateStatistics();
-  } catch (error) {
-    console.error("Transaction save failed:", error);
-
-    showModalMessage(error?.message || "Unable to save transaction.", "error");
-  } finally {
-    if (saveButton) {
-      saveButton.disabled = false;
+        return;
     }
-  }
+
+
+    if (!accountId) {
+
+        showModalMessage(
+            "Please select an account.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (!transactionDate) {
+
+        showModalMessage(
+            "Please select a transaction date.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    /*
+    =====================================================
+    PAYLOAD
+    =====================================================
+    */
+
+    const payload = {
+
+        title: description,
+
+        description: description,
+
+        amount: amount,
+
+        type: type,
+
+        category:
+            categoryId || null,
+
+        categoryId:
+            categoryId || null,
+
+        accountId:
+            Number(accountId),
+
+        transactionDate:
+            transactionDate,
+
+        notes:
+            notes || null,
+
+        reference:
+            reference || null
+    };
+
+
+    const saveButton =
+        document.getElementById("saveButton");
+
+
+    try {
+
+        if (saveButton) {
+            saveButton.disabled = true;
+        }
+
+
+        let response;
+
+
+        /*
+        =================================================
+        UPDATE
+        =================================================
+        */
+
+        if (editingTransactionId) {
+
+            response =
+                await FinanceAPI.transactions.update(
+                    editingTransactionId,
+                    payload
+                );
+
+
+            showMessage(
+                "Transaction updated successfully.",
+                "success"
+            );
+
+        } else {
+
+            /*
+            =================================================
+            CREATE
+            =================================================
+            */
+
+            response =
+                await FinanceAPI.transactions.create(
+                    payload
+                );
+
+
+            showMessage(
+                "Transaction added successfully.",
+                "success"
+            );
+        }
+
+
+        console.log(
+            "Transaction response:",
+            response
+        );
+
+
+        closeTransactionModal();
+
+        await loadTransactions();
+
+        renderTransactions();
+
+        updateStatistics();
+
+    } catch (error) {
+
+        console.error(
+            "Transaction save failed:",
+            error
+        );
+
+
+        showModalMessage(
+            getErrorMessage(error),
+            "error"
+        );
+
+    } finally {
+
+        if (saveButton) {
+            saveButton.disabled = false;
+        }
+    }
 }
 
-/* =========================================================
-   GET SELECTED TYPE
-========================================================= */
+
+/*
+=========================================================
+GET SELECTED TYPE
+=========================================================
+*/
 
 function getSelectedTransactionType() {
-  const selected = document.querySelector(
-    'input[name="transactionType"]:checked',
-  );
 
-  return selected ? selected.value : "";
+    const selected =
+        document.querySelector(
+            'input[name="transactionType"]:checked'
+        );
+
+    return selected
+        ? selected.value
+        : "";
 }
 
-/* =========================================================
-   RENDER TRANSACTIONS
-========================================================= */
+
+/*
+=========================================================
+RENDER TRANSACTIONS
+=========================================================
+*/
 
 function renderTransactions() {
-  const table = document.getElementById("transactionTable");
 
-  if (!table) {
-    return;
-  }
+    const table =
+        document.getElementById(
+            "transactionTable"
+        );
 
-  const emptyState = document.getElementById("emptyState");
-
-  const searchInput = document.getElementById("searchInput");
-
-  const typeFilter = document.getElementById("typeFilter");
-
-  const categoryFilter = document.getElementById("categoryFilter");
-
-  const accountFilter = document.getElementById("accountFilter");
-
-  const sortFilter = document.getElementById("sortFilter");
-
-  const search = (searchInput?.value || "").trim().toLowerCase();
-
-  const type = typeFilter?.value || "all";
-
-  const category = categoryFilter?.value || "all";
-
-  const account = accountFilter?.value || "all";
-
-  const sort = sortFilter?.value || "newest";
-
-  let filtered = [...transactions];
-
-  /* SEARCH */
-
-  if (search) {
-    filtered = filtered.filter((transaction) => {
-      const title = String(
-        transaction.title || transaction.description || "",
-      ).toLowerCase();
-
-      const categoryName = getTransactionCategory(transaction).toLowerCase();
-
-      const accountName = getTransactionAccount(transaction).toLowerCase();
-
-      return (
-        title.includes(search) ||
-        categoryName.includes(search) ||
-        accountName.includes(search)
-      );
-    });
-  }
-
-  /* TYPE */
-
-  if (type !== "all") {
-    filtered = filtered.filter((transaction) => {
-      return String(transaction.type || "").toLowerCase() === type;
-    });
-  }
-
-  /* CATEGORY */
-
-  if (category !== "all") {
-    filtered = filtered.filter((transaction) => {
-      return (
-        getTransactionCategory(transaction).toLowerCase() ===
-        category.toLowerCase()
-      );
-    });
-  }
-
-  /* ACCOUNT */
-
-  if (account !== "all") {
-    filtered = filtered.filter((transaction) => {
-      return (
-        String(transaction.accountId ?? transaction.account?.id ?? "") ===
-        String(account)
-      );
-    });
-  }
-
-  /* SORT */
-
-  filtered.sort((a, b) => {
-    if (sort === "highest") {
-      return Number(b.amount || 0) - Number(a.amount || 0);
+    if (!table) {
+        return;
     }
 
-    if (sort === "lowest") {
-      return Number(a.amount || 0) - Number(b.amount || 0);
+
+    const emptyState =
+        document.getElementById(
+            "emptyState"
+        );
+
+
+    const searchInput =
+        document.getElementById(
+            "searchInput"
+        );
+
+
+    const typeFilter =
+        document.getElementById(
+            "typeFilter"
+        );
+
+
+    const categoryFilter =
+        document.getElementById(
+            "categoryFilter"
+        );
+
+
+    const accountFilter =
+        document.getElementById(
+            "accountFilter"
+        );
+
+
+    const sortFilter =
+        document.getElementById(
+            "sortFilter"
+        );
+
+
+    const search =
+        (
+            searchInput?.value || ""
+        )
+            .trim()
+            .toLowerCase();
+
+
+    const type =
+        typeFilter?.value ||
+        "all";
+
+
+    const category =
+        categoryFilter?.value ||
+        "all";
+
+
+    const account =
+        accountFilter?.value ||
+        "all";
+
+
+    const sort =
+        sortFilter?.value ||
+        "newest";
+
+
+    let filtered =
+        [...transactions];
+
+
+    /*
+    =====================================================
+    SEARCH
+    =====================================================
+    */
+
+    if (search) {
+
+        filtered =
+            filtered.filter(
+                (transaction) => {
+
+                    const title =
+                        String(
+                            transaction.title ||
+                            transaction.description ||
+                            ""
+                        ).toLowerCase();
+
+
+                    const categoryName =
+                        getTransactionCategory(
+                            transaction
+                        ).toLowerCase();
+
+
+                    const accountName =
+                        getTransactionAccount(
+                            transaction
+                        ).toLowerCase();
+
+
+                    return (
+                        title.includes(search) ||
+                        categoryName.includes(search) ||
+                        accountName.includes(search)
+                    );
+                }
+            );
     }
 
-    const dateA = new Date(a.transactionDate || a.createdAt || 0).getTime();
 
-    const dateB = new Date(b.transactionDate || b.createdAt || 0).getTime();
+    /*
+    =====================================================
+    TYPE
+    =====================================================
+    */
 
-    if (sort === "oldest") {
-      return dateA - dateB;
+    if (type !== "all") {
+
+        filtered =
+            filtered.filter(
+                (transaction) => {
+
+                    return (
+                        String(
+                            transaction.type || ""
+                        ).toLowerCase() ===
+                        type.toLowerCase()
+                    );
+                }
+            );
     }
 
-    return dateB - dateA;
-  });
 
-  updateResultText(filtered.length);
+    /*
+    =====================================================
+    CATEGORY
+    =====================================================
+    */
 
-  /* =====================================================
-       NO DATA
-    ===================================================== */
+    if (category !== "all") {
 
-  if (filtered.length === 0) {
-    table.innerHTML = "";
+        filtered =
+            filtered.filter(
+                (transaction) => {
+
+                    return (
+                        getTransactionCategory(
+                            transaction
+                        ).toLowerCase() ===
+                        category.toLowerCase()
+                    );
+                }
+            );
+    }
+
+
+    /*
+    =====================================================
+    ACCOUNT
+    =====================================================
+    */
+
+    if (account !== "all") {
+
+        filtered =
+            filtered.filter(
+                (transaction) => {
+
+                    return (
+                        String(
+                            transaction.accountId ??
+                            transaction.account?.id ??
+                            ""
+                        ) === String(account)
+                    );
+                }
+            );
+    }
+
+
+    /*
+    =====================================================
+    SORT
+    =====================================================
+    */
+
+    filtered.sort(
+        (a, b) => {
+
+            if (sort === "highest") {
+
+                return (
+                    Number(b.amount || 0) -
+                    Number(a.amount || 0)
+                );
+            }
+
+
+            if (sort === "lowest") {
+
+                return (
+                    Number(a.amount || 0) -
+                    Number(b.amount || 0)
+                );
+            }
+
+
+            const dateA =
+                new Date(
+                    a.transactionDate ||
+                    a.createdAt ||
+                    0
+                ).getTime();
+
+
+            const dateB =
+                new Date(
+                    b.transactionDate ||
+                    b.createdAt ||
+                    0
+                ).getTime();
+
+
+            if (sort === "oldest") {
+                return dateA - dateB;
+            }
+
+
+            return dateB - dateA;
+        }
+    );
+
+
+    updateResultText(
+        filtered.length
+    );
+
+
+    /*
+    =====================================================
+    EMPTY STATE
+    =====================================================
+    */
+
+    if (filtered.length === 0) {
+
+        table.innerHTML = "";
+
+
+        if (emptyState) {
+            emptyState.classList.add(
+                "visible"
+            );
+        }
+
+        return;
+    }
+
 
     if (emptyState) {
-      emptyState.classList.add("visible");
+
+        emptyState.classList.remove(
+            "visible"
+        );
     }
 
-    return;
-  }
 
-  if (emptyState) {
-    emptyState.classList.remove("visible");
-  }
-
-  /* =====================================================
-       RENDER ROWS
-    ===================================================== */
-
-  table.innerHTML = filtered.map(createTransactionRow).join("");
+    table.innerHTML =
+        filtered
+            .map(createTransactionRow)
+            .join("");
 }
 
-/* =========================================================
-   CREATE TRANSACTION ROW
-========================================================= */
+
+/*
+=========================================================
+CREATE TRANSACTION ROW
+=========================================================
+*/
 
 function createTransactionRow(transaction) {
-  const id = transaction.id;
 
-  const type = String(transaction.type || "EXPENSE").toUpperCase();
+    const id =
+        transaction.id;
 
-  const isIncome = type === "INCOME";
 
-  const amount = Number(transaction.amount || 0);
+    const type =
+        String(
+            transaction.type ||
+            "EXPENSE"
+        ).toUpperCase();
 
-  const title =
-    transaction.title || transaction.description || "Untitled Transaction";
 
-  const category = getTransactionCategory(transaction) || "Uncategorized";
+    const isIncome =
+        type === "INCOME";
 
-  const account = getTransactionAccount(transaction) || "Unknown";
 
-  const date = formatDisplayDate(transaction.transactionDate);
+    const amount =
+        Number(
+            transaction.amount || 0
+        );
 
-  const icon = isIncome ? "fa-arrow-down" : "fa-arrow-up";
 
-  const amountClass = isIncome ? "amount-income" : "amount-expense";
+    const title =
+        transaction.title ||
+        transaction.description ||
+        "Untitled Transaction";
 
-  const typeClass = isIncome ? "income" : "expense";
 
-  const sign = isIncome ? "+" : "-";
+    const category =
+        getTransactionCategory(
+            transaction
+        ) ||
+        "Uncategorized";
 
-  return `
+
+    const account =
+        getTransactionAccount(
+            transaction
+        ) ||
+        "Unknown";
+
+
+    const date =
+        formatDisplayDate(
+            transaction.transactionDate
+        );
+
+
+    const icon =
+        isIncome
+            ? "fa-arrow-down"
+            : "fa-arrow-up";
+
+
+    const amountClass =
+        isIncome
+            ? "amount-income"
+            : "amount-expense";
+
+
+    const typeClass =
+        isIncome
+            ? "income"
+            : "expense";
+
+
+    const sign =
+        isIncome
+            ? "+"
+            : "-";
+
+
+    return `
 
         <tr data-id="${escapeHTML(id)}">
 
@@ -1141,14 +1723,17 @@ function createTransactionRow(transaction) {
                             ${escapeHTML(title)}
                         </strong>
 
+
                         ${
-                          transaction.reference
-                            ? `
+                            transaction.reference
+                                ? `
                                     <small>
-                                        ${escapeHTML(transaction.reference)}
+                                        ${escapeHTML(
+                                            transaction.reference
+                                        )}
                                     </small>
                                   `
-                            : ""
+                                : ""
                         }
 
                     </div>
@@ -1182,9 +1767,15 @@ function createTransactionRow(transaction) {
 
             <td>
 
-                <span class="type-badge ${typeClass}">
+                <span
+                    class="type-badge ${typeClass}"
+                >
 
-                    ${isIncome ? "Income" : "Expense"}
+                    ${
+                        isIncome
+                            ? "Income"
+                            : "Expense"
+                    }
 
                 </span>
 
@@ -1193,7 +1784,9 @@ function createTransactionRow(transaction) {
 
             <td>
 
-                <strong class="${amountClass}">
+                <strong
+                    class="${amountClass}"
+                >
 
                     ${sign}${formatCurrency(amount)}
 
@@ -1240,592 +1833,1257 @@ function createTransactionRow(transaction) {
     `;
 }
 
-/* =========================================================
-   EDIT TRANSACTION
-========================================================= */
+
+/*
+=========================================================
+EDIT TRANSACTION
+=========================================================
+*/
 
 function editTransaction(id) {
-  const transaction = transactions.find(
-    (item) => Number(item.id) === Number(id),
-  );
 
-  if (!transaction) {
-    showMessage("Transaction not found.", "error");
+    const transaction =
+        transactions.find(
+            (item) =>
+                Number(item.id) ===
+                Number(id)
+        );
 
-    return;
-  }
 
-  openTransactionModal(transaction);
+    if (!transaction) {
+
+        showMessage(
+            "Transaction not found.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    openTransactionModal(
+        transaction
+    );
 }
 
-/* =========================================================
-   DELETE TRANSACTION
-========================================================= */
+
+/*
+=========================================================
+DELETE TRANSACTION
+=========================================================
+*/
 
 function deleteTransaction(id) {
-  const transaction = transactions.find(
-    (item) => Number(item.id) === Number(id),
-  );
 
-  if (!transaction) {
-    showMessage("Transaction not found.", "error");
+    const transaction =
+        transactions.find(
+            (item) =>
+                Number(item.id) ===
+                Number(id)
+        );
 
-    return;
-  }
 
-  deletingTransactionId = id;
+    if (!transaction) {
 
-  const overlay = document.getElementById("confirmOverlay");
+        showMessage(
+            "Transaction not found.",
+            "error"
+        );
 
-  if (!overlay) {
-    return;
-  }
+        return;
+    }
 
-  overlay.classList.add("active");
 
-  overlay.setAttribute("aria-hidden", "false");
+    deletingTransactionId =
+        id;
 
-  document.body.style.overflow = "hidden";
+
+    const overlay =
+        document.getElementById(
+            "confirmOverlay"
+        );
+
+
+    if (!overlay) {
+        return;
+    }
+
+
+    overlay.classList.add(
+        "active"
+    );
+
+
+    overlay.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+
+
+    document.body.style.overflow =
+        "hidden";
 }
 
-/* =========================================================
-   CLOSE DELETE CONFIRMATION
-========================================================= */
+
+/*
+=========================================================
+CLOSE DELETE CONFIRMATION
+=========================================================
+*/
 
 function closeDeleteConfirmation() {
-  const overlay = document.getElementById("confirmOverlay");
 
-  if (overlay) {
-    overlay.classList.remove("active");
+    const overlay =
+        document.getElementById(
+            "confirmOverlay"
+        );
 
-    overlay.setAttribute("aria-hidden", "true");
-  }
 
-  deletingTransactionId = null;
+    if (overlay) {
 
-  document.body.style.overflow = "";
+        overlay.classList.remove(
+            "active"
+        );
+
+        overlay.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+    }
+
+
+    deletingTransactionId =
+        null;
+
+
+    document.body.style.overflow =
+        "";
 }
 
-/* =========================================================
-   CONFIRM DELETE
-========================================================= */
+
+/*
+=========================================================
+CONFIRM DELETE
+=========================================================
+*/
 
 async function confirmDeleteTransaction() {
-  if (!deletingTransactionId) {
-    closeDeleteConfirmation();
 
-    return;
-  }
+    if (!deletingTransactionId) {
 
-  const id = deletingTransactionId;
+        closeDeleteConfirmation();
 
-  const deleteButton = document.getElementById("confirmDelete");
-
-  try {
-    if (deleteButton) {
-      deleteButton.disabled = true;
-
-      deleteButton.textContent = "Deleting...";
+        return;
     }
 
-    await FinanceAPI.delete(`/transactions/${id}`);
 
-    closeDeleteConfirmation();
+    const id =
+        deletingTransactionId;
 
-    showMessage("Transaction deleted successfully.", "success");
 
-    await loadTransactions();
+    const deleteButton =
+        document.getElementById(
+            "confirmDelete"
+        );
 
-    renderTransactions();
 
-    updateStatistics();
-  } catch (error) {
-    console.error("Transaction deletion failed:", error);
+    try {
 
-    showMessage(error?.message || "Unable to delete transaction.", "error");
-  } finally {
-    if (deleteButton) {
-      deleteButton.disabled = false;
+        if (deleteButton) {
 
-      deleteButton.textContent = "Delete";
+            deleteButton.disabled =
+                true;
+
+            deleteButton.textContent =
+                "Deleting...";
+        }
+
+
+        /*
+        IMPORTANT:
+        Current API:
+
+        FinanceAPI.transactions.delete(id)
+        */
+
+        await FinanceAPI.transactions.delete(
+            id
+        );
+
+
+        closeDeleteConfirmation();
+
+
+        showMessage(
+            "Transaction deleted successfully.",
+            "success"
+        );
+
+
+        await loadTransactions();
+
+        renderTransactions();
+
+        updateStatistics();
+
+    } catch (error) {
+
+        console.error(
+            "Transaction deletion failed:",
+            error
+        );
+
+
+        showMessage(
+            getErrorMessage(error),
+            "error"
+        );
+
+    } finally {
+
+        if (deleteButton) {
+
+            deleteButton.disabled =
+                false;
+
+            deleteButton.textContent =
+                "Delete";
+        }
     }
-  }
 }
 
-/* =========================================================
-   UPDATE STATISTICS
-========================================================= */
+
+/*
+=========================================================
+STATISTICS
+=========================================================
+*/
 
 function updateStatistics() {
-  let totalIncome = 0;
 
-  let totalExpenses = 0;
+    let totalIncome = 0;
 
-  transactions.forEach((transaction) => {
-    const amount = Number(transaction.amount || 0);
+    let totalExpenses = 0;
 
-    const type = String(transaction.type || "").toUpperCase();
 
-    if (type === "INCOME") {
-      totalIncome += amount;
-    } else {
-      totalExpenses += amount;
+    transactions.forEach(
+        (transaction) => {
+
+            const amount =
+                Number(
+                    transaction.amount || 0
+                );
+
+
+            const type =
+                String(
+                    transaction.type || ""
+                ).toUpperCase();
+
+
+            if (type === "INCOME") {
+
+                totalIncome +=
+                    amount;
+
+            } else {
+
+                totalExpenses +=
+                    amount;
+            }
+        }
+    );
+
+
+    const netBalance =
+        totalIncome -
+        totalExpenses;
+
+
+    setText(
+        "totalTransactions",
+        transactions.length
+    );
+
+
+    setText(
+        "totalIncome",
+        formatCurrency(
+            totalIncome
+        )
+    );
+
+
+    setText(
+        "totalExpenses",
+        formatCurrency(
+            totalExpenses
+        )
+    );
+
+
+    setText(
+        "netBalance",
+        formatCurrency(
+            netBalance
+        )
+    );
+
+
+    const netElement =
+        document.getElementById(
+            "netBalance"
+        );
+
+
+    if (netElement) {
+
+        netElement.style.color =
+            netBalance >= 0
+                ? "var(--green)"
+                : "var(--red)";
     }
-  });
-
-  const netBalance = totalIncome - totalExpenses;
-
-  setText("totalTransactions", transactions.length);
-
-  setText("totalIncome", formatCurrency(totalIncome));
-
-  setText("totalExpenses", formatCurrency(totalExpenses));
-
-  setText("netBalance", formatCurrency(netBalance));
-
-  const netElement = document.getElementById("netBalance");
-
-  if (netElement) {
-    netElement.style.color = netBalance >= 0 ? "var(--green)" : "var(--red)";
-  }
 }
 
-/* =========================================================
-   RESULT TEXT
-========================================================= */
+
+/*
+=========================================================
+RESULT TEXT
+=========================================================
+*/
 
 function updateResultText(count) {
-  const resultText = document.getElementById("resultText");
 
-  if (!resultText) {
-    return;
-  }
+    const resultText =
+        document.getElementById(
+            "resultText"
+        );
 
-  resultText.textContent = `${count} ${
-    count === 1 ? "transaction" : "transactions"
-  }`;
+
+    if (!resultText) {
+        return;
+    }
+
+
+    resultText.textContent =
+        `${count} ${
+            count === 1
+                ? "transaction"
+                : "transactions"
+        }`;
 }
 
-/* =========================================================
-   CLEAR FILTERS
-========================================================= */
+
+/*
+=========================================================
+CLEAR FILTERS
+=========================================================
+*/
 
 function clearAllFilters() {
-  const search = document.getElementById("searchInput");
 
-  const type = document.getElementById("typeFilter");
+    const search =
+        document.getElementById(
+            "searchInput"
+        );
 
-  const category = document.getElementById("categoryFilter");
 
-  const account = document.getElementById("accountFilter");
+    const type =
+        document.getElementById(
+            "typeFilter"
+        );
 
-  const sort = document.getElementById("sortFilter");
 
-  if (search) {
-    search.value = "";
-  }
+    const category =
+        document.getElementById(
+            "categoryFilter"
+        );
 
-  if (type) {
-    type.value = "all";
-  }
 
-  if (category) {
-    category.value = "all";
-  }
+    const account =
+        document.getElementById(
+            "accountFilter"
+        );
 
-  if (account) {
-    account.value = "all";
-  }
 
-  if (sort) {
-    sort.value = "newest";
-  }
+    const sort =
+        document.getElementById(
+            "sortFilter"
+        );
 
-  renderTransactions();
-}
 
-/* =========================================================
-   REFRESH
-========================================================= */
-
-async function refreshTransactions() {
-  const button = document.getElementById("refreshButton");
-
-  try {
-    if (button) {
-      button.disabled = true;
-
-      button.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
+    if (search) {
+        search.value = "";
     }
 
-    await Promise.all([loadAccounts(), loadCategories(), loadTransactions()]);
 
-    populateAccountFilter();
-    populateCategoryFilter();
+    if (type) {
+        type.value = "all";
+    }
+
+
+    if (category) {
+        category.value = "all";
+    }
+
+
+    if (account) {
+        account.value = "all";
+    }
+
+
+    if (sort) {
+        sort.value = "newest";
+    }
+
 
     renderTransactions();
-    updateStatistics();
-
-    showMessage("Transactions refreshed.", "success");
-  } catch (error) {
-    console.error("Refresh failed:", error);
-
-    showMessage("Unable to refresh transactions.", "error");
-  } finally {
-    if (button) {
-      button.disabled = false;
-
-      button.innerHTML = `<i class="fa-solid fa-rotate"></i>`;
-    }
-  }
 }
 
-/* =========================================================
-   EXPORT CSV
-========================================================= */
+
+/*
+=========================================================
+REFRESH
+=========================================================
+*/
+
+async function refreshTransactions() {
+
+    const button =
+        document.getElementById(
+            "refreshButton"
+        );
+
+
+    try {
+
+        if (button) {
+
+            button.disabled =
+                true;
+
+            button.innerHTML =
+                `<i class="fa-solid fa-spinner fa-spin"></i>`;
+        }
+
+
+        await Promise.all([
+            loadAccounts(),
+            loadTransactions()
+        ]);
+
+
+        categories = [];
+
+
+        populateAccountFilter();
+        populateCategoryFilter();
+
+        renderTransactions();
+
+        updateStatistics();
+
+
+        showMessage(
+            "Transactions refreshed.",
+            "success"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Refresh failed:",
+            error
+        );
+
+
+        showMessage(
+            "Unable to refresh transactions.",
+            "error"
+        );
+
+    } finally {
+
+        if (button) {
+
+            button.disabled =
+                false;
+
+            button.innerHTML =
+                `<i class="fa-solid fa-rotate"></i>`;
+        }
+    }
+}
+
+
+/*
+=========================================================
+EXPORT CSV
+=========================================================
+*/
 
 function exportTransactionsCSV() {
-  if (transactions.length === 0) {
-    showMessage("There are no transactions to export.", "error");
 
-    return;
-  }
+    if (transactions.length === 0) {
 
-  const rows = [];
+        showMessage(
+            "There are no transactions to export.",
+            "error"
+        );
 
-  rows.push([
-    "Date",
-    "Transaction",
-    "Category",
-    "Account",
-    "Type",
-    "Amount",
-    "Notes",
-    "Reference",
-  ]);
+        return;
+    }
 
-  transactions.forEach((transaction) => {
+
+    const rows = [];
+
+
     rows.push([
-      formatDisplayDate(transaction.transactionDate),
-
-      transaction.title || transaction.description || "",
-
-      getTransactionCategory(transaction),
-
-      getTransactionAccount(transaction),
-
-      transaction.type || "",
-
-      Number(transaction.amount || 0).toFixed(2),
-
-      transaction.notes || "",
-
-      transaction.reference || "",
+        "Date",
+        "Transaction",
+        "Category",
+        "Account",
+        "Type",
+        "Amount",
+        "Notes",
+        "Reference"
     ]);
-  });
 
-  const csv = rows.map((row) => row.map(csvEscape).join(",")).join("\n");
 
-  const blob = new Blob([csv], {
-    type: "text/csv;charset=utf-8;",
-  });
+    transactions.forEach(
+        (transaction) => {
 
-  const url = URL.createObjectURL(blob);
+            rows.push([
 
-  const link = document.createElement("a");
+                formatDisplayDate(
+                    transaction.transactionDate
+                ),
 
-  link.href = url;
+                transaction.title ||
+                transaction.description ||
+                "",
 
-  link.download = "finance-transactions.csv";
+                getTransactionCategory(
+                    transaction
+                ),
 
-  document.body.appendChild(link);
+                getTransactionAccount(
+                    transaction
+                ),
 
-  link.click();
+                transaction.type ||
+                "",
 
-  document.body.removeChild(link);
+                Number(
+                    transaction.amount || 0
+                ).toFixed(2),
 
-  URL.revokeObjectURL(url);
+                transaction.notes ||
+                "",
 
-  showMessage("Transactions exported successfully.", "success");
+                transaction.reference ||
+                ""
+            ]);
+        }
+    );
+
+
+    const csv =
+        rows
+            .map(
+                (row) =>
+                    row
+                        .map(csvEscape)
+                        .join(",")
+            )
+            .join("\n");
+
+
+    const blob =
+        new Blob(
+            [csv],
+            {
+                type:
+                    "text/csv;charset=utf-8;"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+
+    link.href =
+        url;
+
+
+    link.download =
+        "finance-transactions.csv";
+
+
+    document.body.appendChild(
+        link
+    );
+
+
+    link.click();
+
+
+    document.body.removeChild(
+        link
+    );
+
+
+    URL.revokeObjectURL(
+        url
+    );
+
+
+    showMessage(
+        "Transactions exported successfully.",
+        "success"
+    );
 }
 
-/* =========================================================
-   CSV ESCAPE
-========================================================= */
+
+/*
+=========================================================
+CSV ESCAPE
+=========================================================
+*/
 
 function csvEscape(value) {
-  const text = String(value ?? "");
 
-  if (text.includes(",") || text.includes('"') || text.includes("\n")) {
-    return `"${text.replace(/"/g, '""')}"`;
-  }
+    const text =
+        String(value ?? "");
 
-  return text;
+
+    if (
+        text.includes(",") ||
+        text.includes('"') ||
+        text.includes("\n")
+    ) {
+
+        return `"${text.replace(
+            /"/g,
+            '""'
+        )}"`;
+    }
+
+
+    return text;
 }
 
-/* =========================================================
-   TRANSACTION CATEGORY
-========================================================= */
 
-function getTransactionCategory(transaction) {
-  if (transaction.category && typeof transaction.category === "object") {
-    return (
-      transaction.category.name ||
-      transaction.category.categoryName ||
-      transaction.category.title ||
-      ""
+/*
+=========================================================
+TRANSACTION CATEGORY
+=========================================================
+*/
+
+function getTransactionCategory(
+    transaction
+) {
+
+    if (
+        transaction.category &&
+        typeof transaction.category ===
+            "object"
+    ) {
+
+        return (
+            transaction.category.name ||
+            transaction.category.categoryName ||
+            transaction.category.title ||
+            ""
+        );
+    }
+
+
+    return String(
+        transaction.categoryName ||
+        transaction.category ||
+        ""
     );
-  }
-
-  return String(transaction.categoryName || transaction.category || "");
 }
 
-/* =========================================================
-   TRANSACTION ACCOUNT
-========================================================= */
 
-function getTransactionAccount(transaction) {
-  if (transaction.account && typeof transaction.account === "object") {
-    return (
-      transaction.account.name ||
-      transaction.account.accountName ||
-      transaction.account.title ||
-      ""
+/*
+=========================================================
+TRANSACTION ACCOUNT
+=========================================================
+*/
+
+function getTransactionAccount(
+    transaction
+) {
+
+    if (
+        transaction.account &&
+        typeof transaction.account ===
+            "object"
+    ) {
+
+        return (
+            transaction.account.name ||
+            transaction.account.accountName ||
+            transaction.account.title ||
+            ""
+        );
+    }
+
+
+    const account =
+        accounts.find(
+            (item) =>
+                Number(item.id) ===
+                Number(
+                    transaction.accountId
+                )
+        );
+
+
+    if (account) {
+
+        return (
+            account.name ||
+            account.accountName ||
+            account.title ||
+            ""
+        );
+    }
+
+
+    return String(
+        transaction.accountName ||
+        ""
     );
-  }
-
-  const account = accounts.find(
-    (item) => Number(item.id) === Number(transaction.accountId),
-  );
-
-  if (account) {
-    return account.name || account.accountName || account.title || "";
-  }
-
-  return String(transaction.accountName || "");
 }
 
-/* =========================================================
-   FORMAT CURRENCY
-========================================================= */
+
+/*
+=========================================================
+FORMAT CURRENCY
+=========================================================
+*/
 
 function formatCurrency(amount) {
-  const value = Number(amount || 0);
 
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value);
+    const value =
+        Number(amount || 0);
+
+
+    return new Intl.NumberFormat(
+        "en-IN",
+        {
+            style: "currency",
+            currency: "INR",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }
+    ).format(value);
 }
 
-/* =========================================================
-   FORMAT DATE
-========================================================= */
+
+/*
+=========================================================
+FORMAT DATE
+=========================================================
+*/
 
 function formatDisplayDate(value) {
-  if (!value) {
-    return "-";
-  }
 
-  const date = new Date(value);
+    if (!value) {
+        return "-";
+    }
 
-  if (Number.isNaN(date.getTime())) {
-    return String(value);
-  }
 
-  return new Intl.DateTimeFormat("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(date);
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return String(value);
+    }
+
+
+    return new Intl.DateTimeFormat(
+        "en-IN",
+        {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        }
+    ).format(date);
 }
 
-/* =========================================================
-   FORMAT DATE FOR INPUT
-========================================================= */
+
+/*
+=========================================================
+FORMAT DATE FOR INPUT
+=========================================================
+*/
 
 function formatDateForInput(value) {
-  if (!value) {
-    return "";
-  }
 
-  if (/^\d{4}-\d{2}-\d{2}$/.test(String(value))) {
-    return String(value);
-  }
+    if (!value) {
+        return "";
+    }
 
-  const date = new Date(value);
 
-  if (Number.isNaN(date.getTime())) {
-    return "";
-  }
+    if (
+        /^\d{4}-\d{2}-\d{2}$/.test(
+            String(value)
+        )
+    ) {
 
-  const year = date.getFullYear();
+        return String(value);
+    }
 
-  const month = String(date.getMonth() + 1).padStart(2, "0");
 
-  const day = String(date.getDate()).padStart(2, "0");
+    const date =
+        new Date(value);
 
-  return `${year}-${month}-${day}`;
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "";
+    }
+
+
+    const year =
+        date.getFullYear();
+
+
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0");
+
+
+    const day =
+        String(
+            date.getDate()
+        ).padStart(2, "0");
+
+
+    return `${year}-${month}-${day}`;
 }
 
-/* =========================================================
-   TODAY
-========================================================= */
+
+/*
+=========================================================
+TODAY DATE
+=========================================================
+*/
 
 function getTodayDate() {
-  const date = new Date();
 
-  const year = date.getFullYear();
+    const date =
+        new Date();
 
-  const month = String(date.getMonth() + 1).padStart(2, "0");
 
-  const day = String(date.getDate()).padStart(2, "0");
+    const year =
+        date.getFullYear();
 
-  return `${year}-${month}-${day}`;
+
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0");
+
+
+    const day =
+        String(
+            date.getDate()
+        ).padStart(2, "0");
+
+
+    return `${year}-${month}-${day}`;
 }
 
-/* =========================================================
-   GET VALUE
-========================================================= */
+
+/*
+=========================================================
+GET VALUE
+=========================================================
+*/
 
 function getValue(id) {
-  const element = document.getElementById(id);
 
-  return element ? element.value.trim() : "";
+    const element =
+        document.getElementById(id);
+
+
+    return element
+        ? element.value.trim()
+        : "";
 }
 
-/* =========================================================
-   SET TEXT
-========================================================= */
+
+/*
+=========================================================
+SET TEXT
+=========================================================
+*/
 
 function setText(id, value) {
-  const element = document.getElementById(id);
 
-  if (element) {
-    element.textContent = value;
-  }
+    const element =
+        document.getElementById(id);
+
+
+    if (element) {
+
+        element.textContent =
+            value;
+    }
 }
 
-/* =========================================================
-   MODAL MESSAGE
-========================================================= */
 
-function showModalMessage(message, type = "error") {
-  const element = document.getElementById("modalMessage");
+/*
+=========================================================
+MODAL MESSAGE
+=========================================================
+*/
 
-  if (!element) {
-    return;
-  }
+function showModalMessage(
+    message,
+    type = "error"
+) {
 
-  element.textContent = message;
+    const element =
+        document.getElementById(
+            "modalMessage"
+        );
 
-  element.className = `modal-message visible ${type}`;
+
+    if (!element) {
+        return;
+    }
+
+
+    element.textContent =
+        message;
+
+
+    element.className =
+        `modal-message visible ${type}`;
 }
 
-/* =========================================================
-   CLEAR MODAL MESSAGE
-========================================================= */
+
+/*
+=========================================================
+CLEAR MODAL MESSAGE
+=========================================================
+*/
 
 function clearModalMessage() {
-  const element = document.getElementById("modalMessage");
 
-  if (!element) {
-    return;
-  }
+    const element =
+        document.getElementById(
+            "modalMessage"
+        );
 
-  element.textContent = "";
 
-  element.className = "modal-message";
+    if (!element) {
+        return;
+    }
+
+
+    element.textContent =
+        "";
+
+
+    element.className =
+        "modal-message";
 }
 
-/* =========================================================
-   TOAST MESSAGE
-========================================================= */
 
-function showMessage(message, type = "success") {
-  const toast = document.getElementById("toast");
+/*
+=========================================================
+TOAST MESSAGE
+=========================================================
+*/
 
-  const toastMessage = document.getElementById("toastMessage");
+function showMessage(
+    message,
+    type = "success"
+) {
 
-  const toastIcon = document.getElementById("toastIcon");
+    const toast =
+        document.getElementById(
+            "toast"
+        );
 
-  if (!toast) {
-    return;
-  }
 
-  if (toastMessage) {
-    toastMessage.textContent = message;
-  }
+    const toastMessage =
+        document.getElementById(
+            "toastMessage"
+        );
 
-  toast.classList.remove("error");
 
-  if (type === "error") {
-    toast.classList.add("error");
-  }
+    const toastIcon =
+        document.getElementById(
+            "toastIcon"
+        );
 
-  if (toastIcon) {
-    toastIcon.className =
-      type === "error"
-        ? "fa-solid fa-circle-exclamation"
-        : "fa-solid fa-circle-check";
-  }
 
-  toast.classList.add("visible");
+    if (!toast) {
+        return;
+    }
 
-  clearTimeout(window.financeToastTimer);
 
-  window.financeToastTimer = setTimeout(() => {
-    toast.classList.remove("visible");
-  }, 3000);
+    if (toastMessage) {
+
+        toastMessage.textContent =
+            message;
+    }
+
+
+    toast.classList.remove(
+        "error"
+    );
+
+
+    if (type === "error") {
+
+        toast.classList.add(
+            "error"
+        );
+    }
+
+
+    if (toastIcon) {
+
+        toastIcon.className =
+            type === "error"
+                ? "fa-solid fa-circle-exclamation"
+                : "fa-solid fa-circle-check";
+    }
+
+
+    toast.classList.add(
+        "visible"
+    );
+
+
+    clearTimeout(
+        window.financeToastTimer
+    );
+
+
+    window.financeToastTimer =
+        setTimeout(
+            () => {
+
+                toast.classList.remove(
+                    "visible"
+                );
+
+            },
+            3000
+        );
 }
 
-/* =========================================================
-   SET VALUE
-========================================================= */
+
+/*
+=========================================================
+SET VALUE
+=========================================================
+*/
 
 function setValue(id, value) {
-  const element = document.getElementById(id);
 
-  if (element) {
-    element.value = value ?? "";
-  }
+    const element =
+        document.getElementById(id);
+
+
+    if (element) {
+
+        element.value =
+            value ?? "";
+    }
 }
 
-/* =========================================================
-   ESCAPE HTML
-========================================================= */
+
+/*
+=========================================================
+ESCAPE HTML
+=========================================================
+*/
 
 function escapeHTML(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+
+    return String(value ?? "")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 }
 
-/* =========================================================
-   LOGOUT
-========================================================= */
 
-function logoutUser() {
-  try {
-    localStorage.removeItem("financeUser");
+/*
+=========================================================
+ERROR MESSAGE
+=========================================================
+*/
 
-    localStorage.removeItem("user");
+function getErrorMessage(error) {
 
-    localStorage.removeItem("loggedIn");
-  } catch (error) {
-    console.warn("Logout cleanup failed.", error);
-  }
+    if (!error) {
+        return "Something went wrong.";
+    }
 
-  window.location.href = "login.html";
+
+    if (
+        typeof FinanceAPI !==
+            "undefined" &&
+        typeof FinanceAPI.errorMessage ===
+            "function"
+    ) {
+
+        return FinanceAPI.errorMessage(
+            error
+        );
+    }
+
+
+    if (
+        error.data &&
+        error.data.message
+    ) {
+
+        return error.data.message;
+    }
+
+
+    if (
+        error.data &&
+        error.data.error
+    ) {
+
+        return error.data.error;
+    }
+
+
+    if (error.message) {
+        return error.message;
+    }
+
+
+    return "Something went wrong.";
 }
 
-const logoutButton = document.getElementById("logoutButton");
+
+/*
+=========================================================
+LOGOUT
+=========================================================
+*/
+
+async function logoutUser() {
+
+    try {
+
+        if (
+            typeof FinanceAPI !==
+                "undefined" &&
+            FinanceAPI.auth &&
+            typeof FinanceAPI.auth.logout ===
+                "function"
+        ) {
+
+            await FinanceAPI.auth.logout();
+        }
+
+    } catch (error) {
+
+        console.warn(
+            "Server logout failed:",
+            error
+        );
+
+    } finally {
+
+        try {
+
+            localStorage.removeItem(
+                "financeUser"
+            );
+
+            localStorage.removeItem(
+                "user"
+            );
+
+            localStorage.removeItem(
+                "loggedIn"
+            );
+
+        } catch (error) {
+
+            console.warn(
+                "Logout cleanup failed.",
+                error
+            );
+        }
+
+
+        window.location.href =
+            "login.html";
+    }
+}
+
+
+/*
+=========================================================
+LOGOUT BUTTON
+=========================================================
+*/
+
+const logoutButton =
+    document.getElementById(
+        "logoutButton"
+    );
+
 
 if (logoutButton) {
-  logoutButton.addEventListener("click", logoutUser);
+
+    logoutButton.addEventListener(
+        "click",
+        logoutUser
+    );
 }

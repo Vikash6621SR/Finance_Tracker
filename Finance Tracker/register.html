@@ -1,276 +1,608 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
+
     <meta charset="UTF-8" />
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    />
 
     <title>Register | Finance Tracker</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
 
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- =====================================================
+         PWA
+    ====================================================== -->
 
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
+        rel="manifest"
+        href="./manifest.json"
+    />
+
+    <meta
+        name="theme-color"
+        content="#16a34a"
+    />
+
+    <meta
+        name="mobile-web-app-capable"
+        content="yes"
+    />
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    />
+
+    <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="default"
+    />
+
+    <meta
+        name="apple-mobile-web-app-title"
+        content="Finance Tracker"
+    />
+
+
+    <!-- =====================================================
+         FONTS
+    ====================================================== -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
     />
 
     <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
     />
 
-    <link rel="stylesheet" href="./static/css/register.css" />
-  </head>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    />
 
-  <body>
+
+    <!-- =====================================================
+         FONT AWESOME
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+
+
+    <!-- =====================================================
+         REGISTER CSS
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="./static/css/register.css"
+    />
+
+</head>
+
+
+<body>
+
     <div class="page">
-      <!-- =====================================================
-         LEFT SECTION
-    ====================================================== -->
 
-      <section class="register-info">
-        <a href="index.html" class="brand">
-          <span class="brand-icon">
-            <i class="fa-solid fa-wallet"></i>
-          </span>
 
-          <span> Finance<span>Tracker</span> </span>
-        </a>
+        <!-- =====================================================
+             LEFT SECTION
+        ====================================================== -->
 
-        <div class="info-content">
-          <span class="eyebrow"> GET STARTED </span>
+        <section class="register-info">
 
-          <h1>
-            Build better
-            <span>financial habits.</span>
-          </h1>
+            <a
+                href="index.html"
+                class="brand"
+            >
 
-          <p>
-            Create your Finance Tracker account and start organizing your
-            personal finances in one place.
-          </p>
+                <span class="brand-icon">
 
-          <div class="benefits">
-            <div class="benefit">
-              <span class="benefit-icon">
-                <i class="fa-solid fa-chart-pie"></i>
-              </span>
+                    <i class="fa-solid fa-wallet"></i>
 
-              <div>
-                <strong> Clear financial overview </strong>
+                </span>
 
-                <span> See your financial information in one place. </span>
-              </div>
-            </div>
+                <span>
+                    Finance<span>Tracker</span>
+                </span>
 
-            <div class="benefit">
-              <span class="benefit-icon">
-                <i class="fa-solid fa-bullseye"></i>
-              </span>
-
-              <div>
-                <strong> Set financial goals </strong>
-
-                <span> Plan your budgets and savings goals. </span>
-              </div>
-            </div>
-
-            <div class="benefit">
-              <span class="benefit-icon">
-                <i class="fa-solid fa-lock"></i>
-              </span>
-
-              <div>
-                <strong> Account-based data </strong>
-
-                <span> Your financial data belongs to your account. </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="info-footer">
-          © <span id="leftYear"></span>
-          Finance Tracker
-        </div>
-      </section>
-
-      <!-- =====================================================
-         REGISTER SECTION
-    ====================================================== -->
-
-      <section class="register-section">
-        <div class="register-card">
-          <!-- MOBILE BRAND -->
-
-          <div class="mobile-brand">
-            <a href="index.html" class="mobile-logo">
-              <span class="mobile-logo-icon">
-                <i class="fa-solid fa-wallet"></i>
-              </span>
-
-              <span> Finance<span>Tracker</span> </span>
             </a>
-          </div>
 
-          <!-- HEADER -->
 
-          <div class="register-header">
-            <span class="form-label"> CREATE ACCOUNT </span>
+            <div class="info-content">
 
-            <h2>Create your account</h2>
+                <span class="eyebrow">
+                    GET STARTED
+                </span>
 
-            <p>Enter your details to get started.</p>
-          </div>
 
-          <!-- MESSAGE -->
+                <h1>
 
-          <div class="message" id="registerMessage"></div>
+                    Build better
 
-          <!-- FORM -->
+                    <span>
+                        financial habits.
+                    </span>
 
-          <form id="registerForm" novalidate>
-            <!-- NAME -->
+                </h1>
 
-            <div class="form-group">
-              <label for="name"> Full Name </label>
 
-              <div class="input-wrapper">
-                <i class="fa-regular fa-user"></i>
+                <p>
 
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  placeholder="Enter your full name"
-                  autocomplete="name"
-                  maxlength="100"
-                  required
-                />
-              </div>
+                    Create your Finance Tracker account
+                    and start organizing your personal
+                    finances in one place.
+
+                </p>
+
+
+                <div class="benefits">
+
+
+                    <!-- BENEFIT 1 -->
+
+                    <div class="benefit">
+
+                        <span class="benefit-icon">
+
+                            <i class="fa-solid fa-chart-pie"></i>
+
+                        </span>
+
+
+                        <div>
+
+                            <strong>
+                                Clear financial overview
+                            </strong>
+
+                            <span>
+                                See your financial information
+                                in one place.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- BENEFIT 2 -->
+
+                    <div class="benefit">
+
+                        <span class="benefit-icon">
+
+                            <i class="fa-solid fa-bullseye"></i>
+
+                        </span>
+
+
+                        <div>
+
+                            <strong>
+                                Set financial goals
+                            </strong>
+
+                            <span>
+                                Plan your budgets and savings goals.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- BENEFIT 3 -->
+
+                    <div class="benefit">
+
+                        <span class="benefit-icon">
+
+                            <i class="fa-solid fa-lock"></i>
+
+                        </span>
+
+
+                        <div>
+
+                            <strong>
+                                Account-based data
+                            </strong>
+
+                            <span>
+                                Your financial data belongs to your account.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
 
-            <!-- EMAIL -->
 
-            <div class="form-group">
-              <label for="email"> Email Address </label>
+            <div class="info-footer">
 
-              <div class="input-wrapper">
-                <i class="fa-regular fa-envelope"></i>
+                ©
 
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  placeholder="Enter your email"
-                  autocomplete="email"
-                  maxlength="150"
-                  required
-                />
-              </div>
+                <span id="leftYear"></span>
+
+                Finance Tracker
+
             </div>
 
-            <!-- PASSWORD -->
+        </section>
 
-            <div class="form-group">
-              <label for="password"> Password </label>
 
-              <div class="input-wrapper">
-                <i class="fa-solid fa-lock"></i>
+        <!-- =====================================================
+             REGISTER SECTION
+        ====================================================== -->
 
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  placeholder="Create a password"
-                  autocomplete="new-password"
-                  minlength="6"
-                  required
-                />
+        <section class="register-section">
 
-                <button
-                  type="button"
-                  class="password-toggle"
-                  data-target="password"
-                  aria-label="Show password"
+            <div class="register-card">
+
+
+                <!-- =================================================
+                     MOBILE BRAND
+                ================================================== -->
+
+                <div class="mobile-brand">
+
+                    <a
+                        href="index.html"
+                        class="mobile-logo"
+                    >
+
+                        <span class="mobile-logo-icon">
+
+                            <i class="fa-solid fa-wallet"></i>
+
+                        </span>
+
+                        <span>
+                            Finance<span>Tracker</span>
+                        </span>
+
+                    </a>
+
+                </div>
+
+
+                <!-- =================================================
+                     HEADER
+                ================================================== -->
+
+                <div class="register-header">
+
+                    <span class="form-label">
+                        CREATE ACCOUNT
+                    </span>
+
+
+                    <h2>
+                        Create your account
+                    </h2>
+
+
+                    <p>
+                        Enter your details to get started.
+                    </p>
+
+                </div>
+
+
+                <!-- =================================================
+                     MESSAGE
+                ================================================== -->
+
+                <div
+                    class="message"
+                    id="registerMessage"
+                ></div>
+
+
+                <!-- =================================================
+                     FORM
+                ================================================== -->
+
+                <form
+                    id="registerForm"
+                    novalidate
                 >
-                  <i class="fa-regular fa-eye"></i>
-                </button>
-              </div>
-            </div>
 
-            <!-- CONFIRM PASSWORD -->
 
-            <div class="form-group">
-              <label for="confirmPassword"> Confirm Password </label>
+                    <!-- NAME -->
 
-              <div class="input-wrapper">
-                <i class="fa-solid fa-lock"></i>
+                    <div class="form-group">
 
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  placeholder="Confirm your password"
-                  autocomplete="new-password"
-                  minlength="6"
-                  required
-                />
+                        <label for="name">
+                            Full Name
+                        </label>
 
-                <button
-                  type="button"
-                  class="password-toggle"
-                  data-target="confirmPassword"
-                  aria-label="Show password"
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-regular fa-user"></i>
+
+
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                placeholder="Enter your full name"
+                                autocomplete="name"
+                                maxlength="100"
+                                required
+                            />
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="form-group">
+
+                        <label for="email">
+                            Email Address
+                        </label>
+
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-regular fa-envelope"></i>
+
+
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="Enter your email"
+                                autocomplete="email"
+                                maxlength="150"
+                                required
+                            />
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+
+                    <div class="form-group">
+
+                        <label for="password">
+                            Password
+                        </label>
+
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-solid fa-lock"></i>
+
+
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Create a password"
+                                autocomplete="new-password"
+                                minlength="6"
+                                required
+                            />
+
+
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                data-target="password"
+                                aria-label="Show password"
+                            >
+
+                                <i class="fa-regular fa-eye"></i>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CONFIRM PASSWORD -->
+
+                    <div class="form-group">
+
+                        <label for="confirmPassword">
+                            Confirm Password
+                        </label>
+
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-solid fa-lock"></i>
+
+
+                            <input
+                                type="password"
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                placeholder="Confirm your password"
+                                autocomplete="new-password"
+                                minlength="6"
+                                required
+                            />
+
+
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                data-target="confirmPassword"
+                                aria-label="Show password"
+                            >
+
+                                <i class="fa-regular fa-eye"></i>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TERMS -->
+
+                    <label class="terms">
+
+                        <input
+                            type="checkbox"
+                            id="terms"
+                            required
+                        />
+
+
+                        <span>
+
+                            I agree to use Finance Tracker
+                            for managing my personal
+                            financial information.
+
+                        </span>
+
+                    </label>
+
+
+                    <!-- BUTTON -->
+
+                    <button
+                        type="submit"
+                        class="register-button"
+                        id="registerButton"
+                    >
+
+                        <span>
+                            Create Account
+                        </span>
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </button>
+
+                </form>
+
+
+                <!-- =================================================
+                     LOGIN
+                ================================================== -->
+
+                <div class="login-link">
+
+                    <span>
+                        Already have an account?
+                    </span>
+
+
+                    <a href="login.html">
+                        Sign in
+                    </a>
+
+                </div>
+
+
+                <!-- =================================================
+                     BACK
+                ================================================== -->
+
+                <a
+                    href="index.html"
+                    class="back-link"
                 >
-                  <i class="fa-regular fa-eye"></i>
-                </button>
-              </div>
+
+                    <i class="fa-solid fa-arrow-left"></i>
+
+                    Back to home
+
+                </a>
+
             </div>
 
-            <!-- TERMS -->
+        </section>
 
-            <label class="terms">
-              <input type="checkbox" id="terms" required />
-
-              <span>
-                I agree to use Finance Tracker for managing my personal
-                financial information.
-              </span>
-            </label>
-
-            <!-- BUTTON -->
-
-            <button type="submit" class="register-button" id="registerButton">
-              <span> Create Account </span>
-
-              <i class="fa-solid fa-arrow-right"></i>
-            </button>
-          </form>
-
-          <!-- LOGIN -->
-
-          <div class="login-link">
-            <span> Already have an account? </span>
-
-            <a href="login.html"> Sign in </a>
-          </div>
-
-          <!-- BACK -->
-
-          <a href="index.html" class="back-link">
-            <i class="fa-solid fa-arrow-left"></i>
-
-            Back to home
-          </a>
-        </div>
-      </section>
     </div>
+
+
+    <!-- =========================================================
+         API
+    ========================================================== -->
 
     <script src="./static/js/api.js"></script>
 
+
+    <!-- =========================================================
+         REGISTER JAVASCRIPT
+    ========================================================== -->
+
     <script src="./static/js/register.js"></script>
-  </body>
+
+
+    <!-- =========================================================
+         PWA SERVICE WORKER
+    ========================================================== -->
+
+    <script>
+
+        if ("serviceWorker" in navigator) {
+
+            window.addEventListener(
+                "load",
+                function () {
+
+                    navigator.serviceWorker
+                        .register(
+                            "./static/js/service-worker.js"
+                        )
+                        .then(
+                            function (registration) {
+
+                                console.log(
+                                    "Finance Tracker PWA registered:",
+                                    registration.scope
+                                );
+
+                            }
+                        )
+                        .catch(
+                            function (error) {
+
+                                console.error(
+                                    "PWA registration failed:",
+                                    error
+                                );
+
+                            }
+                        );
+
+                }
+            );
+
+        }
+
+    </script>
+
+</body>
+
 </html>

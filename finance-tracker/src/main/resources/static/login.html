@@ -1,226 +1,537 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
+
     <meta charset="UTF-8" />
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    />
 
     <title>Login | Finance Tracker</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
 
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- =====================================================
+         PWA
+    ====================================================== -->
 
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
+        rel="manifest"
+        href="./manifest.json"
+    />
+
+    <meta
+        name="theme-color"
+        content="#16a34a"
+    />
+
+    <meta
+        name="mobile-web-app-capable"
+        content="yes"
+    />
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    />
+
+    <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="default"
+    />
+
+    <meta
+        name="apple-mobile-web-app-title"
+        content="Finance Tracker"
+    />
+
+
+    <!-- =====================================================
+         FONTS
+    ====================================================== -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
     />
 
     <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
     />
 
-    <link rel="stylesheet" href="./css/login.css" />
-  </head>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    />
 
-  <body>
+
+    <!-- =====================================================
+         FONT AWESOME
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+
+
+    <!-- =====================================================
+         LOGIN CSS
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="./static/css/login.css"
+    />
+
+</head>
+
+
+<body>
+
     <div class="page">
-      <!-- =====================================================
-         LEFT SIDE
-    ====================================================== -->
 
-      <section class="login-info">
-        <a href="index.html" class="brand">
-          <span class="brand-icon">
-            <i class="fa-solid fa-wallet"></i>
-          </span>
 
-          <span> Finance<span>Tracker</span> </span>
-        </a>
+        <!-- =====================================================
+             LEFT SIDE
+        ====================================================== -->
 
-        <div class="info-content">
-          <span class="eyebrow"> PERSONAL FINANCE </span>
+        <section class="login-info">
 
-          <h1>
-            Your money,
-            <span>your control.</span>
-          </h1>
+            <a
+                href="index.html"
+                class="brand"
+            >
 
-          <p>
-            Manage your accounts, transactions, budgets and savings from one
-            simple financial dashboard.
-          </p>
-
-          <div class="benefits">
-            <div class="benefit">
-              <span class="benefit-icon">
-                <i class="fa-solid fa-wallet"></i>
-              </span>
-
-              <div>
-                <strong> Manage accounts </strong>
-
-                <span> Keep all your accounts organized. </span>
-              </div>
-            </div>
-
-            <div class="benefit">
-              <span class="benefit-icon">
-                <i class="fa-solid fa-chart-line"></i>
-              </span>
-
-              <div>
-                <strong> Track your finances </strong>
-
-                <span> Understand your income and spending. </span>
-              </div>
-            </div>
-
-            <div class="benefit">
-              <span class="benefit-icon">
-                <i class="fa-solid fa-piggy-bank"></i>
-              </span>
-
-              <div>
-                <strong> Reach savings goals </strong>
-
-                <span> Build and monitor your savings goals. </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="info-footer">
-          <span>
-            © <span id="leftYear"></span>
-            Finance Tracker
-          </span>
-        </div>
-      </section>
-
-      <!-- =====================================================
-         RIGHT SIDE
-    ====================================================== -->
-
-      <section class="login-section">
-        <div class="login-card">
-          <!-- HEADER -->
-
-          <div class="login-header">
-            <div class="mobile-brand">
-              <a href="index.html" class="brand">
                 <span class="brand-icon">
-                  <i class="fa-solid fa-wallet"></i>
+
+                    <i class="fa-solid fa-wallet"></i>
+
                 </span>
 
-                <span> Finance<span>Tracker</span> </span>
-              </a>
+                <span>
+                    Finance<span>Tracker</span>
+                </span>
+
+            </a>
+
+
+            <div class="info-content">
+
+                <span class="eyebrow">
+                    PERSONAL FINANCE
+                </span>
+
+
+                <h1>
+
+                    Your money,
+
+                    <span>
+                        your control.
+                    </span>
+
+                </h1>
+
+
+                <p>
+
+                    Manage your accounts, transactions,
+                    budgets and savings from one simple
+                    financial dashboard.
+
+                </p>
+
+
+                <div class="benefits">
+
+
+                    <!-- BENEFIT 1 -->
+
+                    <div class="benefit">
+
+                        <span class="benefit-icon">
+
+                            <i class="fa-solid fa-wallet"></i>
+
+                        </span>
+
+
+                        <div>
+
+                            <strong>
+                                Manage accounts
+                            </strong>
+
+                            <span>
+                                Keep all your accounts organized.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- BENEFIT 2 -->
+
+                    <div class="benefit">
+
+                        <span class="benefit-icon">
+
+                            <i class="fa-solid fa-chart-line"></i>
+
+                        </span>
+
+
+                        <div>
+
+                            <strong>
+                                Track your finances
+                            </strong>
+
+                            <span>
+                                Understand your income and spending.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- BENEFIT 3 -->
+
+                    <div class="benefit">
+
+                        <span class="benefit-icon">
+
+                            <i class="fa-solid fa-piggy-bank"></i>
+
+                        </span>
+
+
+                        <div>
+
+                            <strong>
+                                Reach savings goals
+                            </strong>
+
+                            <span>
+                                Build and monitor your savings goals.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
 
-            <span class="form-label"> WELCOME BACK </span>
 
-            <h2>Sign in to your account</h2>
+            <div class="info-footer">
 
-            <p>Enter your details to continue.</p>
-          </div>
+                <span>
 
-          <!-- MESSAGE -->
+                    ©
 
-          <div class="message" id="loginMessage"></div>
+                    <span id="leftYear"></span>
 
-          <!-- LOGIN FORM -->
+                    Finance Tracker
 
-          <form id="loginForm" novalidate>
-            <!-- EMAIL -->
+                </span>
 
-            <div class="form-group">
-              <label for="email"> Email Address </label>
-
-              <div class="input-wrapper">
-                <i class="fa-regular fa-envelope"></i>
-
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  placeholder="Enter your email"
-                  autocomplete="email"
-                  maxlength="150"
-                  required
-                />
-              </div>
             </div>
 
-            <!-- PASSWORD -->
+        </section>
 
-            <div class="form-group">
-              <div class="label-row">
-                <label for="password"> Password </label>
-              </div>
 
-              <div class="input-wrapper">
-                <i class="fa-solid fa-lock"></i>
+        <!-- =====================================================
+             RIGHT SIDE
+        ====================================================== -->
 
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  placeholder="Enter your password"
-                  autocomplete="current-password"
-                  required
-                />
+        <section class="login-section">
 
-                <button
-                  type="button"
-                  class="password-toggle"
-                  id="passwordToggle"
-                  aria-label="Show password"
+            <div class="login-card">
+
+
+                <!-- =================================================
+                     HEADER
+                ================================================== -->
+
+                <div class="login-header">
+
+                    <div class="mobile-brand">
+
+                        <a
+                            href="index.html"
+                            class="brand"
+                        >
+
+                            <span class="brand-icon">
+
+                                <i class="fa-solid fa-wallet"></i>
+
+                            </span>
+
+                            <span>
+                                Finance<span>Tracker</span>
+                            </span>
+
+                        </a>
+
+                    </div>
+
+
+                    <span class="form-label">
+                        WELCOME BACK
+                    </span>
+
+
+                    <h2>
+                        Sign in to your account
+                    </h2>
+
+
+                    <p>
+                        Enter your details to continue.
+                    </p>
+
+                </div>
+
+
+                <!-- =================================================
+                     MESSAGE
+                ================================================== -->
+
+                <div
+                    class="message"
+                    id="loginMessage"
+                ></div>
+
+
+                <!-- =================================================
+                     LOGIN FORM
+                ================================================== -->
+
+                <form
+                    id="loginForm"
+                    novalidate
                 >
-                  <i class="fa-regular fa-eye"></i>
-                </button>
-              </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="form-group">
+
+                        <label for="email">
+                            Email Address
+                        </label>
+
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-regular fa-envelope"></i>
+
+
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="Enter your email"
+                                autocomplete="email"
+                                maxlength="150"
+                                required
+                            />
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+
+                    <div class="form-group">
+
+                        <div class="label-row">
+
+                            <label for="password">
+                                Password
+                            </label>
+
+                        </div>
+
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-solid fa-lock"></i>
+
+
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                            />
+
+
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                id="passwordToggle"
+                                aria-label="Show password"
+                            >
+
+                                <i class="fa-regular fa-eye"></i>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- REMEMBER -->
+
+                    <div class="login-options">
+
+                        <label class="remember">
+
+                            <input
+                                type="checkbox"
+                                id="remember"
+                            />
+
+                            <span>
+                                Remember me
+                            </span>
+
+                        </label>
+
+                    </div>
+
+
+                    <!-- BUTTON -->
+
+                    <button
+                        type="submit"
+                        class="login-button"
+                        id="loginButton"
+                    >
+
+                        <span>
+                            Sign In
+                        </span>
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </button>
+
+                </form>
+
+
+                <!-- =================================================
+                     REGISTER
+                ================================================== -->
+
+                <div class="register-link">
+
+                    <span>
+                        Don't have an account?
+                    </span>
+
+                    <a href="register.html">
+                        Create an account
+                    </a>
+
+                </div>
+
+
+                <!-- =================================================
+                     BACK
+                ================================================== -->
+
+                <a
+                    href="index.html"
+                    class="back-link"
+                >
+
+                    <i class="fa-solid fa-arrow-left"></i>
+
+                    Back to home
+
+                </a>
+
             </div>
 
-            <!-- REMEMBER -->
+        </section>
 
-            <div class="login-options">
-              <label class="remember">
-                <input type="checkbox" id="remember" />
-
-                <span> Remember me </span>
-              </label>
-            </div>
-
-            <!-- BUTTON -->
-
-            <button type="submit" class="login-button" id="loginButton">
-              <span> Sign In </span>
-
-              <i class="fa-solid fa-arrow-right"></i>
-            </button>
-          </form>
-
-          <!-- REGISTER -->
-
-          <div class="register-link">
-            <span> Don't have an account? </span>
-
-            <a href="register.html"> Create an account </a>
-          </div>
-
-          <!-- BACK -->
-
-          <a href="index.html" class="back-link">
-            <i class="fa-solid fa-arrow-left"></i>
-
-            Back to home
-          </a>
-        </div>
-      </section>
     </div>
 
-    <script src="./js/api.js"></script>
-    <script src="./js/login.js"></script>
-  </body>
+
+    <!-- =========================================================
+         API
+    ========================================================== -->
+
+    <script src="./static/js/api.js"></script>
+
+
+    <!-- =========================================================
+         LOGIN JAVASCRIPT
+    ========================================================== -->
+
+    <script src="./static/js/login.js"></script>
+
+
+    <!-- =========================================================
+         PWA SERVICE WORKER
+    ========================================================== -->
+
+    <script>
+
+        if ("serviceWorker" in navigator) {
+
+            window.addEventListener(
+                "load",
+                function () {
+
+                    navigator.serviceWorker
+                        .register(
+                            "./static/js/service-worker.js"
+                        )
+                        .then(
+                            function (registration) {
+
+                                console.log(
+                                    "Finance Tracker PWA registered:",
+                                    registration.scope
+                                );
+
+                            }
+                        )
+                        .catch(
+                            function (error) {
+
+                                console.error(
+                                    "PWA registration failed:",
+                                    error
+                                );
+
+                            }
+                        );
+
+                }
+            );
+
+        }
+
+    </script>
+
+</body>
+
 </html>

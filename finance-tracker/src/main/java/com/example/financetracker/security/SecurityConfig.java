@@ -60,49 +60,50 @@ public class SecurityConfig {
 
 
     /* =========================================================
-       CORS
+       CORS CONFIGURATION
     ========================================================= */
 
     @Bean
-public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
 
-    CorsConfiguration configuration = new CorsConfiguration();
+        CorsConfiguration configuration =
+                new CorsConfiguration();
 
-    configuration.setAllowedOriginPatterns(
-            List.of(
-                    "https://financetracker-production-3fe4.up.railway.app",
-                    "http://localhost:5500",
-                    "http://127.0.0.1:5500"
-            )
-    );
+        configuration.setAllowedOriginPatterns(
+                List.of(
+                        "https://financetracker-production-3fe4.up.railway.app",
+                        "http://localhost:5500",
+                        "http://127.0.0.1:5500"
+                )
+        );
 
-    configuration.setAllowedMethods(
-            List.of(
-                    "GET",
-                    "POST",
-                    "PUT",
-                    "DELETE",
-                    "PATCH",
-                    "OPTIONS"
-            )
-    );
+        configuration.setAllowedMethods(
+                List.of(
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "DELETE",
+                        "PATCH",
+                        "OPTIONS"
+                )
+        );
 
-    configuration.setAllowedHeaders(
-            List.of("*")
-    );
+        configuration.setAllowedHeaders(
+                List.of("*")
+        );
 
-    configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(true);
 
-    UrlBasedCorsConfigurationSource source =
-            new UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
 
-    source.registerCorsConfiguration(
-            "/**",
-            configuration
-    );
+        source.registerCorsConfiguration(
+                "/**",
+                configuration
+        );
 
-    return source;
-}
+        return source;
+    }
 
 
     /* =========================================================
@@ -171,32 +172,72 @@ public CorsConfigurationSource corsConfigurationSource() {
                 --------------------------------------------- */
 
                 .authorizeHttpRequests(
-                        authorization ->
+                        authorization -> authorization
 
-                                authorization
+                                /* =================================
+                                   PUBLIC AUTHENTICATION API
+                                ================================= */
 
-                                        .requestMatchers(
-                                                "/api/auth/**"
-                                        )
-                                        .permitAll()
-
-
-                                        .requestMatchers(
-                                                "/",
-                                                "/index.html",
-                                                "/login.html",
-                                                "/register.html",
-                                                "/forgot-password.html",
-                                                "/static/**",
-                                                "/css/**",
-                                                "/js/**",
-                                                "/images/**"
-                                        )
-                                        .permitAll()
+                                .requestMatchers(
+                                        "/api/auth/**"
+                                )
+                                .permitAll()
 
 
-                                        .anyRequest()
-                                        .authenticated()
+                                /* =================================
+                                   PUBLIC PWA FILES
+                                ================================= */
+
+                                .requestMatchers(
+                                        "/manifest.json",
+                                        "/service-worker.js",
+                                        "/static/js/service-worker.js"
+                                )
+                                .permitAll()
+
+
+                                /* =================================
+                                   PUBLIC FRONTEND PAGES
+                                ================================= */
+
+                                .requestMatchers(
+                                        "/",
+                                        "/index.html",
+                                        "/login.html",
+                                        "/register.html",
+                                        "/forgot-password.html",
+                                        "/accounts.html",
+                                        "/transactions.html",
+                                        "/budgets.html",
+                                        "/savings.html",
+                                        "/recurring.html",
+                                        "/reports.html",
+                                        "/profile.html",
+                                        "/notifications.html",
+                                        "/dashboard.html"
+                                )
+                                .permitAll()
+
+
+                                /* =================================
+                                   PUBLIC STATIC RESOURCES
+                                ================================= */
+
+                                .requestMatchers(
+                                        "/static/**",
+                                        "/css/**",
+                                        "/js/**",
+                                        "/images/**"
+                                )
+                                .permitAll()
+
+
+                                /* =================================
+                                   EVERYTHING ELSE REQUIRES LOGIN
+                                ================================= */
+
+                                .anyRequest()
+                                .authenticated()
                 )
 
 

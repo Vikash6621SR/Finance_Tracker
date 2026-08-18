@@ -7,6 +7,36 @@
 
     <title>Finance Tracker</title>
 
+    <link
+    rel="manifest"
+    href="./manifest.json"
+>
+
+<meta
+    name="theme-color"
+    content="#16a34a"
+>
+
+<meta
+    name="mobile-web-app-capable"
+    content="yes"
+>
+
+<meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+>
+
+<meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="default"
+>
+
+<meta
+    name="apple-mobile-web-app-title"
+    content="Finance Tracker"
+>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
 
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -21,7 +51,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     />
 
-    <link rel="stylesheet" href="./css/index.css" />
+    <link rel="stylesheet" href="./static/css/index.css" />
   </head>
 
   <body>
@@ -282,8 +312,47 @@
       </p>
     </footer>
 
-    <script src="./js/api.js"></script>
+    <script src="./static/js/api.js"></script>
 
-    <script src="./js/index.js"></script>
-  </body>
+    <script src="./static/js/index.js"></script>
+
+<script>
+if ("serviceWorker" in navigator) {
+
+    window.addEventListener(
+        "load",
+        function () {
+
+            navigator.serviceWorker
+                .register(
+                    "./static/js/service-worker.js"
+                )
+                .then(
+                    function (registration) {
+
+                        console.log(
+                            "Finance Tracker PWA registered:",
+                            registration.scope
+                        );
+
+                    }
+                )
+                .catch(
+                    function (error) {
+
+                        console.error(
+                            "PWA registration failed:",
+                            error
+                        );
+
+                    }
+                );
+
+        }
+    );
+
+}
+</script>
+
+</body>
 </html>

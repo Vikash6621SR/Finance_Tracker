@@ -1024,47 +1024,43 @@
     <!-- =========================================================
          PWA SERVICE WORKER
     ========================================================== -->
+<script>
+if ("serviceWorker" in navigator) {
 
-    <script>
+    window.addEventListener(
+        "load",
+        function () {
 
-        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker
+                .register(
+                    "./service-worker.js"
+                )
+                .then(
+                    function (registration) {
 
-            window.addEventListener(
-                "load",
-                function () {
-
-                    navigator.serviceWorker
-                        .register(
-                            "./static/js/service-worker.js"
-                        )
-                        .then(
-                            function (registration) {
-
-                                console.log(
-                                    "Finance Tracker PWA registered:",
-                                    registration.scope
-                                );
-
-                            }
-                        )
-                        .catch(
-                            function (error) {
-
-                                console.error(
-                                    "PWA registration failed:",
-                                    error
-                                );
-
-                            }
+                        console.log(
+                            "Finance Tracker PWA registered:",
+                            registration.scope
                         );
 
-                }
-            );
+                    }
+                )
+                .catch(
+                    function (error) {
+
+                        console.error(
+                            "PWA registration failed:",
+                            error
+                        );
+
+                    }
+                );
 
         }
+    );
 
-    </script>
+}
+</script>
 
 </body>
-
 </html>

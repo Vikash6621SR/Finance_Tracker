@@ -2,79 +2,152 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    /* =========================================================
-       ELEMENTS
-    ========================================================= */
+    // =========================================================
+    // ELEMENTS
+    // =========================================================
 
-    const sidebar = document.getElementById("sidebar");
-    const sidebarOverlay = document.getElementById("sidebarOverlay");
-    const menuButton = document.getElementById("menuButton");
-    const closeSidebar = document.getElementById("closeSidebar");
+    const sidebar =
+        document.getElementById("sidebar");
 
-    const logoutButton = document.getElementById("logoutButton");
-    const refreshButton = document.getElementById("refreshButton");
+    const sidebarOverlay =
+        document.getElementById("sidebarOverlay");
 
-    const userName = document.getElementById("userName");
-    const userEmail = document.getElementById("userEmail");
-    const userAvatar = document.getElementById("userAvatar");
+    const menuButton =
+        document.getElementById("menuButton");
 
-    const totalBudget = document.getElementById("totalBudget");
-    const totalSpent = document.getElementById("totalSpent");
-    const remainingBudget = document.getElementById("remainingBudget");
-    const activeBudgets = document.getElementById("activeBudgets");
+    const closeSidebar =
+        document.getElementById("closeSidebar");
 
-    const searchInput = document.getElementById("searchInput");
-    const periodFilter = document.getElementById("periodFilter");
-    const clearFilters = document.getElementById("clearFilters");
+    const logoutButton =
+        document.getElementById("logoutButton");
 
-    const budgetGrid = document.getElementById("budgetGrid");
-    const emptyState = document.getElementById("emptyState");
-    const resultText = document.getElementById("resultText");
+    const refreshButton =
+        document.getElementById("refreshButton");
 
-    const addBudgetButton = document.getElementById("addBudgetButton");
-    const panelAddButton = document.getElementById("panelAddButton");
-    const emptyAddButton = document.getElementById("emptyAddButton");
+    const userName =
+        document.getElementById("userName");
 
-    const budgetModal = document.getElementById("budgetModal");
-    const modalTitle = document.getElementById("modalTitle");
-    const modalClose = document.getElementById("modalClose");
-    const cancelButton = document.getElementById("cancelButton");
-    const modalMessage = document.getElementById("modalMessage");
+    const userEmail =
+        document.getElementById("userEmail");
 
-    const budgetForm = document.getElementById("budgetForm");
-    const budgetId = document.getElementById("budgetId");
-    const budgetName = document.getElementById("budgetName");
-    const budgetCategory = document.getElementById("budgetCategory");
-    const budgetPeriod = document.getElementById("budgetPeriod");
-    const budgetAmount = document.getElementById("budgetAmount");
-    const budgetDescription = document.getElementById("budgetDescription");
-    const saveButton = document.getElementById("saveButton");
+    const userAvatar =
+        document.getElementById("userAvatar");
 
-    const confirmOverlay = document.getElementById("confirmOverlay");
-    const confirmCancel = document.getElementById("confirmCancel");
-    const confirmDelete = document.getElementById("confirmDelete");
+    const totalBudget =
+        document.getElementById("totalBudget");
 
-    const toast = document.getElementById("toast");
-    const toastIcon = document.getElementById("toastIcon");
-    const toastMessage = document.getElementById("toastMessage");
+    const totalSpent =
+        document.getElementById("totalSpent");
+
+    const remainingBudget =
+        document.getElementById("remainingBudget");
+
+    const activeBudgets =
+        document.getElementById("activeBudgets");
+
+    const searchInput =
+        document.getElementById("searchInput");
+
+    const periodFilter =
+        document.getElementById("periodFilter");
+
+    const clearFilters =
+        document.getElementById("clearFilters");
+
+    const budgetGrid =
+        document.getElementById("budgetGrid");
+
+    const emptyState =
+        document.getElementById("emptyState");
+
+    const resultText =
+        document.getElementById("resultText");
+
+    const addBudgetButton =
+        document.getElementById("addBudgetButton");
+
+    const panelAddButton =
+        document.getElementById("panelAddButton");
+
+    const emptyAddButton =
+        document.getElementById("emptyAddButton");
+
+    const budgetModal =
+        document.getElementById("budgetModal");
+
+    const modalTitle =
+        document.getElementById("modalTitle");
+
+    const modalClose =
+        document.getElementById("modalClose");
+
+    const cancelButton =
+        document.getElementById("cancelButton");
+
+    const modalMessage =
+        document.getElementById("modalMessage");
+
+    const budgetForm =
+        document.getElementById("budgetForm");
+
+    const budgetId =
+        document.getElementById("budgetId");
+
+    const budgetName =
+        document.getElementById("budgetName");
+
+    const budgetCategory =
+        document.getElementById("budgetCategory");
+
+    const budgetPeriod =
+        document.getElementById("budgetPeriod");
+
+    const budgetAmount =
+        document.getElementById("budgetAmount");
+
+    const budgetDescription =
+        document.getElementById("budgetDescription");
+
+    const saveButton =
+        document.getElementById("saveButton");
+
+    const confirmOverlay =
+        document.getElementById("confirmOverlay");
+
+    const confirmCancel =
+        document.getElementById("confirmCancel");
+
+    const confirmDelete =
+        document.getElementById("confirmDelete");
+
+    const toast =
+        document.getElementById("toast");
+
+    const toastIcon =
+        document.getElementById("toastIcon");
+
+    const toastMessage =
+        document.getElementById("toastMessage");
 
 
-    /* =========================================================
-       STATE
-    ========================================================= */
+    // =========================================================
+    // STATE
+    // =========================================================
 
     let budgets = [];
+
     let transactions = [];
 
     let editingId = null;
+
     let deletingId = null;
 
     let toastTimer = null;
 
 
-    /* =========================================================
-       API CHECK
-    ========================================================= */
+    // =========================================================
+    // API CHECK
+    // =========================================================
 
     if (
         typeof FinanceAPI === "undefined" ||
@@ -94,9 +167,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /* =========================================================
-       INITIALIZE
-    ========================================================= */
+    // =========================================================
+    // INITIALIZE
+    // =========================================================
 
     init();
 
@@ -116,9 +189,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /* =========================================================
-       EVENTS
-    ========================================================= */
+    // =========================================================
+    // EVENTS
+    // =========================================================
 
     function setupEvents() {
 
@@ -179,7 +252,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (
                     event.target === budgetModal
                 ) {
-
                     closeModal();
                 }
             }
@@ -222,7 +294,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (
                     event.target === confirmOverlay
                 ) {
-
                     closeConfirm();
                 }
             }
@@ -247,8 +318,9 @@ document.addEventListener("DOMContentLoaded", () => {
             "resize",
             () => {
 
-                if (window.innerWidth > 950) {
-
+                if (
+                    window.innerWidth > 950
+                ) {
                     closeSidebarMenu();
                 }
             }
@@ -256,9 +328,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /* =========================================================
-       SIDEBAR
-    ========================================================= */
+    // =========================================================
+    // SIDEBAR
+    // =========================================================
 
     function setupSidebar() {
 
@@ -277,7 +349,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         if (
                             window.innerWidth <= 950
                         ) {
-
                             closeSidebarMenu();
                         }
                     }
@@ -294,22 +365,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
         sidebar.classList.add("open");
 
-        sidebarOverlay?.classList.add("active");
+        sidebarOverlay?.classList.add(
+            "active"
+        );
 
         menuButton?.setAttribute(
             "aria-expanded",
             "true"
         );
 
-        document.body.style.overflow = "hidden";
+        document.body.style.overflow =
+            "hidden";
     }
 
 
     function closeSidebarMenu() {
 
-        sidebar?.classList.remove("open");
+        sidebar?.classList.remove(
+            "open"
+        );
 
-        sidebarOverlay?.classList.remove("active");
+        sidebarOverlay?.classList.remove(
+            "active"
+        );
 
         menuButton?.setAttribute(
             "aria-expanded",
@@ -317,23 +395,21 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
         if (
-            !budgetModal?.classList.contains("show") &&
-            !confirmOverlay?.classList.contains("show")
+            !budgetModal?.classList.contains(
+                "show"
+            ) &&
+            !confirmOverlay?.classList.contains(
+                "show"
+            )
         ) {
-
             document.body.style.overflow = "";
         }
     }
 
 
-    /* =========================================================
-       USER DISPLAY
-       
-       The current FinanceAPI provided earlier does not have
-       auth.me(), so we do not call a non-existing endpoint.
-       
-       If user information exists in localStorage, display it.
-    ========================================================= */
+    // =========================================================
+    // USER
+    // =========================================================
 
     async function loadUser() {
 
@@ -376,14 +452,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
-
             if (!user) {
 
                 setDefaultUser();
 
                 return;
             }
-
 
             const name =
                 user.name ||
@@ -392,28 +466,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 user.email ||
                 "User";
 
-
             const email =
                 user.email ||
                 "Finance Account";
 
-
             if (userName) {
-
-                userName.textContent =
-                    name;
+                userName.textContent = name;
             }
-
 
             if (userEmail) {
-
-                userEmail.textContent =
-                    email;
+                userEmail.textContent = email;
             }
 
-
             if (userAvatar) {
-
                 userAvatar.textContent =
                     getInitials(name);
             }
@@ -433,21 +498,16 @@ document.addEventListener("DOMContentLoaded", () => {
     function setDefaultUser() {
 
         if (userName) {
-
-            userName.textContent =
-                "User";
+            userName.textContent = "User";
         }
 
         if (userEmail) {
-
             userEmail.textContent =
                 "Finance Account";
         }
 
         if (userAvatar) {
-
-            userAvatar.textContent =
-                "U";
+            userAvatar.textContent = "U";
         }
     }
 
@@ -473,12 +533,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /* =========================================================
-       LOAD BUDGETS
-
-       IMPORTANT:
-       Uses FinanceAPI.budgets.getAll()
-       ========================================================= */
+    // =========================================================
+    // LOAD BUDGETS
+    // =========================================================
 
     async function loadBudgets() {
 
@@ -489,7 +546,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const response =
                 await FinanceAPI.budgets.getAll();
 
-
             budgets =
                 extractArray(
                     response,
@@ -499,11 +555,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         "content"
                     ]
                 )
-                .map(
-                    normalizeBudget
-                )
+                .map(normalizeBudget)
                 .filter(Boolean);
-
 
             updateSummary();
 
@@ -516,7 +569,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 error
             );
 
-
             budgets = [];
 
             updateSummary();
@@ -526,11 +578,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /* =========================================================
-       LOAD TRANSACTIONS
-
-       Used to calculate budget spending.
-       ========================================================= */
+    // =========================================================
+    // LOAD TRANSACTIONS
+    // =========================================================
 
     async function loadTransactions() {
 
@@ -538,7 +588,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const response =
                 await FinanceAPI.transactions.getAll();
-
 
             transactions =
                 extractArray(
@@ -562,9 +611,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /* =========================================================
-       REFRESH
-    ========================================================= */
+    // =========================================================
+    // REFRESH
+    // =========================================================
 
     async function refreshData() {
 
@@ -577,7 +626,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 ?.classList.add("fa-spin");
         }
 
-
         try {
 
             await Promise.all([
@@ -585,11 +633,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 loadTransactions()
             ]);
 
-
             updateSummary();
 
             renderBudgets();
-
 
             showToast(
                 "Budgets refreshed."
@@ -610,15 +656,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 refreshButton
                     .querySelector("i")
-                    ?.classList.remove("fa-spin");
+                    ?.classList.remove(
+                        "fa-spin"
+                    );
             }
         }
     }
 
 
-    /* =========================================================
-       NORMALIZE BUDGET
-    ========================================================= */
+    // =========================================================
+    // NORMALIZE BUDGET
+    // =========================================================
 
     function normalizeBudget(item) {
 
@@ -626,10 +674,8 @@ document.addEventListener("DOMContentLoaded", () => {
             !item ||
             typeof item !== "object"
         ) {
-
             return null;
         }
-
 
         return {
 
@@ -638,19 +684,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 item.budgetId ??
                 item.budget_id,
 
-
             name:
                 item.name ??
                 item.budgetName ??
                 item.title ??
                 "Budget",
 
-
             category:
                 item.category ??
                 item.categoryName ??
                 "Other",
-
 
             period:
                 normalizePeriod(
@@ -659,7 +702,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     item.frequency ??
                     "MONTHLY"
                 ),
-
 
             amount:
                 Number(
@@ -670,7 +712,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     0
                 ) || 0,
 
-
             spent:
                 Number(
                     item.spent ??
@@ -678,7 +719,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     item.used ??
                     0
                 ) || 0,
-
 
             description:
                 item.description ??
@@ -688,60 +728,43 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /* =========================================================
-       EXTRACT ARRAY
-    ========================================================= */
+    // =========================================================
+    // EXTRACT ARRAY
+    // =========================================================
 
     function extractArray(
         response,
         keys
     ) {
 
-        if (
-            Array.isArray(response)
-        ) {
-
+        if (Array.isArray(response)) {
             return response;
         }
-
 
         if (
             response &&
             typeof response === "object"
         ) {
 
-            for (
-                const key of keys
-            ) {
+            for (const key of keys) {
 
                 if (
                     Array.isArray(
                         response[key]
                     )
                 ) {
-
                     return response[key];
                 }
             }
         }
 
-
         return [];
     }
+        // =========================================================
+    // CALCULATE SPENT
+    // =========================================================
 
-
-    /* =========================================================
-       CALCULATE SPENT
-    ========================================================= */
-
-    function calculateSpent(
-        budget
-    ) {
-
-        /*
-         * If backend already provides spent,
-         * use it.
-         */
+    function calculateSpent(budget) {
 
         if (
             Number(budget.spent) > 0
@@ -752,7 +775,6 @@ document.addEventListener("DOMContentLoaded", () => {
             );
         }
 
-
         const category =
             String(
                 budget.category || ""
@@ -760,36 +782,32 @@ document.addEventListener("DOMContentLoaded", () => {
             .trim()
             .toLowerCase();
 
-
         return transactions
-            .filter(
-                transaction => {
+            .filter(transaction => {
 
-                    const type =
-                        String(
-                            transaction.type ||
-                            transaction.transactionType ||
-                            ""
-                        )
-                        .toLowerCase();
+                const type =
+                    String(
+                        transaction.type ||
+                        transaction.transactionType ||
+                        ""
+                    )
+                    .trim()
+                    .toLowerCase();
 
-
-                    const transactionCategory =
-                        getTransactionCategory(
-                            transaction
-                        );
-
-
-                    return (
-                        (
-                            type === "expense" ||
-                            type === "debit"
-                        ) &&
-                        transactionCategory ===
-                        category
+                const transactionCategory =
+                    getTransactionCategory(
+                        transaction
                     );
-                }
-            )
+
+                return (
+                    (
+                        type === "expense" ||
+                        type === "debit"
+                    ) &&
+                    transactionCategory ===
+                    category
+                );
+            })
             .reduce(
                 (
                     total,
@@ -830,7 +848,6 @@ document.addEventListener("DOMContentLoaded", () => {
             .toLowerCase();
         }
 
-
         return String(
             transaction.categoryName ||
             transaction.category ||
@@ -841,9 +858,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /* =========================================================
-       SUMMARY
-    ========================================================= */
+    // =========================================================
+    // SUMMARY
+    // =========================================================
 
     function updateSummary() {
 
@@ -864,7 +881,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 0
             );
 
-
         const spent =
             budgets.reduce(
                 (
@@ -882,10 +898,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 0
             );
 
-
         const remaining =
             total - spent;
-
 
         if (totalBudget) {
 
@@ -893,13 +907,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 formatCurrency(total);
         }
 
-
         if (totalSpent) {
 
             totalSpent.textContent =
                 formatCurrency(spent);
         }
-
 
         if (remainingBudget) {
 
@@ -912,7 +924,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
         }
 
-
         if (activeBudgets) {
 
             activeBudgets.textContent =
@@ -921,17 +932,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /* =========================================================
-       RENDER BUDGETS
-    ========================================================= */
+    // =========================================================
+    // RENDER BUDGETS
+    // =========================================================
 
     function renderBudgets() {
 
         if (!budgetGrid) {
-
             return;
         }
-
 
         const search =
             String(
@@ -940,11 +949,9 @@ document.addEventListener("DOMContentLoaded", () => {
             .trim()
             .toLowerCase();
 
-
         const period =
             periodFilter?.value ||
             "all";
-
 
         const filtered =
             budgets.filter(
@@ -963,12 +970,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         .toLowerCase()
                         .includes(search);
 
-
                     const matchesPeriod =
                         period === "all" ||
                         budget.period ===
                         period;
-
 
                     return (
                         matchesSearch &&
@@ -977,13 +982,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             );
 
-
         budgetGrid.innerHTML = "";
 
-
-        if (
-            budgets.length === 0
-        ) {
+        if (budgets.length === 0) {
 
             budgetGrid.style.display =
                 "none";
@@ -992,47 +993,35 @@ document.addEventListener("DOMContentLoaded", () => {
                 "show"
             );
 
-
             const heading =
                 emptyState?.querySelector(
                     "h3"
                 );
-
 
             const paragraph =
                 emptyState?.querySelector(
                     "p"
                 );
 
-
             if (heading) {
-
                 heading.textContent =
                     "No budgets yet";
             }
 
-
             if (paragraph) {
-
                 paragraph.textContent =
                     "Create your first budget to start controlling your spending.";
             }
 
-
             if (resultText) {
-
                 resultText.textContent =
                     "0 budgets";
             }
 
-
             return;
         }
 
-
-        if (
-            filtered.length === 0
-        ) {
+        if (filtered.length === 0) {
 
             budgetGrid.style.display =
                 "none";
@@ -1041,52 +1030,40 @@ document.addEventListener("DOMContentLoaded", () => {
                 "show"
             );
 
-
             const heading =
                 emptyState?.querySelector(
                     "h3"
                 );
-
 
             const paragraph =
                 emptyState?.querySelector(
                     "p"
                 );
 
-
             if (heading) {
-
                 heading.textContent =
                     "No matching budgets";
             }
 
-
             if (paragraph) {
-
                 paragraph.textContent =
                     "Try changing your search or period filter.";
             }
 
-
             if (resultText) {
-
                 resultText.textContent =
                     "0 matching budgets";
             }
 
-
             return;
         }
-
 
         budgetGrid.style.display =
             "grid";
 
-
         emptyState?.classList.remove(
             "show"
         );
-
 
         if (resultText) {
 
@@ -1098,7 +1075,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         : " budgets"
                 );
         }
-
 
         filtered.forEach(
             budget => {
@@ -1113,9 +1089,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /* =========================================================
-       CREATE BUDGET CARD
-    ========================================================= */
+    // =========================================================
+    // CREATE BUDGET CARD
+    // =========================================================
 
     function createBudgetCard(
         budget
@@ -1126,22 +1102,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 "article"
             );
 
-
         card.className =
             "budget-card";
-
 
         const spent =
             calculateSpent(
                 budget
             );
 
-
         const amount =
             Number(
                 budget.amount
             ) || 0;
-
 
         const percentage =
             amount > 0
@@ -1150,7 +1122,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     amount
                 ) * 100
                 : 0;
-
 
         const safePercentage =
             Math.min(
@@ -1161,26 +1132,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 100
             );
 
+        let progressClass = "";
 
-        let progressClass =
-            "";
-
-
-        if (
-            percentage >= 100
-        ) {
+        if (percentage >= 100) {
 
             progressClass =
                 "danger";
 
-        } else if (
-            percentage >= 80
-        ) {
+        } else if (percentage >= 80) {
 
             progressClass =
                 "warning";
         }
-
 
         const remaining =
             Math.max(
@@ -1188,17 +1151,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 0
             );
 
-
         card.innerHTML = `
 
             <div class="budget-top">
 
                 <div class="budget-icon">
-
                     <i class="fa-solid fa-wallet"></i>
-
                 </div>
-
 
                 <div class="budget-actions">
 
@@ -1208,11 +1167,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         title="Edit budget"
                         aria-label="Edit budget"
                     >
-
                         <i class="fa-solid fa-pen"></i>
-
                     </button>
-
 
                     <button
                         class="budget-action delete"
@@ -1220,24 +1176,18 @@ document.addEventListener("DOMContentLoaded", () => {
                         title="Delete budget"
                         aria-label="Delete budget"
                     >
-
                         <i class="fa-solid fa-trash"></i>
-
                     </button>
 
                 </div>
 
             </div>
 
-
             <h3 class="budget-name">
-
                 ${escapeHtml(
                     budget.name
                 )}
-
             </h3>
-
 
             <span class="budget-category">
 
@@ -1255,7 +1205,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             </span>
 
-
             <div class="budget-values">
 
                 <div>
@@ -1271,7 +1220,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     </strong>
 
                 </div>
-
 
                 <div>
 
@@ -1289,7 +1237,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             </div>
 
-
             <div class="progress-track">
 
                 <div
@@ -1298,7 +1245,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 ></div>
 
             </div>
-
 
             <div class="progress-text">
 
@@ -1314,18 +1260,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
             </div>
 
-
             <p class="budget-description">
-
                 ${escapeHtml(
                     budget.description ||
                     "No description added."
                 )}
-
             </p>
-
         `;
-
 
         card
             .querySelector(".edit")
@@ -1339,7 +1280,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             );
 
-
         card
             .querySelector(".delete")
             ?.addEventListener(
@@ -1352,28 +1292,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             );
 
-
         return card;
     }
 
 
-    /* =========================================================
-       ADD MODAL
-    ========================================================= */
+    // =========================================================
+    // ADD MODAL
+    // =========================================================
 
     function openAddModal() {
 
         editingId = null;
 
-
         budgetForm?.reset();
 
-
         if (budgetId) {
-
             budgetId.value = "";
         }
-
 
         if (modalTitle) {
 
@@ -1381,40 +1316,33 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Add Budget";
         }
 
-
         if (saveButton) {
 
             saveButton.textContent =
                 "Save Budget";
         }
 
-
         hideModalMessage();
-
 
         budgetModal?.classList.add(
             "show"
         );
 
-
         document.body.style.overflow =
             "hidden";
 
-
         setTimeout(
             () => {
-
                 budgetName?.focus();
-
             },
             100
         );
     }
 
 
-    /* =========================================================
-       EDIT MODAL
-    ========================================================= */
+    // =========================================================
+    // EDIT MODAL
+    // =========================================================
 
     function openEditModal(
         budget
@@ -1423,13 +1351,11 @@ document.addEventListener("DOMContentLoaded", () => {
         editingId =
             budget.id;
 
-
         if (budgetId) {
 
             budgetId.value =
                 budget.id ?? "";
         }
-
 
         if (budgetName) {
 
@@ -1437,13 +1363,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 budget.name ?? "";
         }
 
-
         if (budgetCategory) {
 
             budgetCategory.value =
                 budget.category ?? "";
         }
-
 
         if (budgetPeriod) {
 
@@ -1452,13 +1376,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 "MONTHLY";
         }
 
-
         if (budgetAmount) {
 
             budgetAmount.value =
                 budget.amount ?? 0;
         }
-
 
         if (budgetDescription) {
 
@@ -1466,13 +1388,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 budget.description ?? "";
         }
 
-
         if (modalTitle) {
 
             modalTitle.textContent =
                 "Edit Budget";
         }
-
 
         if (saveButton) {
 
@@ -1480,40 +1400,33 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Update Budget";
         }
 
-
         hideModalMessage();
-
 
         budgetModal?.classList.add(
             "show"
         );
 
-
         document.body.style.overflow =
             "hidden";
 
-
         setTimeout(
             () => {
-
                 budgetName?.focus();
-
             },
             100
         );
     }
 
 
-    /* =========================================================
-       CLOSE MODAL
-    ========================================================= */
+    // =========================================================
+    // CLOSE MODAL
+    // =========================================================
 
     function closeModal() {
 
         budgetModal?.classList.remove(
             "show"
         );
-
 
         if (
             !confirmOverlay?.classList.contains(
@@ -1527,310 +1440,338 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /* =========================================================
-       SAVE / UPDATE BUDGET
-       
-       IMPORTANT:
-       FinanceAPI.budgets.create()
-       FinanceAPI.budgets.update()
-    ========================================================= */
-
-    async function handleSubmit(event) {
-
-    event.preventDefault();
-
-    const name =
-        budgetName?.value.trim() || "";
-
-    const category =
-        budgetCategory?.value.trim() || "";
-
-    const period =
-        normalizePeriod(
-            budgetPeriod?.value
-        );
-
-    const amount =
-        Number(
-            budgetAmount?.value
-        );
-
-    const description =
-        budgetDescription?.value.trim() || "";
-
-
     // =========================================================
-    // FRONTEND VALIDATION
+    // SAVE / UPDATE
     // =========================================================
 
-    if (!name) {
-
-        showModalMessage(
-            "Please enter a budget name."
-        );
-
-        budgetName?.focus();
-
-        return;
-    }
-
-
-    if (!category) {
-
-        showModalMessage(
-            "Please enter a category."
-        );
-
-        budgetCategory?.focus();
-
-        return;
-    }
-
-
-    if (!period) {
-
-        showModalMessage(
-            "Please select a budget period."
-        );
-
-        budgetPeriod?.focus();
-
-        return;
-    }
-
-
-    if (
-        !Number.isFinite(amount) ||
-        amount <= 0
+    async function handleSubmit(
+        event
     ) {
 
-        showModalMessage(
-            "Please enter a valid budget amount greater than zero."
-        );
+        event.preventDefault();
 
-        budgetAmount?.focus();
+        const name =
+            budgetName?.value.trim() ||
+            "";
 
-        return;
-    }
+        const category =
+            budgetCategory?.value.trim() ||
+            "";
 
-
-    // =========================================================
-    // CALCULATE START / END DATES
-    // =========================================================
-
-    const today = new Date();
-
-    let startDate;
-    let endDate;
-
-
-    if (period === "WEEKLY") {
-
-        const day =
-            today.getDay();
-
-        const difference =
-            day === 0
-                ? 6
-                : day - 1;
-
-        const start =
-            new Date(today);
-
-        start.setDate(
-            today.getDate() - difference
-        );
-
-        const end =
-            new Date(start);
-
-        end.setDate(
-            start.getDate() + 6
-        );
-
-        startDate =
-            formatDate(start);
-
-        endDate =
-            formatDate(end);
-
-    } else if (period === "YEARLY") {
-
-        startDate =
-            `${today.getFullYear()}-01-01`;
-
-        endDate =
-            `${today.getFullYear()}-12-31`;
-
-    } else {
-
-        // MONTHLY
-        // Also used as a safe fallback for CUSTOM
-        const year =
-            today.getFullYear();
-
-        const month =
-            today.getMonth();
-
-        const start =
-            new Date(
-                year,
-                month,
-                1
+        const period =
+            normalizePeriod(
+                budgetPeriod?.value
             );
 
-        const end =
-            new Date(
-                year,
-                month + 1,
-                0
+        const amount =
+            Number(
+                budgetAmount?.value
             );
 
-        startDate =
-            formatDate(start);
+        const description =
+            budgetDescription?.value.trim() ||
+            "";
 
-        endDate =
-            formatDate(end);
-    }
+        if (!name) {
 
+            showModalMessage(
+                "Please enter a budget name."
+            );
 
-    // =========================================================
-    // API PAYLOAD
-    // IMPORTANT:
-    // Only send fields that BudgetRequest accepts.
-    // =========================================================
+            budgetName?.focus();
 
-    const payload = {
+            return;
+        }
 
-        name: name,
+        if (!category) {
 
-        category: category,
+            showModalMessage(
+                "Please enter a category."
+            );
 
-        amount: amount,
+            budgetCategory?.focus();
 
-        period: period,
+            return;
+        }
 
-        startDate: startDate,
+        if (!period) {
 
-        endDate: endDate,
+            showModalMessage(
+                "Please select a budget period."
+            );
 
-        active: true
-    };
+            budgetPeriod?.focus();
 
-
-    console.log(
-        "Budget payload:",
-        payload
-    );
-
-
-    if (saveButton) {
-
-        saveButton.disabled =
-            true;
-
-        saveButton.textContent =
-            editingId
-                ? "Updating..."
-                : "Saving...";
-    }
-
-
-    try {
+            return;
+        }
 
         if (
-            editingId !== null &&
-            editingId !== undefined
+            !Number.isFinite(amount) ||
+            amount <= 0
         ) {
 
-            await FinanceAPI.budgets.update(
-                editingId,
-                payload
+            showModalMessage(
+                "Please enter a valid budget amount greater than zero."
             );
 
-            showToast(
-                "Budget updated successfully."
+            budgetAmount?.focus();
+
+            return;
+        }
+                // =========================================================
+        // CALCULATE START / END DATES
+        // =========================================================
+
+        const today =
+            new Date();
+
+        let startDate;
+        let endDate;
+
+
+        if (period === "WEEKLY") {
+
+            const day =
+                today.getDay();
+
+            const difference =
+                day === 0
+                    ? 6
+                    : day - 1;
+
+            const start =
+                new Date(today);
+
+            start.setDate(
+                today.getDate() -
+                difference
             );
+
+            const end =
+                new Date(start);
+
+            end.setDate(
+                start.getDate() + 6
+            );
+
+            startDate =
+                formatDate(start);
+
+            endDate =
+                formatDate(end);
+
+
+        } else if (
+            period === "YEARLY"
+        ) {
+
+            startDate =
+                `${today.getFullYear()}-01-01`;
+
+            endDate =
+                `${today.getFullYear()}-12-31`;
+
 
         } else {
 
-            await FinanceAPI.budgets.create(
-                payload
-            );
+            // MONTHLY
+            // CUSTOM also safely uses the current month.
 
-            showToast(
-                "Budget created successfully."
-            );
+            const year =
+                today.getFullYear();
+
+            const month =
+                today.getMonth();
+
+            const start =
+                new Date(
+                    year,
+                    month,
+                    1
+                );
+
+            const end =
+                new Date(
+                    year,
+                    month + 1,
+                    0
+                );
+
+            startDate =
+                formatDate(start);
+
+            endDate =
+                formatDate(end);
         }
 
 
-        closeModal();
+        // =========================================================
+        // API PAYLOAD
+        // =========================================================
+        // IMPORTANT:
+        // These names exactly match BudgetRequest.java.
+        //
+        // Do NOT send:
+        // budgetName
+        // budgetPeriod
+        // budgetAmount
+        //
+        // Description is not sent because the current backend
+        // BudgetRequest does not contain a description property.
+        // =========================================================
 
-        await loadBudgets();
+        const payload = {
 
-        updateSummary();
+            name: name,
 
-        renderBudgets();
+            category: category,
+
+            amount: amount,
+
+            period: period,
+
+            startDate: startDate,
+
+            endDate: endDate,
+
+            active: true
+        };
 
 
-    } catch (error) {
-
-        console.error(
-            "Budget save failed:",
-            error
+        console.log(
+            "BUDGET PAYLOAD SENT TO API:",
+            payload
         );
 
-        showModalMessage(
-            getErrorMessage(error)
-        );
-
-    } finally {
 
         if (saveButton) {
 
             saveButton.disabled =
-                false;
+                true;
 
             saveButton.textContent =
-                editingId
-                    ? "Update Budget"
-                    : "Save Budget";
+                editingId !== null &&
+                editingId !== undefined
+                    ? "Updating..."
+                    : "Saving...";
+        }
+
+
+        try {
+
+            // =====================================================
+            // UPDATE
+            // =====================================================
+
+            if (
+                editingId !== null &&
+                editingId !== undefined
+            ) {
+
+                await FinanceAPI.budgets.update(
+                    editingId,
+                    payload
+                );
+
+                showToast(
+                    "Budget updated successfully."
+                );
+
+
+            // =====================================================
+            // CREATE
+            // =====================================================
+
+            } else {
+
+                await FinanceAPI.budgets.create(
+                    payload
+                );
+
+                showToast(
+                    "Budget created successfully."
+                );
+            }
+
+
+            // =====================================================
+            // REFRESH DATA
+            // =====================================================
+
+            closeModal();
+
+            await loadBudgets();
+
+            await loadTransactions();
+
+            updateSummary();
+
+            renderBudgets();
+
+
+        } catch (error) {
+
+            console.error(
+                "Budget save failed:",
+                error
+            );
+
+            showModalMessage(
+                getErrorMessage(error)
+            );
+
+
+        } finally {
+
+            if (saveButton) {
+
+                saveButton.disabled =
+                    false;
+
+                saveButton.textContent =
+                    editingId !== null &&
+                    editingId !== undefined
+                        ? "Update Budget"
+                        : "Save Budget";
+            }
         }
     }
-}
 
 
-/* =========================================================
-   FORMAT DATE AS YYYY-MM-DD
-   ========================================================= */
+    // =========================================================
+    // FORMAT DATE
+    // =========================================================
 
-function formatDate(date) {
+    function formatDate(date) {
 
-    const year =
-        date.getFullYear();
+        const year =
+            date.getFullYear();
 
-    const month =
-        String(
-            date.getMonth() + 1
-        ).padStart(
-            2,
-            "0"
+        const month =
+            String(
+                date.getMonth() + 1
+            ).padStart(
+                2,
+                "0"
+            );
+
+        const day =
+            String(
+                date.getDate()
+            ).padStart(
+                2,
+                "0"
+            );
+
+        return (
+            `${year}-${month}-${day}`
         );
+    }
 
-    const day =
-        String(
-            date.getDate()
-        ).padStart(
-            2,
-            "0"
-        );
 
-    return `${year}-${month}-${day}`;
-}
-
-    /* =========================================================
-       DELETE CONFIRMATION
-    ========================================================= */
+    // =========================================================
+    // DELETE CONFIRMATION
+    // =========================================================
 
     function openConfirm(
         budget
@@ -1839,11 +1780,9 @@ function formatDate(date) {
         deletingId =
             budget.id;
 
-
         confirmOverlay?.classList.add(
             "show"
         );
-
 
         document.body.style.overflow =
             "hidden";
@@ -1856,10 +1795,8 @@ function formatDate(date) {
             "show"
         );
 
-
         deletingId =
             null;
-
 
         if (
             !budgetModal?.classList.contains(
@@ -1873,12 +1810,9 @@ function formatDate(date) {
     }
 
 
-    /* =========================================================
-       DELETE BUDGET
-       
-       IMPORTANT:
-       FinanceAPI.budgets.delete(id)
-    ========================================================= */
+    // =========================================================
+    // DELETE BUDGET
+    // =========================================================
 
     async function deleteBudget() {
 
@@ -1886,54 +1820,41 @@ function formatDate(date) {
             deletingId === null ||
             deletingId === undefined
         ) {
-
             return;
         }
 
-
         const id =
             deletingId;
-
 
         if (confirmDelete) {
 
             confirmDelete.disabled =
                 true;
 
-
             confirmDelete.textContent =
                 "Deleting...";
         }
 
-
         try {
-
-            /*
-             * CORRECT:
-             *
-             * FinanceAPI.budgets.delete(id)
-             */
 
             await FinanceAPI.budgets.delete(
                 id
             );
 
-
             closeConfirm();
-
 
             showToast(
                 "Budget deleted successfully."
             );
 
-
             await loadBudgets();
 
+            await loadTransactions();
 
             updateSummary();
 
-
             renderBudgets();
+
 
         } catch (error) {
 
@@ -1942,13 +1863,11 @@ function formatDate(date) {
                 error
             );
 
-
             showToast(
-                getErrorMessage(
-                    error
-                ),
+                getErrorMessage(error),
                 "error"
             );
+
 
         } finally {
 
@@ -1957,7 +1876,6 @@ function formatDate(date) {
                 confirmDelete.disabled =
                     false;
 
-
                 confirmDelete.textContent =
                     "Delete";
             }
@@ -1965,9 +1883,9 @@ function formatDate(date) {
     }
 
 
-    /* =========================================================
-       FILTERS
-    ========================================================= */
+    // =========================================================
+    // FILTERS
+    // =========================================================
 
     function clearFiltersHandler() {
 
@@ -1976,21 +1894,19 @@ function formatDate(date) {
             searchInput.value = "";
         }
 
-
         if (periodFilter) {
 
             periodFilter.value =
                 "all";
         }
 
-
         renderBudgets();
     }
 
 
-    /* =========================================================
-       PERIOD
-    ========================================================= */
+    // =========================================================
+    // PERIOD
+    // =========================================================
 
     function normalizePeriod(
         value
@@ -2024,9 +1940,11 @@ function formatDate(date) {
                 "Yearly",
 
             DAILY:
-                "Daily"
-        };
+                "Daily",
 
+            CUSTOM:
+                "Custom"
+        };
 
         return (
             names[period] ||
@@ -2041,9 +1959,9 @@ function formatDate(date) {
     }
 
 
-    /* =========================================================
-       CURRENCY
-    ========================================================= */
+    // =========================================================
+    // CURRENCY
+    // =========================================================
 
     function formatCurrency(
         amount
@@ -2066,26 +1984,22 @@ function formatDate(date) {
     }
 
 
-    /* =========================================================
-       LOADING
-    ========================================================= */
+    // =========================================================
+    // LOADING
+    // =========================================================
 
     function showLoading() {
 
         if (!budgetGrid) {
-
             return;
         }
-
 
         budgetGrid.style.display =
             "grid";
 
-
         emptyState?.classList.remove(
             "show"
         );
-
 
         budgetGrid.innerHTML = `
 
@@ -2106,19 +2020,15 @@ function formatDate(date) {
     ) {
 
         if (!budgetGrid) {
-
             return;
         }
-
 
         budgetGrid.style.display =
             "grid";
 
-
         emptyState?.classList.remove(
             "show"
         );
-
 
         budgetGrid.innerHTML = `
 
@@ -2132,13 +2042,11 @@ function formatDate(date) {
 
         `;
 
-
         if (resultText) {
 
             resultText.textContent =
                 "Unable to load budgets";
         }
-
 
         showToast(
             getErrorMessage(error),
@@ -2146,24 +2054,20 @@ function formatDate(date) {
         );
     }
 
-
-    /* =========================================================
-       MODAL MESSAGE
-    ========================================================= */
+        // =========================================================
+    // MODAL MESSAGE
+    // =========================================================
 
     function showModalMessage(
         message
     ) {
 
         if (!modalMessage) {
-
             return;
         }
 
-
         modalMessage.textContent =
             message;
-
 
         modalMessage.classList.add(
             "show"
@@ -2174,14 +2078,11 @@ function formatDate(date) {
     function hideModalMessage() {
 
         if (!modalMessage) {
-
             return;
         }
 
-
         modalMessage.textContent =
             "";
-
 
         modalMessage.classList.remove(
             "show"
@@ -2189,9 +2090,9 @@ function formatDate(date) {
     }
 
 
-    /* =========================================================
-       TOAST
-    ========================================================= */
+    // =========================================================
+    // TOAST
+    // =========================================================
 
     function showToast(
         message,
@@ -2199,22 +2100,18 @@ function formatDate(date) {
     ) {
 
         if (!toast) {
-
             return;
         }
-
 
         clearTimeout(
             toastTimer
         );
-
 
         if (toastMessage) {
 
             toastMessage.textContent =
                 message;
         }
-
 
         if (toastIcon) {
 
@@ -2238,11 +2135,9 @@ function formatDate(date) {
             }
         }
 
-
         toast.classList.add(
             "show"
         );
-
 
         toastTimer =
             setTimeout(
@@ -2258,9 +2153,9 @@ function formatDate(date) {
     }
 
 
-    /* =========================================================
-       ERROR MESSAGE
-    ========================================================= */
+    // =========================================================
+    // ERROR MESSAGE
+    // =========================================================
 
     function getErrorMessage(
         error
@@ -2273,6 +2168,19 @@ function formatDate(date) {
             return error.message;
         }
 
+        if (
+            error?.response?.message
+        ) {
+
+            return error.response.message;
+        }
+
+        if (
+            error?.data?.message
+        ) {
+
+            return error.data.message;
+        }
 
         return (
             "Something went wrong. Please try again."
@@ -2280,9 +2188,9 @@ function formatDate(date) {
     }
 
 
-    /* =========================================================
-       ESCAPE HTML
-    ========================================================= */
+    // =========================================================
+    // ESCAPE HTML
+    // =========================================================
 
     function escapeHtml(
         value
@@ -2314,11 +2222,9 @@ function formatDate(date) {
     }
 
 
-    /* =========================================================
-       LOGOUT
-       
-       Uses the current FinanceAPI.
-    ========================================================= */
+    // =========================================================
+    // LOGOUT
+    // =========================================================
 
     async function handleLogout() {
 
@@ -2365,7 +2271,6 @@ function formatDate(date) {
                     error
                 );
             }
-
 
             window.location.href =
                 "login.html";

@@ -446,8 +446,7 @@
 
     <script src="./js/budgets.js"></script>
 
-    <script>
-
+<script>
 if ("serviceWorker" in navigator) {
 
     window.addEventListener(
@@ -456,7 +455,7 @@ if ("serviceWorker" in navigator) {
 
             navigator.serviceWorker
                 .register(
-                    "./static/js/service-worker.js"
+                    "./service-worker.js"
                 )
                 .then(
                     function (registration) {
@@ -483,7 +482,7 @@ if ("serviceWorker" in navigator) {
     );
 
 }
-
 </script>
-  </body>
+
+</body>
 </html>

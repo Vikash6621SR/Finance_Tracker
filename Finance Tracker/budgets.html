@@ -7,6 +7,33 @@
 
     <title>Budgets | Finance Tracker</title>
 
+    <link rel="manifest" href="./manifest.json">
+
+<meta
+    name="theme-color"
+    content="#16a34a"
+>
+
+<meta
+    name="mobile-web-app-capable"
+    content="yes"
+>
+
+<meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+>
+
+<meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="default"
+>
+
+<meta
+    name="apple-mobile-web-app-title"
+    content="Finance Tracker"
+>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
 
     <link
@@ -418,5 +445,45 @@
     <script src="./static/js/api.js"></script>
 
     <script src="./static/js/budgets.js"></script>
+
+    <script>
+
+if ("serviceWorker" in navigator) {
+
+    window.addEventListener(
+        "load",
+        function () {
+
+            navigator.serviceWorker
+                .register(
+                    "./static/js/service-worker.js"
+                )
+                .then(
+                    function (registration) {
+
+                        console.log(
+                            "Finance Tracker PWA registered:",
+                            registration.scope
+                        );
+
+                    }
+                )
+                .catch(
+                    function (error) {
+
+                        console.error(
+                            "PWA registration failed:",
+                            error
+                        );
+
+                    }
+                );
+
+        }
+    );
+
+}
+
+</script>
   </body>
 </html>

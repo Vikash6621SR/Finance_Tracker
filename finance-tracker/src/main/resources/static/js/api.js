@@ -19,47 +19,187 @@ COMMON REQUEST FUNCTION
 
 async function apiRequest(endpoint, options = {}) {
 
-    const response = await fetch(
-        `${API_BASE_URL}${endpoint}`,
-        {
-            ...options,
+    const url =
+        `${API_BASE_URL}${endpoint}`;
 
-            credentials: "include",
 
-            headers: {
-                "Content-Type": "application/json",
-                ...(options.headers || {})
-            }
+    /*
+    =========================================================
+    REQUEST OPTIONS
+    =========================================================
+    */
+
+    const requestOptions = {
+
+        ...options,
+
+        credentials: "include",
+
+        headers: {
+
+            "Content-Type":
+                "application/json",
+
+            ...(options.headers || {})
         }
-    );
+    };
 
 
-    let data = null;
+    /*
+    =========================================================
+    SEND REQUEST
+    =========================================================
+    */
+
+    let response;
 
     try {
 
-        data = await response.json();
+        response =
+            await fetch(
+                url,
+                requestOptions
+            );
 
-    } catch (error) {
+    } catch (networkError) {
+
+        console.error(
+            "NETWORK ERROR:",
+            networkError
+        );
+
+        throw new Error(
+            "Unable to connect to the Finance Tracker server."
+        );
+    }
+
+
+    /*
+    =========================================================
+    READ RESPONSE
+    =========================================================
+    */
+
+    let data = null;
+
+    const contentType =
+        response.headers.get(
+            "content-type"
+        ) || "";
+
+
+    try {
+
+        if (
+            contentType.includes(
+                "application/json"
+            )
+        ) {
+
+            data =
+                await response.json();
+
+        } else {
+
+            const text =
+                await response.text();
+
+            if (text) {
+
+                data = {
+                    message: text
+                };
+            }
+        }
+
+    } catch (parseError) {
+
+        console.warn(
+            "Could not parse API response:",
+            parseError
+        );
 
         data = null;
     }
 
 
+    /*
+    =========================================================
+    LOG RESPONSE
+    =========================================================
+    */
+
+    console.log(
+        "API RESPONSE:",
+        {
+            endpoint: endpoint,
+
+            status: response.status,
+
+            ok: response.ok,
+
+            data: data
+        }
+    );
+
+
+    /*
+    =========================================================
+    HANDLE API ERRORS
+    =========================================================
+    */
+
     if (!response.ok) {
 
-        const error = new Error(
+        const message =
             data?.message ||
             data?.error ||
-            `Request failed with status ${response.status}`
+            data?.detail ||
+            data?.errors ||
+            `Request failed with status ${response.status}`;
+
+
+        console.error(
+            "API ERROR:",
+            {
+                url: url,
+
+                status: response.status,
+
+                statusText:
+                    response.statusText,
+
+                response: data
+            }
         );
 
-        error.status = response.status;
-        error.data = data;
+
+        const error =
+            new Error(
+                typeof message === "string"
+                    ? message
+                    : JSON.stringify(message)
+            );
+
+
+        error.status =
+            response.status;
+
+        error.statusText =
+            response.statusText;
+
+        error.data =
+            data;
 
         throw error;
     }
 
+
+    /*
+    =========================================================
+    SUCCESS
+    =========================================================
+    */
 
     return data;
 }
@@ -82,7 +222,10 @@ const FinanceAPI = {
 
     auth: {
 
-        async login(email, password) {
+        async login(
+            email,
+            password
+        ) {
 
             return await apiRequest(
                 "/auth/login",
@@ -90,22 +233,31 @@ const FinanceAPI = {
                     method: "POST",
 
                     body: JSON.stringify({
-                        email: email,
-                        password: password
+
+                        email:
+                            email,
+
+                        password:
+                            password
                     })
                 }
             );
         },
 
 
-        async register(userData) {
+        async register(
+            userData
+        ) {
 
             return await apiRequest(
                 "/auth/setup",
                 {
                     method: "POST",
 
-                    body: JSON.stringify(userData)
+                    body:
+                        JSON.stringify(
+                            userData
+                        )
                 }
             );
         },
@@ -154,13 +306,15 @@ const FinanceAPI = {
                 {
                     method: "POST",
 
-                    body: JSON.stringify({
-                        currentPassword:
-                            currentPassword,
+                    body:
+                        JSON.stringify({
 
-                        newPassword:
-                            newPassword
-                    })
+                            currentPassword:
+                                currentPassword,
+
+                            newPassword:
+                                newPassword
+                        })
                 }
             );
         }
@@ -186,33 +340,46 @@ const FinanceAPI = {
         },
 
 
-        async create(account) {
+        async create(
+            account
+        ) {
 
             return await apiRequest(
                 "/accounts",
                 {
                     method: "POST",
 
-                    body: JSON.stringify(account)
+                    body:
+                        JSON.stringify(
+                            account
+                        )
                 }
             );
         },
 
 
-        async update(id, account) {
+        async update(
+            id,
+            account
+        ) {
 
             return await apiRequest(
                 `/accounts/${id}`,
                 {
                     method: "PUT",
 
-                    body: JSON.stringify(account)
+                    body:
+                        JSON.stringify(
+                            account
+                        )
                 }
             );
         },
 
 
-        async delete(id) {
+        async delete(
+            id
+        ) {
 
             return await apiRequest(
                 `/accounts/${id}`,
@@ -243,33 +410,46 @@ const FinanceAPI = {
         },
 
 
-        async create(transaction) {
+        async create(
+            transaction
+        ) {
 
             return await apiRequest(
                 "/transactions",
                 {
                     method: "POST",
 
-                    body: JSON.stringify(transaction)
+                    body:
+                        JSON.stringify(
+                            transaction
+                        )
                 }
             );
         },
 
 
-        async update(id, transaction) {
+        async update(
+            id,
+            transaction
+        ) {
 
             return await apiRequest(
                 `/transactions/${id}`,
                 {
                     method: "PUT",
 
-                    body: JSON.stringify(transaction)
+                    body:
+                        JSON.stringify(
+                            transaction
+                        )
                 }
             );
         },
 
 
-        async delete(id) {
+        async delete(
+            id
+        ) {
 
             return await apiRequest(
                 `/transactions/${id}`,
@@ -289,54 +469,81 @@ const FinanceAPI = {
 
     budgets: {
 
-    async getAll() {
+        async getAll() {
 
-        return await apiRequest(
-            "/budgets",
-            {
-                method: "GET"
-            }
-        );
+            return await apiRequest(
+                "/budgets",
+                {
+                    method: "GET"
+                }
+            );
+        },
+
+
+        async create(
+            budget
+        ) {
+
+            console.log(
+                "BUDGET CREATE REQUEST:",
+                budget
+            );
+
+            return await apiRequest(
+                "/budgets",
+                {
+                    method: "POST",
+
+                    body:
+                        JSON.stringify(
+                            budget
+                        )
+                }
+            );
+        },
+
+
+        async update(
+            id,
+            budget
+        ) {
+
+            console.log(
+                "BUDGET UPDATE REQUEST:",
+                {
+                    id: id,
+                    budget: budget
+                }
+            );
+
+            return await apiRequest(
+                `/budgets/${id}`,
+                {
+                    method: "PUT",
+
+                    body:
+                        JSON.stringify(
+                            budget
+                        )
+                }
+            );
+        },
+
+
+        async delete(
+            id
+        ) {
+
+            return await apiRequest(
+                `/budgets/${id}`,
+                {
+                    method: "DELETE"
+                }
+            );
+        }
     },
 
-
-    async create(budget) {
-
-        return await apiRequest(
-            "/budgets",
-            {
-                method: "POST",
-                body: JSON.stringify(budget)
-            }
-        );
-    },
-
-
-    async update(id, budget) {
-
-        return await apiRequest(
-            `/budgets/${id}`,
-            {
-                method: "PUT",
-                body: JSON.stringify(budget)
-            }
-        );
-    },
-
-
-    async delete(id) {
-
-        return await apiRequest(
-            `/budgets/${id}`,
-            {
-                method: "DELETE"
-            }
-        );
-    }
-},
-
-
-    /*
+        /*
     =====================================================
     SAVINGS
     =====================================================
@@ -355,33 +562,46 @@ const FinanceAPI = {
         },
 
 
-        async create(saving) {
+        async create(
+            saving
+        ) {
 
             return await apiRequest(
                 "/savings",
                 {
                     method: "POST",
 
-                    body: JSON.stringify(saving)
+                    body:
+                        JSON.stringify(
+                            saving
+                        )
                 }
             );
         },
 
 
-        async update(id, saving) {
+        async update(
+            id,
+            saving
+        ) {
 
             return await apiRequest(
                 `/savings/${id}`,
                 {
                     method: "PUT",
 
-                    body: JSON.stringify(saving)
+                    body:
+                        JSON.stringify(
+                            saving
+                        )
                 }
             );
         },
 
 
-        async delete(id) {
+        async delete(
+            id
+        ) {
 
             return await apiRequest(
                 `/savings/${id}`,
@@ -412,33 +632,46 @@ const FinanceAPI = {
         },
 
 
-        async create(recurring) {
+        async create(
+            recurring
+        ) {
 
             return await apiRequest(
                 "/recurring",
                 {
                     method: "POST",
 
-                    body: JSON.stringify(recurring)
+                    body:
+                        JSON.stringify(
+                            recurring
+                        )
                 }
             );
         },
 
 
-        async update(id, recurring) {
+        async update(
+            id,
+            recurring
+        ) {
 
             return await apiRequest(
                 `/recurring/${id}`,
                 {
                     method: "PUT",
 
-                    body: JSON.stringify(recurring)
+                    body:
+                        JSON.stringify(
+                            recurring
+                        )
                 }
             );
         },
 
 
-        async delete(id) {
+        async delete(
+            id
+        ) {
 
             return await apiRequest(
                 `/recurring/${id}`,
@@ -484,9 +717,15 @@ const FinanceAPI = {
 
             let transactions = [];
 
-            if (Array.isArray(response)) {
 
-                transactions = response;
+            if (
+                Array.isArray(
+                    response
+                )
+            ) {
+
+                transactions =
+                    response;
 
             } else if (
                 response &&
@@ -494,19 +733,27 @@ const FinanceAPI = {
             ) {
 
                 const possibleKeys = [
+
                     "transactions",
+
                     "data",
+
                     "content",
+
                     "items",
+
                     "results"
                 ];
+
 
                 for (
                     const key of possibleKeys
                 ) {
 
                     if (
-                        Array.isArray(response[key])
+                        Array.isArray(
+                            response[key]
+                        )
                     ) {
 
                         transactions =
@@ -526,94 +773,111 @@ const FinanceAPI = {
 
             transactions =
                 transactions
-                    .map(transaction => {
+                    .map(
+                        transaction => {
 
-                        if (
-                            !transaction ||
-                            typeof transaction !== "object"
-                        ) {
+                            if (
+                                !transaction ||
+                                typeof transaction !==
+                                "object"
+                            ) {
 
-                            return null;
-                        }
-
-
-                        const rawType =
-                            transaction.type ??
-                            transaction.transactionType ??
-                            transaction.transaction_type ??
-                            "";
+                                return null;
+                            }
 
 
-                        const typeText =
-                            String(rawType)
+                            const rawType =
+                                transaction.type ??
+                                transaction.transactionType ??
+                                transaction.transaction_type ??
+                                "";
+
+
+                            const typeText =
+                                String(
+                                    rawType
+                                )
                                 .trim()
                                 .toLowerCase();
 
 
-                        const type =
-                            (
-                                typeText === "income" ||
-                                typeText === "credit" ||
-                                typeText === "deposit" ||
-                                typeText === "earning"
-                            )
-                                ? "income"
-                                : "expense";
+                            const type =
+                                (
+                                    typeText ===
+                                        "income" ||
+
+                                    typeText ===
+                                        "credit" ||
+
+                                    typeText ===
+                                        "deposit" ||
+
+                                    typeText ===
+                                        "earning"
+                                )
+                                    ? "income"
+                                    : "expense";
 
 
-                        const amount =
-                            Number(
-                                transaction.amount ??
-                                transaction.value ??
-                                0
-                            );
+                            const amount =
+                                Number(
+                                    transaction.amount ??
+                                    transaction.value ??
+                                    0
+                                );
 
 
-                        if (
-                            !Number.isFinite(amount)
-                        ) {
+                            if (
+                                !Number.isFinite(
+                                    amount
+                                )
+                            ) {
 
-                            return null;
-                        }
+                                return null;
+                            }
 
 
-                        return {
+                            return {
 
-                            id:
-                                transaction.id ??
-                                transaction.transactionId ??
-                                transaction.transaction_id,
+                                id:
+                                    transaction.id ??
+                                    transaction.transactionId ??
+                                    transaction.transaction_id,
 
-                            type: type,
+                                type:
+                                    type,
 
-                            amount:
-                                Math.abs(amount),
+                                amount:
+                                    Math.abs(
+                                        amount
+                                    ),
 
-                            category:
-                                String(
-                                    transaction.category ??
-                                    transaction.categoryName ??
-                                    transaction.category_name ??
-                                    "Other"
-                                ),
+                                category:
+                                    String(
+                                        transaction.category ??
+                                        transaction.categoryName ??
+                                        transaction.category_name ??
+                                        "Other"
+                                    ),
 
-                            description:
-                                String(
-                                    transaction.description ??
-                                    transaction.name ??
-                                    transaction.title ??
+                                description:
+                                    String(
+                                        transaction.description ??
+                                        transaction.name ??
+                                        transaction.title ??
+                                        ""
+                                    ),
+
+                                date:
+                                    transaction.date ??
+                                    transaction.transactionDate ??
+                                    transaction.transaction_date ??
+                                    transaction.createdAt ??
                                     ""
-                                ),
+                            };
 
-                            date:
-                                transaction.date ??
-                                transaction.transactionDate ??
-                                transaction.transaction_date ??
-                                transaction.createdAt ??
-                                ""
-                        };
-
-                    })
+                        }
+                    )
                     .filter(Boolean);
 
 
@@ -627,11 +891,17 @@ const FinanceAPI = {
                 transactions
                     .filter(
                         transaction =>
-                            transaction.type === "income"
+                            transaction.type ===
+                            "income"
                     )
                     .reduce(
-                        (total, transaction) =>
-                            total + transaction.amount,
+                        (
+                            total,
+                            transaction
+                        ) =>
+                            total +
+                            transaction.amount,
+
                         0
                     );
 
@@ -646,11 +916,17 @@ const FinanceAPI = {
                 transactions
                     .filter(
                         transaction =>
-                            transaction.type === "expense"
+                            transaction.type ===
+                            "expense"
                     )
                     .reduce(
-                        (total, transaction) =>
-                            total + transaction.amount,
+                        (
+                            total,
+                            transaction
+                        ) =>
+                            total +
+                            transaction.amount,
+
                         0
                     );
 
@@ -662,7 +938,8 @@ const FinanceAPI = {
             */
 
             const netBalance =
-                income - expense;
+                income -
+                expense;
 
 
             /*
@@ -677,43 +954,64 @@ const FinanceAPI = {
             transactions
                 .filter(
                     transaction =>
-                        transaction.type === "expense"
+                        transaction.type ===
+                        "expense"
                 )
-                .forEach(transaction => {
+                .forEach(
+                    transaction => {
 
-                    const category =
-                        transaction.category ||
-                        "Other";
+                        const category =
+                            transaction.category ||
+                            "Other";
 
 
-                    if (
-                        !categoryTotals[category]
-                    ) {
+                        if (
+                            !categoryTotals[
+                                category
+                            ]
+                        ) {
 
-                        categoryTotals[category] = 0;
+                            categoryTotals[
+                                category
+                            ] = 0;
+                        }
+
+
+                        categoryTotals[
+                            category
+                        ] +=
+                            transaction.amount;
                     }
-
-
-                    categoryTotals[category] +=
-                        transaction.amount;
-                });
+                );
 
 
             const categories =
-                Object.entries(categoryTotals)
-                    .map(
-                        ([category, amount]) => ({
+                Object.entries(
+                    categoryTotals
+                )
+                .map(
+                    (
+                        [
                             category,
                             amount
-                        })
-                    )
-                    .sort(
-                        (a, b) =>
-                            b.amount - a.amount
-                    );
+                        ]
+                    ) => ({
 
+                        category,
 
-            /*
+                        amount
+                    })
+                )
+                .sort(
+                    (
+                        a,
+                        b
+                    ) =>
+                        b.amount -
+                        a.amount
+                );
+
+                    /*
             ---------------------------------------------
             MONTHLY REPORT
             ---------------------------------------------
@@ -722,68 +1020,81 @@ const FinanceAPI = {
             const monthlyTotals = {};
 
 
-            transactions.forEach(transaction => {
+            transactions.forEach(
+                transaction => {
 
-                if (!transaction.date) {
-                    return;
+                    if (
+                        !transaction.date
+                    ) {
+                        return;
+                    }
+
+
+                    const date =
+                        new Date(
+                            transaction.date
+                        );
+
+
+                    if (
+                        Number.isNaN(
+                            date.getTime()
+                        )
+                    ) {
+
+                        return;
+                    }
+
+
+                    const year =
+                        date.getFullYear();
+
+
+                    const month =
+                        String(
+                            date.getMonth() + 1
+                        )
+                        .padStart(
+                            2,
+                            "0"
+                        );
+
+
+                    const key =
+                        `${year}-${month}`;
+
+
+                    if (
+                        !monthlyTotals[key]
+                    ) {
+
+                        monthlyTotals[key] = {
+
+                            income: 0,
+
+                            expense: 0
+                        };
+                    }
+
+
+                    if (
+                        transaction.type ===
+                        "income"
+                    ) {
+
+                        monthlyTotals[key]
+                            .income +=
+                            transaction.amount;
+
+                    } else {
+
+                        monthlyTotals[key]
+                            .expense +=
+                            transaction.amount;
+                    }
+
                 }
-
-
-                const date =
-                    new Date(transaction.date);
-
-
-                if (
-                    Number.isNaN(
-                        date.getTime()
-                    )
-                ) {
-
-                    return;
-                }
-
-
-                const year =
-                    date.getFullYear();
-
-
-                const month =
-                    String(
-                        date.getMonth() + 1
-                    ).padStart(2, "0");
-
-
-                const key =
-                    `${year}-${month}`;
-
-
-                if (
-                    !monthlyTotals[key]
-                ) {
-
-                    monthlyTotals[key] = {
-
-                        income: 0,
-
-                        expense: 0
-                    };
-                }
-
-
-                if (
-                    transaction.type === "income"
-                ) {
-
-                    monthlyTotals[key].income +=
-                        transaction.amount;
-
-                } else {
-
-                    monthlyTotals[key].expense +=
-                        transaction.amount;
-                }
-
-            });
+            );
 
 
             /*
@@ -793,29 +1104,39 @@ const FinanceAPI = {
             */
 
             const monthly =
-                Object.entries(monthlyTotals)
-                    .map(
-                        ([month, values]) => ({
-
+                Object.entries(
+                    monthlyTotals
+                )
+                .map(
+                    (
+                        [
                             month,
+                            values
+                        ]
+                    ) => ({
 
-                            income:
-                                values.income,
+                        month,
 
-                            expense:
-                                values.expense,
+                        income:
+                            values.income,
 
-                            net:
-                                values.income -
-                                values.expense
-                        })
-                    )
-                    .sort(
-                        (a, b) =>
-                            b.month.localeCompare(
-                                a.month
-                            )
-                    );
+                        expense:
+                            values.expense,
+
+                        net:
+                            values.income -
+                            values.expense
+                    })
+                )
+                .sort(
+                    (
+                        a,
+                        b
+                    ) =>
+                        b.month.localeCompare(
+                            a.month
+                        )
+                );
 
 
             /*
@@ -826,7 +1147,8 @@ const FinanceAPI = {
 
             return {
 
-                success: true,
+                success:
+                    true,
 
                 transactions,
 
@@ -869,14 +1191,19 @@ const FinanceAPI = {
         },
 
 
-        async update(profile) {
+        async update(
+            profile
+        ) {
 
             return await apiRequest(
                 "/auth/profile",
                 {
                     method: "PUT",
 
-                    body: JSON.stringify(profile)
+                    body:
+                        JSON.stringify(
+                            profile
+                        )
                 }
             );
         }
@@ -889,11 +1216,15 @@ const FinanceAPI = {
     =====================================================
     */
 
-    errorMessage(error) {
+    errorMessage(
+        error
+    ) {
 
         if (!error) {
 
-            return "Something went wrong.";
+            return (
+                "Something went wrong."
+            );
         }
 
 
@@ -902,7 +1233,9 @@ const FinanceAPI = {
             error.data.message
         ) {
 
-            return error.data.message;
+            return (
+                error.data.message
+            );
         }
 
 
@@ -911,17 +1244,88 @@ const FinanceAPI = {
             error.data.error
         ) {
 
-            return error.data.error;
+            return (
+                error.data.error
+            );
         }
 
 
-        if (error.message) {
+        if (
+            error.data &&
+            error.data.detail
+        ) {
 
-            return error.message;
+            return (
+                error.data.detail
+            );
         }
 
 
-        return "Something went wrong.";
+        if (
+            error.data &&
+            error.data.errors
+        ) {
+
+            const errors =
+                error.data.errors;
+
+
+            if (
+                typeof errors ===
+                "string"
+            ) {
+
+                return errors;
+            }
+
+
+            if (
+                Array.isArray(errors)
+            ) {
+
+                return errors.join(
+                    ", "
+                );
+            }
+
+
+            if (
+                typeof errors ===
+                "object"
+            ) {
+
+                return Object.entries(
+                    errors
+                )
+                .map(
+                    (
+                        [
+                            field,
+                            message
+                        ]
+                    ) =>
+                        `${field}: ${message}`
+                )
+                .join(
+                    ", "
+                );
+            }
+        }
+
+
+        if (
+            error.message
+        ) {
+
+            return (
+                error.message
+            );
+        }
+
+
+        return (
+            "Something went wrong."
+        );
     }
 };
 
@@ -932,6 +1336,142 @@ MAKE AVAILABLE GLOBALLY
 =========================================================
 */
 
-window.FinanceAPI = FinanceAPI;
+window.FinanceAPI =
+    FinanceAPI;
 
-window.API_BASE_URL = API_BASE_URL;
+window.API_BASE_URL =
+    API_BASE_URL;
+
+async function apiRequest(endpoint, options = {}) {
+
+    const url =
+        `${API_BASE_URL}${endpoint}`;
+
+    const requestOptions = {
+
+        ...options,
+
+        credentials: "include",
+
+        headers: {
+            "Content-Type":
+                "application/json",
+
+            ...(options.headers || {})
+        }
+    };
+
+    let response;
+
+    try {
+
+        response =
+            await fetch(
+                url,
+                requestOptions
+            );
+
+    } catch (networkError) {
+
+        console.error(
+            "NETWORK ERROR:",
+            networkError
+        );
+
+        throw new Error(
+            "Unable to connect to the Finance Tracker server."
+        );
+    }
+
+    let data = null;
+
+    const contentType =
+        response.headers.get(
+            "content-type"
+        ) || "";
+
+    try {
+
+        if (
+            contentType.includes(
+                "application/json"
+            )
+        ) {
+
+            data =
+                await response.json();
+
+        } else {
+
+            const text =
+                await response.text();
+
+            if (text) {
+
+                data = {
+                    message: text
+                };
+            }
+        }
+
+    } catch (parseError) {
+
+        console.warn(
+            "Could not parse API response:",
+            parseError
+        );
+
+        data = null;
+    }
+
+    console.log(
+        "API RESPONSE:",
+        {
+            endpoint: endpoint,
+            status: response.status,
+            ok: response.ok,
+            data: data
+        }
+    );
+
+    if (!response.ok) {
+
+        const message =
+            data?.message ||
+            data?.error ||
+            data?.detail ||
+            data?.errors ||
+            `Request failed with status ${response.status}`;
+
+        console.error(
+            "API ERROR:",
+            {
+                url: url,
+                status: response.status,
+                statusText:
+                    response.statusText,
+                response: data
+            }
+        );
+
+        const error =
+            new Error(
+                typeof message === "string"
+                    ? message
+                    : JSON.stringify(message)
+            );
+
+        error.status =
+            response.status;
+
+        error.statusText =
+            response.statusText;
+
+        error.data =
+            data;
+
+        throw error;
+    }
+
+    return data;
+}

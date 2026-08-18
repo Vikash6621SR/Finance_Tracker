@@ -1535,211 +1535,298 @@ document.addEventListener("DOMContentLoaded", () => {
        FinanceAPI.budgets.update()
     ========================================================= */
 
-    async function handleSubmit(
-        event
+    async function handleSubmit(event) {
+
+    event.preventDefault();
+
+    const name =
+        budgetName?.value.trim() || "";
+
+    const category =
+        budgetCategory?.value.trim() || "";
+
+    const period =
+        normalizePeriod(
+            budgetPeriod?.value
+        );
+
+    const amount =
+        Number(
+            budgetAmount?.value
+        );
+
+    const description =
+        budgetDescription?.value.trim() || "";
+
+
+    // =========================================================
+    // FRONTEND VALIDATION
+    // =========================================================
+
+    if (!name) {
+
+        showModalMessage(
+            "Please enter a budget name."
+        );
+
+        budgetName?.focus();
+
+        return;
+    }
+
+
+    if (!category) {
+
+        showModalMessage(
+            "Please enter a category."
+        );
+
+        budgetCategory?.focus();
+
+        return;
+    }
+
+
+    if (!period) {
+
+        showModalMessage(
+            "Please select a budget period."
+        );
+
+        budgetPeriod?.focus();
+
+        return;
+    }
+
+
+    if (
+        !Number.isFinite(amount) ||
+        amount <= 0
     ) {
 
-        event.preventDefault();
+        showModalMessage(
+            "Please enter a valid budget amount greater than zero."
+        );
+
+        budgetAmount?.focus();
+
+        return;
+    }
 
 
-        const name =
-            budgetName?.value.trim() ||
-            "";
+    // =========================================================
+    // CALCULATE START / END DATES
+    // =========================================================
+
+    const today = new Date();
+
+    let startDate;
+    let endDate;
 
 
-        const category =
-            budgetCategory?.value.trim() ||
-            "";
+    if (period === "WEEKLY") {
 
+        const day =
+            today.getDay();
 
-        const period =
-            normalizePeriod(
-                budgetPeriod?.value
+        const difference =
+            day === 0
+                ? 6
+                : day - 1;
+
+        const start =
+            new Date(today);
+
+        start.setDate(
+            today.getDate() - difference
+        );
+
+        const end =
+            new Date(start);
+
+        end.setDate(
+            start.getDate() + 6
+        );
+
+        startDate =
+            formatDate(start);
+
+        endDate =
+            formatDate(end);
+
+    } else if (period === "YEARLY") {
+
+        startDate =
+            `${today.getFullYear()}-01-01`;
+
+        endDate =
+            `${today.getFullYear()}-12-31`;
+
+    } else {
+
+        // MONTHLY
+        // Also used as a safe fallback for CUSTOM
+        const year =
+            today.getFullYear();
+
+        const month =
+            today.getMonth();
+
+        const start =
+            new Date(
+                year,
+                month,
+                1
             );
 
-
-        const amount =
-            Number(
-                budgetAmount?.value
+        const end =
+            new Date(
+                year,
+                month + 1,
+                0
             );
 
+        startDate =
+            formatDate(start);
 
-        const description =
-            budgetDescription?.value.trim() ||
-            "";
-
-
-        if (!name) {
-
-            showModalMessage(
-                "Please enter a budget name."
-            );
-
-            budgetName?.focus();
-
-            return;
-        }
+        endDate =
+            formatDate(end);
+    }
 
 
-        if (!category) {
+    // =========================================================
+    // API PAYLOAD
+    // IMPORTANT:
+    // Only send fields that BudgetRequest accepts.
+    // =========================================================
 
-            showModalMessage(
-                "Please enter a category."
-            );
+    const payload = {
 
-            budgetCategory?.focus();
+        name: name,
 
-            return;
-        }
+        category: category,
+
+        amount: amount,
+
+        period: period,
+
+        startDate: startDate,
+
+        endDate: endDate,
+
+        active: true
+    };
 
 
-        if (!period) {
+    console.log(
+        "Budget payload:",
+        payload
+    );
 
-            showModalMessage(
-                "Please select a budget period."
-            );
 
-            budgetPeriod?.focus();
+    if (saveButton) {
 
-            return;
-        }
+        saveButton.disabled =
+            true;
 
+        saveButton.textContent =
+            editingId
+                ? "Updating..."
+                : "Saving...";
+    }
+
+
+    try {
 
         if (
-            !Number.isFinite(amount) ||
-            amount <= 0
+            editingId !== null &&
+            editingId !== undefined
         ) {
 
-            showModalMessage(
-                "Please enter a valid budget amount greater than zero."
+            await FinanceAPI.budgets.update(
+                editingId,
+                payload
             );
 
-            budgetAmount?.focus();
+            showToast(
+                "Budget updated successfully."
+            );
 
-            return;
+        } else {
+
+            await FinanceAPI.budgets.create(
+                payload
+            );
+
+            showToast(
+                "Budget created successfully."
+            );
         }
 
 
-        const payload = {
+        closeModal();
 
-            name: name,
+        await loadBudgets();
 
-            budgetName: name,
+        updateSummary();
 
-            category: category,
+        renderBudgets();
 
-            period: period,
 
-            budgetPeriod: period,
+    } catch (error) {
 
-            amount: amount,
+        console.error(
+            "Budget save failed:",
+            error
+        );
 
-            budgetAmount: amount,
+        showModalMessage(
+            getErrorMessage(error)
+        );
 
-            description: description
-        };
-
+    } finally {
 
         if (saveButton) {
 
             saveButton.disabled =
-                true;
-
+                false;
 
             saveButton.textContent =
                 editingId
-                    ? "Updating..."
-                    : "Saving...";
-        }
-
-
-        try {
-
-            if (
-                editingId !== null &&
-                editingId !== undefined
-            ) {
-
-                /*
-                 * CORRECT:
-                 *
-                 * FinanceAPI.accounts.update(id, data)
-                 *
-                 * For budgets:
-                 *
-                 * FinanceAPI.budgets.update(id, data)
-                 */
-
-                await FinanceAPI.budgets.update(
-                    editingId,
-                    payload
-                );
-
-
-                showToast(
-                    "Budget updated successfully."
-                );
-
-            } else {
-
-                /*
-                 * CORRECT CREATE:
-                 *
-                 * FinanceAPI.budgets.create(data)
-                 */
-
-                await FinanceAPI.budgets.create(
-                    payload
-                );
-
-
-                showToast(
-                    "Budget created successfully."
-                );
-            }
-
-
-            closeModal();
-
-
-            await loadBudgets();
-
-
-            updateSummary();
-
-
-            renderBudgets();
-
-        } catch (error) {
-
-            console.error(
-                "Budget save failed:",
-                error
-            );
-
-
-            showModalMessage(
-                getErrorMessage(
-                    error
-                )
-            );
-
-        } finally {
-
-            if (saveButton) {
-
-                saveButton.disabled =
-                    false;
-
-
-                saveButton.textContent =
-                    editingId
-                        ? "Update Budget"
-                        : "Save Budget";
-            }
+                    ? "Update Budget"
+                    : "Save Budget";
         }
     }
+}
 
+
+/* =========================================================
+   FORMAT DATE AS YYYY-MM-DD
+   ========================================================= */
+
+function formatDate(date) {
+
+    const year =
+        date.getFullYear();
+
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(
+            2,
+            "0"
+        );
+
+    const day =
+        String(
+            date.getDate()
+        ).padStart(
+            2,
+            "0"
+        );
+
+    return `${year}-${month}-${day}`;
+}
 
     /* =========================================================
        DELETE CONFIRMATION
